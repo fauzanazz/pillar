@@ -14,7 +14,6 @@ import {
   GetContractsData,
   updateContract,
   UpdateContractData,
-  UpdateContractResponse,
 } from '@/api';
 
 interface ContractState {

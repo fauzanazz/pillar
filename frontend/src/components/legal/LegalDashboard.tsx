@@ -97,7 +97,7 @@ const LegalDashboard = () => {
       </div>
 
       {/* Contracts Table */}
-      <div className="space-y-4">
+    <div className="space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="text-2xl font-semibold tracking-tight">
             Contracts for Review

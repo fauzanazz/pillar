@@ -8,7 +8,7 @@ import { Separator } from '@/components/ui/separator';
 import { usePathname } from 'next/navigation';
 import { useAuthStore } from '@/stores/authStore';
 
-export function AppTopbar() {
+export function PageTopBar() {
   const { user, logout } = useAuthStore();
   const pathname = usePathname();
   return (
@@ -55,11 +55,13 @@ export function AppTopbar() {
           <span className="hidden text-sm text-white/80 md:inline">
             {user?.name} {user?.role ? `(${user.role})` : ''}
           </span>
+
           <Avatar className="h-8 w-8">
             <AvatarFallback>
               {user?.name?.slice(0, 2).toUpperCase() || 'U'}
             </AvatarFallback>
           </Avatar>
+
           <Button variant="secondary" onClick={logout} asChild>
             <Link href="/login">Logout</Link>
           </Button>

@@ -3,7 +3,7 @@
 import { useMemo, useState, useEffect } from 'react';
 import { useContractStore } from '@/stores/contractStore';
 import StatCard from '@/components/dashboard/StatCard';
-import { EnhancedContractTable } from '@/components/contracts/EnhancedContractTable';
+import { InternalContractTable } from '@/components/internal/InternalContractTable';
 import { AddContractModal } from '@/components/contracts/AddContractModal';
 import { EditContractModal } from '@/components/contracts/EditContractModal';
 import { Contract } from '@/api/types.gen';
@@ -138,7 +138,7 @@ const InternalDashboard = ({
             <span className="ml-3 text-gray-600">Loading contracts...</span>
           </div>
         ) : (
-          <EnhancedContractTable
+          <InternalContractTable
             contracts={contracts}
             onEdit={contract => {
               setEditingContract(contract);
@@ -154,6 +154,8 @@ const InternalDashboard = ({
             onSendToNextStep={contract => {
               // Update status based on current status
               let newStatus: Contract['status'];
+
+              console.log('Curretn Status : ', contract.status);
               switch (contract.status) {
                 case 'Draft':
                   newStatus = 'Legal Review';
