@@ -1,14 +1,18 @@
 'use client';
 
-import { useState } from 'react';
-import { FileText, Clock, CheckCircle, Plus } from 'lucide-react';
 import { ContractWithRelations, Contract } from '@/api';
-import { AddContractModal } from '@/components/contracts/AddContractModal';
+import {
+  AddContractModal,
+  ContractForm,
+} from '@/components/contracts/AddContractModal';
 import { EditContractModal } from '@/components/contracts/EditContractModal';
 import StatCard from '@/components/dashboard/StatCard';
 import { InternalContractTable } from '@/components/internal/InternalContractTable';
 import { Button } from '@/components/ui/button';
 import { useContractStore } from '@/stores/contractStore';
+import { FileText, Clock, CheckCircle, Plus } from 'lucide-react';
+import { useState } from 'react';
+import { generateContract } from '@/services/ai';
 
 const InternalDashboard = () => {
   const {
@@ -117,10 +121,32 @@ const InternalDashboard = () => {
         isOpen={isAddModalOpen}
         onClose={() => setIsAddModalOpen(false)}
         onSubmit={async contractData => {
-          addContract({
+          const response = await addContract({
             url: '/api/contracts',
             body: contractData,
           });
+
+          console.log('response', response);
+
+          // @ts-expect-error - Response type may not have success property
+          if (response.success!) {
+            // @ts-expect-error - Response data may not have presignedUrl property
+            const presignedUrl = response.data?.presignedUrl;
+
+            // Convert ContractFormUpload to ContractForm format
+            const contractFormData: ContractForm = {
+              title: contractData.title,
+              description: contractData.description || '',
+              endDate: contractData.endDate || '',
+              parties: contractData.party.map(p => ({
+                name: p.partyName,
+                representation: p.partyRole,
+              })),
+            };
+
+            await generateContract(contractFormData, presignedUrl);
+            console.log('Contract generated successfully');
+          }
         }}
       />
 

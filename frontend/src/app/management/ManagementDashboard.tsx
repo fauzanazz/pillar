@@ -20,12 +20,9 @@ interface ManagementDashboardProps {
   onDeleteContract?: (contract: ContractWithRelations) => void;
 }
 
-const ManagementDashboard = ({
-  onEditContract,
-  onReviewContract,
-  onDeleteContract,
-}: ManagementDashboardProps) => {
-  const contracts = useContractStore(state => state.contracts);
+const ManagementDashboard = () => {
+  const { contracts, fetchContracts, loading, error, totalContracts } =
+    useContractStore();
 
   // Management sees contracts that need their approval or are already approved
   const managementContracts = useMemo(() => {

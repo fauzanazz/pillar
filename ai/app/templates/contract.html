@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ header.title }}</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 2.5cm;
+            @bottom-right {
+                content: "Halaman " counter(page) " dari " counter(pages);
+                font-size: 10pt;
+                color: #666;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header Section -->
+    <div class="header">
+        <h1 class="title">{{ header.title|upper }}</h1>
+        {% if header.number %}
+        <p class="contract-number">Nomor: {{ header.number }}</p>
+        {% endif %}
+    </div>
+
+    <!-- Date Section -->
+    <div class="date-section">
+        <p>Pada hari ini, {{ current_date }}, telah dibuat dan ditandatangani perjanjian ini oleh dan antara:</p>
+    </div>
+
+    <!-- Parties Section -->
+    <div class="parties-section">
+        {% for party in parties %}
+        <div class="party">
+            <div class="party-number">
+                <strong>PIHAK {{ party.number }}:</strong>
+            </div>
+            <div class="party-details">
+                <p class="party-name"><strong>{{ party.name }}</strong></p>
+                {% if party.rep %}
+                <p class="party-representative">Dalam hal ini diwakili oleh: {{ party.rep }}</p>
+                {% endif %}
+                <p class="party-address">Berkedudukan di: {{ party.address }}</p>
+                <p class="party-role">Selanjutnya disebut sebagai <strong>"{{ party.role }}"</strong></p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Preamble -->
+    <div class="preamble">
+        <p>Para Pihak terlebih dahulu menerangkan hal-hal sebagai berikut:</p>
+        <p>Bahwa Para Pihak sepakat untuk mengadakan perjanjian ini dengan ketentuan dan syarat-syarat sebagai berikut:</p>
+    </div>
+
+    <!-- Clauses Section -->
+    <div class="clauses-section">
+        {% for clause in clauses %}
+        <div class="clause">
+            <h2 class="clause-title">
+                PASAL {{ clause.no }}
+                <br>
+                <span class="clause-subject">{{ clause.title|upper }}</span>
+            </h2>
+            <div class="clause-content">
+                {% if '\n' in clause.text %}
+                    {% for paragraph in clause.text.split('\n') %}
+                        {% if paragraph.strip() %}
+                        <p>{{ paragraph }}</p>
+                        {% endif %}
+                    {% endfor %}
+                {% else %}
+                    <p>{{ clause.text }}</p>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Signature Section -->
+    <div class="signature-section">
+        <p>Demikian perjanjian ini dibuat dalam {{ parties|length }} ({{ parties|length|string|replace('1', 'satu')|replace('2', 'dua')|replace('3', 'tiga')|replace('4', 'empat') }}) rangkap yang masing-masing mempunyai kekuatan hukum yang sama, dan ditandatangani oleh Para Pihak pada hari dan tanggal sebagaimana disebutkan di atas.</p>
+        
+        <div class="signatures">
+            {% for party in parties %}
+            <div class="signature-block">
+                <p class="signature-party">{{ party.role|upper }}</p>
+                <div class="signature-line"></div>
+                <p class="signature-name">({{ party.name }})</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Watermark (if applicable) -->
+    {% if watermark %}
+    <div class="watermark">{{ watermark }}</div>
+    {% endif %}
+
+    <!-- Footer -->
+    <div class="footer">
+        {% if footer.hash %}
+        <p class="footer-item">Hash: {{ footer.hash }}</p>
+        {% endif %}
+        {% if footer.version %}
+        <p class="footer-item">Version: {{ footer.version }}</p>
+        {% endif %}
+        <p class="footer-item generated">Generated: {{ generation_date }}</p>
+    </div>
+</body>
+</html>

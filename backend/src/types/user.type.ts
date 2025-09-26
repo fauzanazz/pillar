@@ -17,7 +17,7 @@ export const createUserSchema = createInsertSchema(user).omit({
 export const readUserSchema = createSelectSchema(user, {
   createdAt: z.union([z.string(), z.date()]),
   updatedAt: z.union([z.string(), z.date()]),
-}).openapi('User');
+});
 export const readUserListSchema = z.array(readUserSchema);
 
 // Update

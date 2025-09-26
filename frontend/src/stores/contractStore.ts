@@ -25,7 +25,7 @@ interface ContractState {
   fetchContracts: (
     params?: GetContractsData
   ) => Promise<GetContractsResponse | undefined>;
-  addContract: (params: CreateContractData) => Promise<any>;
+  addContract: (params: CreateContractData) => Promise<unknown>;
   updateContract: (params: UpdateContractData) => Promise<void>;
   deleteContract: (params: DeleteContractData) => Promise<void>;
   getContractById: (

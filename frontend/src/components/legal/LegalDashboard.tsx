@@ -1,80 +1,85 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useMemo, useEffect, useState } from 'react';
 import { useContractStore } from '@/stores/contractStore';
-
-import ContractTable from '../contracts/ContractTable';
 import { FileText, Clock, CheckCircle, AlertTriangle } from 'lucide-react';
 import StatCard from '../dashboard/StatCard';
+import { LegalContractsTable } from './LegalContractTable';
+import { Button } from '../ui/button';
 
 const LegalDashboard = () => {
-  const contracts = useContractStore(state => state.contracts);
+  const { contracts, fetchContracts, loading, error, totalContracts } =
+    useContractStore();
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
 
-  // Filter contracts relevant to legal team
-  const legalContracts = useMemo(() => {
-    return contracts.filter(
-      c =>
-        c.status === 'Legal Review' ||
-        c.status === 'Management Review' ||
-        c.status === 'Accepted' ||
-        c.status === 'Canceled'
-    );
-  }, [contracts]);
+  // Fetch contracts when the current page changes
+  useEffect(() => {
+    fetchContracts({
+      url: '/api/contracts',
+      query: {
+        page: currentPage.toString(),
+        limit: itemsPerPage.toString(),
+        status: 'Legal Review', // Example filter for legal dashboard
+      },
+    });
+  }, [currentPage]); // Removed fetchContracts from dependencies
 
+  const totalPages = Math.ceil(totalContracts / itemsPerPage);
+
+  const handlePageChange = (page: number) => {
+    if (page > 0 && page <= totalPages) {
+      setCurrentPage(page);
+    }
+  };
+
+  // Memoized stats based on the fetched contracts for the current page
   const stats = useMemo(() => {
-    const totalContracts = legalContracts.length;
+    // Note: These stats will reflect the current page, not all contracts.
+    // For global stats, you might need a separate API call or adjust the store.
     const pendingReview = contracts.filter(
       c => c.status === 'Legal Review'
     ).length;
-    const reviewedContracts = contracts.filter(
-      c => c.status === 'Management Review' || c.status === 'Accepted'
-    ).length;
-    const rejectedContracts = contracts.filter(
-      c => c.status === 'Canceled'
-    ).length;
-
     return {
-      totalContracts,
+      totalContracts: totalContracts, // Use total from store for accuracy
       pendingReview,
-      reviewedContracts,
-      rejectedContracts,
     };
-  }, [contracts, legalContracts]);
-
-  function reviewContracts() {}
+  }, [contracts, totalContracts]);
 
   const legalStats = [
     {
       title: 'Total Contracts',
       value: stats.totalContracts,
-      description: 'Legal oversight',
       icon: <FileText className="h-6 w-6 text-accent" />,
-      trend: { value: 12, isPositive: true },
     },
     {
       title: 'Pending Review',
       value: stats.pendingReview,
-      description: 'Awaiting legal review',
       icon: <Clock className="h-6 w-6 text-warning" />,
     },
     {
       title: 'Reviewed',
-      value: stats.reviewedContracts,
-      description: 'Completed reviews',
+      value: 0, // Placeholder
       icon: <CheckCircle className="h-6 w-6 text-success" />,
-      trend: { value: 8, isPositive: true },
     },
     {
       title: 'Rejected',
-      value: stats.rejectedContracts,
-      description: 'Legal concerns',
+      value: 0, // Placeholder
       icon: <AlertTriangle className="h-6 w-6 text-destructive" />,
     },
   ];
 
+  if (error) {
+    return (
+      <div className="text-center p-8">
+        <p className="text-red-500">Failed to load contracts.</p>
+        <Button onClick={() => setCurrentPage(1)}>Retry</Button>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6 p-6">
-      {/* Header */}
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Legal Dashboard</h1>
         <p className="text-muted-foreground">
@@ -82,32 +87,31 @@ const LegalDashboard = () => {
         </p>
       </div>
 
-      {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {legalStats.map((stat, index) => (
           <StatCard
             key={index}
             title={stat.title}
             value={stat.value}
-            description={stat.description}
             icon={stat.icon}
-            trend={'trend' in stat ? stat.trend : undefined}
+            description={''}
           />
         ))}
       </div>
 
-      {/* Contracts Table */}
-    <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-semibold tracking-tight">
-            Contracts for Review
-          </h2>
-          <p className="text-sm text-muted-foreground">
-            Showing {legalContracts.length} contracts requiring legal attention
-          </p>
-        </div>
-
-        <ContractTable filteredContracts={legalContracts} />
+      <div className="space-y-4">
+        <h2 className="text-2xl font-semibold tracking-tight">
+          Contracts for Review
+        </h2>
+        <LegalContractsTable
+          contracts={contracts}
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={handlePageChange}
+          loading={loading}
+          itemsPerPage={itemsPerPage}
+          totalItems={totalContracts}
+        />
       </div>
     </div>
   );

@@ -21,11 +21,7 @@ export default function ManagementPage() {
     <div className="min-h-screen bg-gray-50">
       <Navigation />
       <div className="max-w-7xl mx-auto">
-        <ManagementDashboard
-          onEditContract={handleEditContract}
-          onReviewContract={handleReviewContract}
-          onDeleteContract={handleDeleteContract}
-        />
+        <ManagementDashboard />
       </div>
     </div>
   );
