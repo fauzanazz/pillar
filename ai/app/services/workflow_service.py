@@ -459,10 +459,12 @@ class WorkflowService:
                 finally:
                     loop.close()
             
-            # Save PDF file
+            # Save PDF file locally for now (could be moved to cloud storage later)
+            from pathlib import Path
             pdf_filename = f"contract_{contract.id}.pdf"
-            pdf_path = contract_storage.base_path / "pdfs" / pdf_filename
-            pdf_path.parent.mkdir(exist_ok=True)
+            pdf_dir = Path("out") / "pdfs"
+            pdf_dir.mkdir(parents=True, exist_ok=True)
+            pdf_path = pdf_dir / pdf_filename
             
             with open(pdf_path, "wb") as f:
                 f.write(pdf_bytes)

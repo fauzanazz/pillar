@@ -112,8 +112,8 @@ async def identify_risks_for_contract(
             }
         )
         
-        from app.services.workflow_service import workflow_service
-        contract = workflow_service.storage.load_contract(contract_id)
+        from app.services.db_adapter import contract_db_adapter
+        contract = await contract_db_adapter.load_contract(contract_id)
         if not contract:
             raise HTTPException(status_code=404, detail=f"Contract {contract_id} not found")
         
@@ -162,7 +162,7 @@ async def identify_risks_for_contract(
             overall_risk_score = 0
         
         contract.risk_score = overall_risk_score
-        workflow_service.storage.save_contract(contract)
+        await contract_db_adapter.save_contract(contract)
         
         response = RiskIdentificationResponse(
             risks=risks,
