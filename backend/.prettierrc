@@ -1,0 +1,26 @@
+{
+  "singleQuote": true,
+  "arrowParens": "always",
+  "semi": true,
+  "tabWidth": 2,
+  "trailingComma": "all",
+  "endOfLine": "auto",
+  "importOrder": [
+    "^@configs/(.*)$",
+    "^@types/(.*)$",
+    "^@routes/(.*)$",
+    "^@controllers/(.*)$",
+    "^@repositories/(.*)$",
+    "^@middlewares/(.*)$",
+    "^@db/(.*)$",
+    "^@lib/(.*)$",
+    "^@utils/(.*)$",
+    "^@/(.*)$",
+    "^[./]"
+  ],
+  "importOrderSeparation": true,
+  "importOrderSortSpecifiers": true,
+  "plugins": [
+    "@trivago/prettier-plugin-sort-imports"
+  ]
+}
