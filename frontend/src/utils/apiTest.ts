@@ -1,4 +1,4 @@
-import { openApi } from '@/services/openapi';
+import { getContracts, createContract, health } from '@/api';
 
 // Simple test function to verify OpenAPI integration
 export const testOpenApiIntegration = async () => {
@@ -7,12 +7,13 @@ export const testOpenApiIntegration = async () => {
   try {
     // Test 1: Health check
     console.log('📡 Testing health endpoint...');
-    const healthResponse = await openApi.auth.health();
+    const healthResponse = await health();
     console.log('✅ Health check passed:', healthResponse);
 
     // Test 2: Fetch contracts
     console.log('📄 Testing contract fetching...');
-    const contracts = await openApi.contracts.getContracts();
+    const contractsResponse = await getContracts();
+    const contracts = contractsResponse.data?.data?.contracts || [];
     console.log(`✅ Contracts fetched: ${contracts.length} contracts found`);
     console.log('📋 Contract sample:', contracts[0]);
 
@@ -55,7 +56,7 @@ export const testContractCreation = async () => {
       ]
     };
 
-    const createdContract = await openApi.contracts.createContract(testContract);
+    const createdContract = await createContract({ body: testContract });
     console.log('✅ Contract created successfully:', createdContract);
 
     return {

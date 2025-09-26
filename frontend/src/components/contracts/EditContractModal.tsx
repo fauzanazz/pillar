@@ -9,13 +9,13 @@ import { X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Contract } from '@/types/contract';
+import { Contract, ContractWithRelations } from '@/api';
 
 interface EditContractModalProps {
   isOpen: boolean;
-  contract: Contract | null;
+  contract: ContractWithRelations | null;
   onClose: () => void;
-  onSubmit: (id: string, updates: Partial<Contract>) => void;
+  onSubmit: (id: number, updates: Partial<Contract>) => void;
 }
 
 const editContractSchema = z.object({
@@ -53,10 +53,10 @@ export function EditContractModal({ isOpen, contract, onClose, onSubmit }: EditC
         title: contract.title,
         description: contract.description,
         endDate: contract.endDate,
-        parties: contract.parties.map(p => `${p.name} (${p.representation})`).join(', '),
-        contractUrl: contract.contractUrl || '',
-        startDate: contract.startDate,
-        amount: contract.amount || '',
+        parties: contract.parties?.map(p => `${p.partyName} (${p.partyRole})`).join(', ') || '',
+        contractUrl: contract.urlContract || '',
+        startDate: contract.createdAt,
+        amount: '',  // Not available in Contract type
       });
     }
   }, [contract, form]);
@@ -71,8 +71,7 @@ export function EditContractModal({ isOpen, contract, onClose, onSubmit }: EditC
         title: data.title,
         description: data.description,
         endDate: data.endDate,
-        startDate: data.startDate,
-        amount: data.amount || undefined,
+        // Note: startDate and amount are not part of Contract type
       };
 
       await onSubmit(contract.id, updates);
@@ -198,7 +197,7 @@ export function EditContractModal({ isOpen, contract, onClose, onSubmit }: EditC
               </span>
               <br />
               <span className="text-sm text-gray-700">
-                Version: <span className="font-medium">{contract.version}</span>
+                Version: <span className="font-medium">{contract.versions?.[contract.versions.length - 1]?.versionNo || 1}</span>
               </span>
             </div>
           </div>

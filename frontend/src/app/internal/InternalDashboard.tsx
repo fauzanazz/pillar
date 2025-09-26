@@ -202,7 +202,7 @@ const InternalDashboard = ({
         onSubmit={(id, updates) => {
           updateContract({
             url: '/api/contracts/{id}',
-            path: { id: id },
+            path: { id: id.toString() },
             body: updates,
           });
         }}
