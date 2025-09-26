@@ -96,6 +96,7 @@ export const updateContractSchema = z.object({
   description: z.string().optional(),
   endDate: z.string().optional(),
   status: contractStatusEnum.optional(),
+  reason: z.string().optional(),
 });
 
 export const rejectContractSchema = z.object({

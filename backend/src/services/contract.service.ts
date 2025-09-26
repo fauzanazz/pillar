@@ -74,6 +74,7 @@ export const rejectContractService = async (
 
   const updateData: UpdateContract = {
     status: status as 'Rejected' | 'Rejected Legal',
+    reason: rejectData.reason,
   };
 
   return await updateContractRepo(id, updateData, rejectedBy, 'management');
@@ -86,6 +87,7 @@ export const acceptContractService = async (
 ) => {
   const updateData: UpdateContract = {
     status: 'Accepted',
+    reason: acceptData.reason,
   };
 
   return await updateContractRepo(id, updateData, acceptedBy, 'management');
