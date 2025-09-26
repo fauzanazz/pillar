@@ -46,15 +46,7 @@ app.doc('/openapi.json', {
   },
   tags: [
     { name: 'health', description: 'Health Check API' },
-    { name: 'contracts', description: 'Contract Management API' },
-    { name: 'store', description: 'Store API' },
-    { name: 'product', description: 'Product API' },
-    { name: 'wholesale-price', description: 'Wholesale Price API' },
-    { name: 'cart', description: 'Shopping Cart API' },
-    { name: 'favorite', description: 'Favorites API' },
-    { name: 'transaction', description: 'Transaction API' },
-    { name: 'user', description: 'User API' },
-    { name: 'auth', description: 'Authentication API' },
+    { name: 'contracts', description: 'Contract Management APIs' },
   ],
 });
 app.get(

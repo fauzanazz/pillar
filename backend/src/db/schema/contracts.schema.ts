@@ -54,14 +54,8 @@ export const clauses = pgTable('clauses', {
     .references(() => contracts.id)
     .notNull(),
   clauseText: text('clause_text').notNull(),
-  clauseType: varchar('clause_type'),
+  clauseDescription: varchar('clause_description'),
   riskLevel: varchar('risk_level'),
-  aiGenerated: boolean('ai_generated')
-    .$defaultFn(() => false)
-    .notNull(),
-  approved: boolean('approved')
-    .$defaultFn(() => false)
-    .notNull(),
   createdBy: varchar('created_by').references(() => user.id),
   updatedBy: varchar('updated_by').references(() => user.id),
   createdAt: timestamp('created_at').$defaultFn(getNow).notNull(),
