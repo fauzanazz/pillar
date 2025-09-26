@@ -39,6 +39,7 @@ class OpenAIClient:
             model_name = model or settings.openai_model
             user_message = json.dumps(user_json, ensure_ascii=False)
             
+            
             logger.info(
                 "Making OpenAI request",
                 extra={
@@ -71,6 +72,15 @@ class OpenAIClient:
                 if not content:
                     raise ValueError("Empty response from OpenAI")
                 result = json.loads(content)
+            
+            # Log OpenAI response content for debugging
+            logger.debug(
+                "OpenAI response content",
+                extra={
+                    "correlation_id": correlation_id,
+                    "response_content": response.choices[0].message.content
+                }
+            )
             
             logger.info(
                 "OpenAI request completed successfully",
