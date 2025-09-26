@@ -96,6 +96,7 @@ export const getContractById = async (
 
   const baseContract = {
     ...contract[0],
+    urlContract: await getPresignedUrlByUrl(contract[0].urlContract || ''),
     status: contract[0].status as
       | 'Draft'
       | 'Legal Review'
