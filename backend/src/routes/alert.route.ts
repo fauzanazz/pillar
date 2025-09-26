@@ -5,6 +5,7 @@ import { GenericErrorResponses } from '@/lib';
 import {
   alertWithContractResponseSchema,
   alertsListResponseSchema,
+  createAlertSchema,
   getAlertsQuerySchema,
   markAlertAsReadSchema,
 } from '@/types/alert.type';
@@ -99,6 +100,33 @@ export const getUnreadAlertsCountRoute = createRoute({
             message: z.string(),
             code: z.number().default(200),
           }),
+        },
+      },
+    },
+    ...GenericErrorResponses,
+  },
+});
+
+export const createAlertRoute = createRoute({
+  operationId: 'createAlert',
+  tags: ['alerts'],
+  method: 'post',
+  path: '/alerts',
+  request: {
+    body: {
+      content: {
+        'application/json': {
+          schema: createAlertSchema,
+        },
+      },
+    },
+  },
+  responses: {
+    201: {
+      description: 'Alert created successfully',
+      content: {
+        'application/json': {
+          schema: alertWithContractResponseSchema,
         },
       },
     },

@@ -4,12 +4,14 @@ import {
   createSuccessResponse,
 } from '@/lib';
 import {
+  createAlertRoute,
   getAlertByIdRoute,
   getAlertsRoute,
   getUnreadAlertsCountRoute,
   markAlertAsReadRoute,
 } from '@/routes/alert.route';
 import {
+  createAlertService,
   getAlertByIdService,
   getAlertsService,
   getUnreadAlertsCountService,
@@ -82,5 +84,29 @@ protectedAlertRouter.openapi(getUnreadAlertsCountRoute, async (c) => {
       createErrorResponse('Failed to get unread alerts count', 500),
       500,
     );
+  }
+});
+
+protectedAlertRouter.openapi(createAlertRoute, async (c) => {
+  const alertData = c.req.valid('json');
+  const user = c.var.user;
+
+  if (!user) {
+    return c.json(createErrorResponse('User not authenticated', 401), 401);
+  }
+
+  try {
+    const newAlert = await createAlertService(alertData, user.id);
+
+    return c.json(
+      createSuccessResponse(newAlert, 'Alert created successfully', 201),
+      201,
+    );
+  } catch (error) {
+    console.error('Error creating alert:', error);
+    if (error instanceof Error && error.message === 'Contract not found') {
+      return c.json(createErrorResponse('Contract not found', 404), 404);
+    }
+    return c.json(createErrorResponse('Failed to create alert', 500), 500);
   }
 });
