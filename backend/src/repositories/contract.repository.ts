@@ -284,19 +284,10 @@ export const deleteContract = async (id: number) => {
     return null;
   }
 
-  // Delete related records first (due to foreign key constraints)
-  // Delete contract versions
-  await db.delete(contractVersions).where(eq(contractVersions.contractId, id));
-
-  // Delete contract parties
-  await db.delete(contractParties).where(eq(contractParties.contractId, id));
-
-  // Delete clauses
-  await db.delete(clauses).where(eq(clauses.contractId, id));
-
   // Finally, delete the contract
   const [deletedContract] = await db
-    .delete(contracts)
+    .update(contracts)
+    .set({ deleted: true })
     .where(eq(contracts.id, id))
     .returning();
 

@@ -4,19 +4,23 @@ import {
   createSuccessResponse,
 } from '@/lib';
 import {
+  acceptContractRoute,
   createClauseRoute,
   createContractRoute,
   deleteContractRoute,
   getContractByIdRoute,
   getContractsRoute,
+  rejectContractRoute,
   updateContractRoute,
 } from '@/routes/contract.route';
 import {
+  acceptContractService,
   createClauseService,
   createContractService,
   deleteContractService,
   getContractByIdService,
   getContractsService,
+  rejectContractService,
   updateContractService,
 } from '@/services/contract.service';
 
@@ -57,7 +61,7 @@ protectedContractRouter.openapi(createContractRoute, async (c) => {
   }
 
   try {
-    const res = await createContractService(contractData, user.id);
+    const res = await createContractService(contractData, user.name);
 
     console.log(res);
 
@@ -84,7 +88,7 @@ protectedContractRouter.openapi(updateContractRoute, async (c) => {
     const updatedContract = await updateContractService(
       id,
       contractData,
-      user.id,
+      user.name,
       user.role as string,
     );
 
@@ -158,5 +162,123 @@ protectedContractRouter.openapi(createClauseRoute, async (c) => {
       return c.json(createErrorResponse('Contract not found', 404), 404);
     }
     return c.json(createErrorResponse('Failed to create clause', 500), 500);
+  }
+});
+
+protectedContractRouter.openapi(rejectContractRoute, async (c) => {
+  const { id } = c.req.valid('param');
+  const rejectData = c.req.valid('json');
+  const user = c.var.user;
+
+  if (!user) {
+    return c.json(createErrorResponse('User not authenticated', 401), 401);
+  }
+
+  if (user.role !== 'management') {
+    return c.json(createErrorResponse('Forbidden', 403), 403);
+  }
+
+  try {
+    // First check if the contract exists
+    const existingContract = await getContractByIdService(id);
+    if (!existingContract) {
+      return c.json(createErrorResponse('Contract not found', 404), 404);
+    }
+
+    // Check if contract is in a state that can be rejected
+    const rejectable = ['Management Review'];
+    if (!rejectable.includes(existingContract.status)) {
+      return c.json(
+        createErrorResponse(
+          `Cannot reject contract with status: ${existingContract.status}`,
+          400,
+        ),
+        400,
+      );
+    }
+
+    const rejectedContract = await rejectContractService(
+      id,
+      rejectData,
+      user.name,
+    );
+
+    if (!rejectedContract) {
+      return c.json(createErrorResponse('Contract not found', 404), 404);
+    }
+
+    const message =
+      rejectData.rejectType === 'legal'
+        ? 'Contract rejected and sent to legal review'
+        : 'Contract rejected completely';
+
+    return c.json(createSuccessResponse(rejectedContract, message, 200), 200);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    console.error('Error rejecting contract:', error);
+    return c.json(
+      createErrorResponse(error.message || 'Failed to reject contract', 500),
+      500,
+    );
+  }
+});
+
+protectedContractRouter.openapi(acceptContractRoute, async (c) => {
+  const { id } = c.req.valid('param');
+  const acceptData = c.req.valid('json');
+  const user = c.var.user;
+
+  if (!user) {
+    return c.json(createErrorResponse('User not authenticated', 401), 401);
+  }
+
+  if (user.role !== 'management') {
+    return c.json(createErrorResponse('Forbidden', 403), 403);
+  }
+
+  try {
+    // First check if the contract exists
+    const existingContract = await getContractByIdService(id);
+    if (!existingContract) {
+      return c.json(createErrorResponse('Contract not found', 404), 404);
+    }
+
+    // Check if contract is in a state that can be accepted
+    const acceptable = ['Management Review'];
+    if (!acceptable.includes(existingContract.status)) {
+      return c.json(
+        createErrorResponse(
+          `Cannot accept contract with status: ${existingContract.status}`,
+          400,
+        ),
+        400,
+      );
+    }
+
+    const acceptedContract = await acceptContractService(
+      id,
+      acceptData,
+      user.name,
+    );
+
+    if (!acceptedContract) {
+      return c.json(createErrorResponse('Contract not found', 404), 404);
+    }
+
+    return c.json(
+      createSuccessResponse(
+        acceptedContract,
+        'Contract accepted successfully',
+        200,
+      ),
+      200,
+    );
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    console.error('Error accepting contract:', error);
+    return c.json(
+      createErrorResponse(error.message || 'Failed to accept contract', 500),
+      500,
+    );
   }
 });

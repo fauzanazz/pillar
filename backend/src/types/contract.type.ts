@@ -11,6 +11,7 @@ export const contractStatusEnum = z.enum([
   'Management Review',
   'Accepted',
   'Rejected',
+  'Rejected Legal',
   'Canceled',
 ]);
 export type ContractStatusEnum = z.infer<typeof contractStatusEnum>;
@@ -97,6 +98,17 @@ export const updateContractSchema = z.object({
   status: contractStatusEnum.optional(),
 });
 
+export const rejectContractSchema = z.object({
+  rejectType: z.enum(['legal', 'all'], {
+    message: 'Reject type must be either "legal" or "all"',
+  }),
+  reason: z.string().min(1, 'Rejection reason is required'),
+});
+
+export const acceptContractSchema = z.object({
+  reason: z.string().min(1, 'Acceptance reason is required'),
+});
+
 export const createClauseSchema = z.array(
   z.object({
     clauseText: z.string().min(1, 'Clause text is required'),
@@ -147,5 +159,7 @@ export type GetContractParams = z.infer<typeof getContractParamsSchema>;
 export type GetContractsQuery = z.infer<typeof getContractsQuerySchema>;
 export type CreateContract = z.infer<typeof createContractSchema>;
 export type UpdateContract = z.infer<typeof updateContractSchema>;
+export type RejectContract = z.infer<typeof rejectContractSchema>;
+export type AcceptContract = z.infer<typeof acceptContractSchema>;
 export type CreateClause = z.infer<typeof createClauseSchema>;
 export type ClauseResponse = z.infer<typeof clauseResponseSchema>;
