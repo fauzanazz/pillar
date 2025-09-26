@@ -105,6 +105,10 @@ export const rejectContractSchema = z.object({
   reason: z.string().min(1, 'Rejection reason is required'),
 });
 
+export const acceptContractSchema = z.object({
+  reason: z.string().min(1, 'Acceptance reason is required'),
+});
+
 export const createClauseSchema = z.array(
   z.object({
     clauseText: z.string().min(1, 'Clause text is required'),
@@ -156,5 +160,6 @@ export type GetContractsQuery = z.infer<typeof getContractsQuerySchema>;
 export type CreateContract = z.infer<typeof createContractSchema>;
 export type UpdateContract = z.infer<typeof updateContractSchema>;
 export type RejectContract = z.infer<typeof rejectContractSchema>;
+export type AcceptContract = z.infer<typeof acceptContractSchema>;
 export type CreateClause = z.infer<typeof createClauseSchema>;
 export type ClauseResponse = z.infer<typeof clauseResponseSchema>;

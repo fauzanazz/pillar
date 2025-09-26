@@ -3,6 +3,7 @@ import z from 'zod';
 
 import { GenericErrorResponses } from '@/lib';
 import {
+  acceptContractSchema,
   clauseCreatedResponseSchema,
   contractResponseSchema,
   contractWithRelationsResponseSchema,
@@ -185,6 +186,34 @@ export const rejectContractRoute = createRoute({
   responses: {
     200: {
       description: 'Contract rejected successfully',
+      content: {
+        'application/json': {
+          schema: contractResponseSchema,
+        },
+      },
+    },
+    ...GenericErrorResponses,
+  },
+});
+
+export const acceptContractRoute = createRoute({
+  operationId: 'acceptContract',
+  tags: ['contracts'],
+  method: 'post',
+  path: '/contracts/{id}/accept',
+  request: {
+    params: getContractParamsSchema,
+    body: {
+      content: {
+        'application/json': {
+          schema: acceptContractSchema,
+        },
+      },
+    },
+  },
+  responses: {
+    200: {
+      description: 'Contract accepted successfully',
       content: {
         'application/json': {
           schema: contractResponseSchema,

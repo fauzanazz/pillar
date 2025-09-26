@@ -9,6 +9,7 @@ import {
   updateContract as updateContractRepo,
 } from '@/repositories/contract.repository';
 import type {
+  AcceptContract,
   CreateClause,
   CreateContract,
   GetContractsQuery,
@@ -75,5 +76,17 @@ export const rejectContractService = async (
     status: status as 'Rejected' | 'Rejected Legal',
   };
 
-  return await updateContractRepo(id, updateData, rejectedBy, 'system');
+  return await updateContractRepo(id, updateData, rejectedBy, 'management');
+};
+
+export const acceptContractService = async (
+  id: number,
+  acceptData: AcceptContract,
+  acceptedBy: string,
+) => {
+  const updateData: UpdateContract = {
+    status: 'Accepted',
+  };
+
+  return await updateContractRepo(id, updateData, acceptedBy, 'management');
 };

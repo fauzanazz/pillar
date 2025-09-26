@@ -9,7 +9,6 @@ import {
 } from 'drizzle-orm/pg-core';
 
 import { getNow } from '../db-helper';
-import { user } from './user.schema';
 
 export const contracts = pgTable('contracts', {
   id: integer('id').primaryKey().generatedByDefaultAsIdentity(),
@@ -18,8 +17,10 @@ export const contracts = pgTable('contracts', {
   endDate: date('end_date'),
   status: varchar('status').notNull(), // Draft, Legal Review, Management Review, Accepted, Rejected, Canceled
   riskScore: integer('risk_score').default(0),
-  createdBy: varchar('created_by').references(() => user.id),
-  updatedBy: varchar('updated_by').references(() => user.id),
+  reason: text('reason'), // reason for rejection or cancellation
+  createdBy: varchar('created_by'),
+  updatedBy: varchar('updated_by'),
+  deleted: boolean('deleted').default(false).notNull(),
   urlContract: text('url_contract'), // lokasi PDF / file
   createdAt: timestamp('created_at').$defaultFn(getNow).notNull(),
   updatedAt: timestamp('updated_at').$defaultFn(getNow).notNull(),
@@ -28,12 +29,12 @@ export const contracts = pgTable('contracts', {
 export const contractVersions = pgTable('contract_versions', {
   id: integer('id').primaryKey().generatedByDefaultAsIdentity(),
   contractId: integer('contract_id')
-    .references(() => contracts.id)
+    .references(() => contracts.id, { onDelete: 'cascade' })
     .notNull(),
   filePath: text('file_path').notNull(),
   versionNo: integer('version_no').notNull(),
-  createdBy: varchar('created_by').references(() => user.id),
-  updatedBy: varchar('updated_by').references(() => user.id),
+  createdBy: varchar('created_by'),
+  updatedBy: varchar('updated_by'),
   uploadedAt: timestamp('uploaded_at').$defaultFn(getNow).notNull(),
   updatedAt: timestamp('updated_at').$defaultFn(getNow).notNull(),
 });
@@ -41,7 +42,7 @@ export const contractVersions = pgTable('contract_versions', {
 export const contractParties = pgTable('contract_parties', {
   id: integer('id').primaryKey().generatedByDefaultAsIdentity(),
   contractId: integer('contract_id')
-    .references(() => contracts.id)
+    .references(() => contracts.id, { onDelete: 'cascade' })
     .notNull(),
   partyName: varchar('party_name').notNull(),
   partyRole: varchar('party_role').notNull(), // vendor, client, partner, etc.
@@ -51,13 +52,13 @@ export const contractParties = pgTable('contract_parties', {
 export const clauses = pgTable('clauses', {
   id: integer('id').primaryKey().generatedByDefaultAsIdentity(),
   contractId: integer('contract_id')
-    .references(() => contracts.id)
+    .references(() => contracts.id, { onDelete: 'cascade' })
     .notNull(),
   clauseText: text('clause_text').notNull(),
   clauseDescription: varchar('clause_description'),
   riskLevel: varchar('risk_level'),
-  createdBy: varchar('created_by').references(() => user.id),
-  updatedBy: varchar('updated_by').references(() => user.id),
+  createdBy: varchar('created_by'),
+  updatedBy: varchar('updated_by'),
   createdAt: timestamp('created_at').$defaultFn(getNow).notNull(),
   updatedAt: timestamp('updated_at').$defaultFn(getNow).notNull(),
 });
@@ -65,14 +66,14 @@ export const clauses = pgTable('clauses', {
 export const alerts = pgTable('alerts', {
   id: integer('id').primaryKey().generatedByDefaultAsIdentity(),
   contractId: integer('contract_id')
-    .references(() => contracts.id)
+    .references(() => contracts.id, { onDelete: 'cascade' })
     .notNull(),
   message: text('message').notNull(),
   priority: varchar('priority').notNull(),
   isRead: boolean('is_read')
     .$defaultFn(() => false)
     .notNull(),
-  createdBy: varchar('created_by').references(() => user.id),
+  createdBy: varchar('created_by'),
   createdAt: timestamp('created_at').$defaultFn(getNow).notNull(),
 });
 

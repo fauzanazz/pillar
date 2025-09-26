@@ -4,6 +4,7 @@ import {
   createSuccessResponse,
 } from '@/lib';
 import {
+  acceptContractRoute,
   createClauseRoute,
   createContractRoute,
   deleteContractRoute,
@@ -13,6 +14,7 @@ import {
   updateContractRoute,
 } from '@/routes/contract.route';
 import {
+  acceptContractService,
   createClauseService,
   createContractService,
   deleteContractService,
@@ -59,7 +61,7 @@ protectedContractRouter.openapi(createContractRoute, async (c) => {
   }
 
   try {
-    const res = await createContractService(contractData, user.id);
+    const res = await createContractService(contractData, user.name);
 
     console.log(res);
 
@@ -86,7 +88,7 @@ protectedContractRouter.openapi(updateContractRoute, async (c) => {
     const updatedContract = await updateContractService(
       id,
       contractData,
-      user.id,
+      user.name,
       user.role as string,
     );
 
@@ -198,7 +200,7 @@ protectedContractRouter.openapi(rejectContractRoute, async (c) => {
     const rejectedContract = await rejectContractService(
       id,
       rejectData,
-      user.id,
+      user.name,
     );
 
     if (!rejectedContract) {
@@ -216,6 +218,66 @@ protectedContractRouter.openapi(rejectContractRoute, async (c) => {
     console.error('Error rejecting contract:', error);
     return c.json(
       createErrorResponse(error.message || 'Failed to reject contract', 500),
+      500,
+    );
+  }
+});
+
+protectedContractRouter.openapi(acceptContractRoute, async (c) => {
+  const { id } = c.req.valid('param');
+  const acceptData = c.req.valid('json');
+  const user = c.var.user;
+
+  if (!user) {
+    return c.json(createErrorResponse('User not authenticated', 401), 401);
+  }
+
+  if (user.role !== 'management') {
+    return c.json(createErrorResponse('Forbidden', 403), 403);
+  }
+
+  try {
+    // First check if the contract exists
+    const existingContract = await getContractByIdService(id);
+    if (!existingContract) {
+      return c.json(createErrorResponse('Contract not found', 404), 404);
+    }
+
+    // Check if contract is in a state that can be accepted
+    const acceptable = ['Management Review'];
+    if (!acceptable.includes(existingContract.status)) {
+      return c.json(
+        createErrorResponse(
+          `Cannot accept contract with status: ${existingContract.status}`,
+          400,
+        ),
+        400,
+      );
+    }
+
+    const acceptedContract = await acceptContractService(
+      id,
+      acceptData,
+      user.name,
+    );
+
+    if (!acceptedContract) {
+      return c.json(createErrorResponse('Contract not found', 404), 404);
+    }
+
+    return c.json(
+      createSuccessResponse(
+        acceptedContract,
+        'Contract accepted successfully',
+        200,
+      ),
+      200,
+    );
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    console.error('Error accepting contract:', error);
+    return c.json(
+      createErrorResponse(error.message || 'Failed to accept contract', 500),
       500,
     );
   }
