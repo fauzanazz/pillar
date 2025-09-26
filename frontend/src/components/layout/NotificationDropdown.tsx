@@ -63,7 +63,7 @@ export function NotificationDropdown() {
               ))
             ) : (
               <p className="text-sm text-center text-gray-500 py-4">
-                You're all caught up!
+                You&apos;re all caught up!
               </p>
             )}
           </div>

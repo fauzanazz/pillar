@@ -109,7 +109,7 @@ export const searchContract = async (
 
 // Transform search matches to Contract format
 export const transformSearchMatches = (matches: SearchMatch[]): Contract[] => {
-  return matches.map(match => {
+  const data = matches.map(match => {
     const { contract } = match;
 
     // Map AI service status to frontend status
@@ -145,8 +145,15 @@ export const transformSearchMatches = (matches: SearchMatch[]): Contract[] => {
       urlContract: contract.pdf_file_path || '',
       createdAt: contract.created_at,
       updatedAt: contract.updated_at,
+
+      reason: contract.internal_notes || '',
+
+      deleted: false,
+      draftSummary: JSON.stringify(contract.clauses || []),
     };
   });
+
+  return data;
 };
 
 export interface ClausesGenerationRequest {
