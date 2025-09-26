@@ -57,6 +57,13 @@
       "when": 1758918982503,
       "tag": "0007_tidy_penance",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1758921250991,
+      "tag": "0008_wide_toad_men",
+      "breakpoints": true
     }
   ]
 }

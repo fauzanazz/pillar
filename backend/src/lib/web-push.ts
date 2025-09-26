@@ -118,6 +118,51 @@ export class WebPushService {
   }
 
   /**
+   * Send notification to all subscriptions for specific users
+   * @param userIds Array of user IDs to send notifications to
+   * @param payload Notification payload
+   * @returns Array of send results
+   */
+  async sendNotificationToUsers(
+    userIds: string[],
+    payload: NotificationPayload,
+  ): Promise<Array<{ success: boolean; error?: Error }>> {
+    const { pushSubscriptionRepository } = await import(
+      '@/repositories/push-subscription.repository'
+    );
+
+    const results: Array<{ success: boolean; error?: Error }> = [];
+
+    for (const userId of userIds) {
+      const subscriptions =
+        await pushSubscriptionRepository.getSubscriptionsByUserId(userId);
+
+      for (const sub of subscriptions) {
+        const subscription: PushSubscription = {
+          endpoint: sub.endpoint,
+          keys: {
+            p256dh: sub.p256dhKey,
+            auth: sub.authKey,
+          },
+        };
+
+        try {
+          await this.sendNotification(subscription, payload);
+          results.push({ success: true });
+        } catch (error) {
+          console.error(
+            `Failed to send notification to user ${userId}:`,
+            error,
+          );
+          results.push({ success: false, error: error as Error });
+        }
+      }
+    }
+
+    return results;
+  }
+
+  /**
    * Get urgency level based on notification content
    */
   private getUrgencyFromPayload(
