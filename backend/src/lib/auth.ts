@@ -5,6 +5,7 @@ import { openAPI } from 'better-auth/plugins';
 
 import { env } from '@/configs';
 import { db } from '@/db/drizzle';
+import * as schema from '@/db/schema';
 
 // your drizzle instance
 
@@ -12,6 +13,7 @@ export const auth = betterAuth({
   appName: 'Nusa',
   database: drizzleAdapter(db, {
     provider: 'pg',
+    schema: schema,
   }),
   trustedOrigins: env.TRUSTED_ORIGINS,
   plugins: [openAPI()],
@@ -48,6 +50,21 @@ export const auth = betterAuth({
   },
   user: {
     modelName: 'user',
+    additionalFields: {
+      role: {
+        type: 'string',
+        required: false,
+        defaultValue: 'internal',
+        input: true, // Allow role to be passed during registration
+        returned: true, // Include role in API responses
+      },
+      bio: {
+        type: 'string',
+        required: false,
+        input: true,
+        returned: true,
+      },
+    },
     changeEmail: {
       enabled: true,
       // sendChangeEmailVerification: async ({ user, newEmail, url, token }) => {
@@ -60,6 +77,9 @@ export const auth = betterAuth({
       enabled: true,
       maxAge: 60 * 60 * 24 * 7, // 7 days
     },
+    updateAge: 60 * 60 * 24, // Update session every day
+    expiresIn: 60 * 60 * 24 * 7, // 7 days
+    freshAge: 60 * 60 * 24, // Consider session fresh for 1 day
   },
   cors: {
     origin: env.ALLOWED_ORIGINS,

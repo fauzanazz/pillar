@@ -1,5 +1,7 @@
 import z from 'zod';
 
+import { userRoleSchema } from './user.type';
+
 export const registerFormSchema = z.object({
   address: z.string().min(1, {
     message: 'Alamat harus diisi.',
@@ -37,6 +39,7 @@ export const registerFormSchema = z.object({
   confirmPassword: z.string().min(6, {
     message: 'Konfirmasi password harus minimal 6 karakter.',
   }),
+  role: userRoleSchema.optional().default('internal'),
 });
 
 export type RegisterFormType = z.infer<typeof registerFormSchema>;
