@@ -19,7 +19,7 @@ export const ROUTES: Record<string, RouteConfig> = {
     name: 'Login',
     allowedRoles: [],
     requiresAuth: false,
-    description: 'User authentication page'
+    description: 'User authentication page',
   },
 
   HOME: {
@@ -27,7 +27,7 @@ export const ROUTES: Record<string, RouteConfig> = {
     name: 'Home',
     allowedRoles: [],
     requiresAuth: false,
-    description: 'Landing page'
+    description: 'Landing page',
   },
 
   // Protected dashboard routes
@@ -37,7 +37,7 @@ export const ROUTES: Record<string, RouteConfig> = {
     allowedRoles: ['legal'],
     requiresAuth: true,
     icon: 'Shield',
-    description: 'Legal team contract review and compliance dashboard'
+    description: 'Legal team contract review and compliance dashboard',
   },
 
   INTERNAL_DASHBOARD: {
@@ -46,7 +46,7 @@ export const ROUTES: Record<string, RouteConfig> = {
     allowedRoles: ['internal'],
     requiresAuth: true,
     icon: 'FileText',
-    description: 'Internal team contract management dashboard'
+    description: 'Internal team contract management dashboard',
   },
 
   MANAGEMENT_DASHBOARD: {
@@ -55,7 +55,7 @@ export const ROUTES: Record<string, RouteConfig> = {
     allowedRoles: ['management'],
     requiresAuth: true,
     icon: 'Users',
-    description: 'Management oversight and strategic dashboard'
+    description: 'Management oversight and strategic dashboard',
   },
 
   // Contract management routes (role-specific access)
@@ -65,7 +65,7 @@ export const ROUTES: Record<string, RouteConfig> = {
     allowedRoles: ['legal', 'internal', 'management'],
     requiresAuth: true,
     icon: 'FileText',
-    description: 'Contract listing and management'
+    description: 'Contract listing and management',
   },
 
   CONTRACT_CREATE: {
@@ -73,7 +73,7 @@ export const ROUTES: Record<string, RouteConfig> = {
     name: 'Create Contract',
     allowedRoles: ['internal'],
     requiresAuth: true,
-    description: 'Create new contract'
+    description: 'Create new contract',
   },
 
   CONTRACT_EDIT: {
@@ -81,7 +81,7 @@ export const ROUTES: Record<string, RouteConfig> = {
     name: 'Edit Contract',
     allowedRoles: ['internal'],
     requiresAuth: true,
-    description: 'Edit existing contract'
+    description: 'Edit existing contract',
   },
 
   CONTRACT_VIEW: {
@@ -89,7 +89,7 @@ export const ROUTES: Record<string, RouteConfig> = {
     name: 'View Contract',
     allowedRoles: ['legal', 'internal', 'management'],
     requiresAuth: true,
-    description: 'View contract details'
+    description: 'View contract details',
   },
 
   CONTRACT_REVIEW: {
@@ -97,7 +97,24 @@ export const ROUTES: Record<string, RouteConfig> = {
     name: 'Review Contract',
     allowedRoles: ['legal', 'management'],
     requiresAuth: true,
-    description: 'Review and approve/reject contracts'
+    description: 'Review and approve/reject contracts',
+  },
+
+  // Legal specific routes
+  LEGAL_REVIEW: {
+    path: '/legal/review/:id',
+    name: 'Legal Review',
+    allowedRoles: ['legal', 'management'],
+    requiresAuth: true,
+    description: 'Legal contract review page',
+  },
+
+  MANAGEMENT_REVIEW: {
+    path: '/management/review/:id',
+    name: 'Management Review',
+    allowedRoles: ['management'],
+    requiresAuth: true,
+    description: 'Management contract review page',
   },
 
   // User management routes (limited access)
@@ -107,7 +124,7 @@ export const ROUTES: Record<string, RouteConfig> = {
     allowedRoles: ['management'],
     requiresAuth: true,
     icon: 'Users',
-    description: 'User management and administration'
+    description: 'User management and administration',
   },
 
   USER_PROFILE: {
@@ -116,7 +133,7 @@ export const ROUTES: Record<string, RouteConfig> = {
     allowedRoles: ['legal', 'internal', 'management'],
     requiresAuth: true,
     icon: 'User',
-    description: 'User profile and settings'
+    description: 'User profile and settings',
   },
 
   // Reports and analytics (role-specific)
@@ -133,16 +150,16 @@ export const ROUTES: Record<string, RouteConfig> = {
         name: 'Legal Reports',
         allowedRoles: ['legal'],
         requiresAuth: true,
-        description: 'Legal compliance and review reports'
+        description: 'Legal compliance and review reports',
       },
       {
         path: '/reports/financial',
         name: 'Financial Reports',
         allowedRoles: ['management'],
         requiresAuth: true,
-        description: 'Contract value and financial analytics'
-      }
-    ]
+        description: 'Contract value and financial analytics',
+      },
+    ],
   },
 
   // Settings and configuration
@@ -152,7 +169,7 @@ export const ROUTES: Record<string, RouteConfig> = {
     allowedRoles: ['management'],
     requiresAuth: true,
     icon: 'Settings',
-    description: 'System settings and configuration'
+    description: 'System settings and configuration',
   },
 
   // Error pages
@@ -161,7 +178,7 @@ export const ROUTES: Record<string, RouteConfig> = {
     name: 'Not Found',
     allowedRoles: [],
     requiresAuth: false,
-    description: '404 error page'
+    description: '404 error page',
   },
 
   UNAUTHORIZED: {
@@ -169,21 +186,22 @@ export const ROUTES: Record<string, RouteConfig> = {
     name: 'Unauthorized',
     allowedRoles: [],
     requiresAuth: false,
-    description: '403 unauthorized access page'
-  }
+    description: '403 unauthorized access page',
+  },
 };
 
 // Role-based default dashboard mapping
 export const ROLE_DEFAULT_ROUTES: Record<UserRole, string> = {
   legal: ROUTES.LEGAL_DASHBOARD.path,
   internal: ROUTES.INTERNAL_DASHBOARD.path,
-  management: ROUTES.MANAGEMENT_DASHBOARD.path
+  management: ROUTES.MANAGEMENT_DASHBOARD.path,
 };
 
 // Get routes accessible by a specific role
 export const getRoutesForRole = (role: UserRole): RouteConfig[] => {
-  return Object.values(ROUTES).filter(route =>
-    route.allowedRoles.length === 0 || route.allowedRoles.includes(role)
+  return Object.values(ROUTES).filter(
+    route =>
+      route.allowedRoles.length === 0 || route.allowedRoles.includes(role)
   );
 };
 
@@ -197,27 +215,68 @@ export const getNavigationRoutes = (role: UserRole): RouteConfig[] => {
     ROUTES.USERS_LIST,
     ROUTES.REPORTS,
     ROUTES.USER_PROFILE,
-    ROUTES.SETTINGS
+    ROUTES.SETTINGS,
   ];
 
-  return dashboardRoutes.filter(route =>
-    route.allowedRoles.includes(role)
-  );
+  return dashboardRoutes.filter(route => route.allowedRoles.includes(role));
+};
+
+// Helper function to match dynamic routes
+export const matchDynamicRoute = (pattern: string, route: string): boolean => {
+  // Convert route pattern to regex
+  // :id becomes [^/]+ and :slug becomes [^/]+
+  const regexPattern = pattern
+    .replace(/:[^/]+/g, '[^/]+')
+    .replace(/\//g, '\\/');
+
+  const regex = new RegExp(`^${regexPattern}$`);
+  const result = regex.test(route);
+
+  return result;
+};
+
+// Find route config for a given path (handles both exact and dynamic routes)
+export const findRouteConfig = (route: string): RouteConfig | undefined => {
+  // First try exact match
+  let routeConfig = Object.values(ROUTES).find(r => r.path === route);
+
+  // If no exact match found, try dynamic route matching
+  if (!routeConfig) {
+    routeConfig = Object.values(ROUTES)
+      .filter(r => r.path.includes(':'))
+      .find(r => matchDynamicRoute(r.path, route));
+  }
+
+  return routeConfig;
 };
 
 // Check if user has access to a specific route
 export const hasRouteAccess = (route: string, userRole?: UserRole): boolean => {
-  const routeConfig = Object.values(ROUTES).find(r => r.path === route);
+  const routeConfig = findRouteConfig(route);
 
-  if (!routeConfig) return false;
+  console.log(`Checking access for route: ${route}`);
+  console.log(`Route config:`, routeConfig);
+
+  if (!routeConfig) {
+    console.log(`Route not found: ${route}`);
+    return false;
+  }
 
   // Public routes (no auth required)
-  if (!routeConfig.requiresAuth) return true;
+  if (!routeConfig.requiresAuth) {
+    return true;
+  }
 
   // Protected routes require role check
-  if (!userRole) return false;
+  if (!userRole) {
+    console.log(`No user role provided for protected route: ${route}`);
+    return false;
+  }
 
-  return routeConfig.allowedRoles.includes(userRole);
+  const hasAccess = routeConfig.allowedRoles.includes(userRole);
+  console.log(`Access check: ${route} for ${userRole} = ${hasAccess}`);
+
+  return hasAccess;
 };
 
 // Get default route for user role
