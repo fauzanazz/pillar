@@ -233,7 +233,7 @@ class WorkflowService:
         if not contract:
             raise ValueError(f"Contract {contract_id} not found")
         
-        if contract.status not in [ContractStatus.LEGAL_REVIEW, ContractStatus.REJECTED]:
+        if contract.status not in [ContractStatus.DRAFT, ContractStatus.REJECTED]:
             raise ValueError(f"Cannot submit contract in status {contract.status}")
         
         # Check that all clauses are reviewed
