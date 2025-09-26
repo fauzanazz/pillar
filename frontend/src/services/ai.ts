@@ -50,13 +50,13 @@ export interface SearchMatch {
       value: number | null;
       special_requirements: string | null;
     };
-    clauses: any[];
+    clauses: unknown[];
     status: string;
     created_by: string;
     current_assignee: string;
     created_at: string;
     updated_at: string;
-    workflow_history: any[];
+    workflow_history: unknown[];
     management_notes: string | null;
     legal_notes: string | null;
     internal_notes: string | null;
@@ -75,14 +75,14 @@ export interface SearchResponse {
   query: {
     original_query: string;
     intent: string;
-    filters: any;
+    filters: unknown;
     confidence: number;
     explanation: string;
   };
   matches: SearchMatch[];
   total_found: number;
   processing_time_ms: number;
-  suggestions: any;
+  suggestions: unknown;
 }
 
 export const searchContract = async (query: string): Promise<SearchResponse> => {
