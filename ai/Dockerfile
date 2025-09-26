@@ -1,13 +1,7 @@
 FROM python:3.11-slim
 
-# Install system dependencies for WeasyPrint
-RUN apt-get update && apt-get install -y \
-    libpango-1.0-0 \
-    libharfbuzz0b \
-    libpangoft2-1.0-0 \
-    libfontconfig1 \
-    fonts-dejavu-core \
-    && rm -rf /var/lib/apt/lists/*
+# No additional system dependencies needed for ReportLab
+# ReportLab is pure Python and doesn't require system packages
 
 WORKDIR /app
 
