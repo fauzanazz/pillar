@@ -288,17 +288,17 @@ export const createClause = async (
     throw new Error('Contract not found');
   }
 
+  const mappedClauseData = clauseData.map((clause) => ({
+    contractId,
+    clauseText: clause.clauseText,
+    clauseDescription: clause.clauseDescription,
+    createdBy,
+    updatedBy: createdBy,
+  }));
+
   const [newClause] = await db
     .insert(clauses)
-    .values(
-      clauseData.map((c) => ({
-        contractId,
-        clauseText: c.clauseText,
-        clauseDescription: c.clauseDescription || null,
-        createdBy,
-        updatedBy: createdBy,
-      })),
-    )
+    .values(mappedClauseData)
     .returning();
 
   return newClause;
