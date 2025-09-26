@@ -290,13 +290,15 @@ export const createClause = async (
 
   const [newClause] = await db
     .insert(clauses)
-    .values({
-      contractId,
-      clauseText: clauseData.clauseText,
-      clauseDescription: clauseData.clauseDescription || null,
-      createdBy,
-      updatedBy: createdBy,
-    })
+    .values(
+      clauseData.map((c) => ({
+        contractId,
+        clauseText: c.clauseText,
+        clauseDescription: c.clauseDescription || null,
+        createdBy,
+        updatedBy: createdBy,
+      })),
+    )
     .returning();
 
   return newClause;
