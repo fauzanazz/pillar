@@ -1,14 +1,22 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { MOCK_USERS, LOGIN_CREDENTIALS, DASHBOARD_ROUTES, User } from '@/constants/mockData';
+import { MOCK_USERS, LOGIN_CREDENTIALS, User } from '@/constants/mockData';
+import { getDefaultRoute, hasRouteAccess } from '@/config/routes';
+import type { UserRole } from '@/config/routes';
+import { authApi } from '@/services/api';
 
 interface AuthState {
   user: User | null;
   isAuthenticated: boolean;
-  login: (username: string, password: string) => Promise<{ success: boolean; redirectUrl?: string; error?: string }>;
+  login: (
+    email: string,
+    password: string
+  ) => Promise<{ success: boolean; redirectUrl?: string; error?: string }>;
   logout: () => void;
   updateUser: (updates: Partial<User>) => void;
   initializeAuth: () => void;
+  hasAccess: (route: string) => boolean;
+  getDefaultDashboard: () => string | null;
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -17,32 +25,36 @@ export const useAuthStore = create<AuthState>()(
       user: null,
       isAuthenticated: false,
 
-      login: async (username: string, password: string) => {
-        // Find matching credentials
-        const credentials = LOGIN_CREDENTIALS.find(
-          cred => cred.username === username && cred.password === password
-        );
+      login: async (email: string, password: string) => {
+        try {
+          // Try API call first when backend is ready
+          const response = await authApi.login(email, password);
 
-        if (!credentials) {
-          return { success: false, error: 'Invalid username or password' };
+          if (!response) {
+            return { success: false, error: 'Invalid credentials' };
+          }
+
+          console.log(response);
+
+          const session = await authApi.getSession();
+
+          if (!session) {
+            return { success: false, error: 'User not found' };
+          }
+
+          // Set authenticated state
+          set({
+            user: session.user,
+            isAuthenticated: true,
+          });
+
+          // Return success with redirect URL based on role
+          const redirectUrl = getDefaultRoute(session.user.role as UserRole);
+          return { success: true, redirectUrl };
+        } catch (error) {
+          console.error('Login error:', error);
+          return { success: false, error: 'Login failed. Please try again.' };
         }
-
-        // Find the user data
-        const user = MOCK_USERS.find(u => u.email === credentials.email);
-
-        if (!user) {
-          return { success: false, error: 'User not found' };
-        }
-
-        // Set authenticated state
-        set({
-          user,
-          isAuthenticated: true,
-        });
-
-        // Return success with redirect URL based on role
-        const redirectUrl = DASHBOARD_ROUTES[user.role];
-        return { success: true, redirectUrl };
       },
 
       logout: () => {
@@ -64,6 +76,18 @@ export const useAuthStore = create<AuthState>()(
       initializeAuth: () => {
         // This is called on app initialization
         // Zustand persist middleware handles restoration
+      },
+
+      hasAccess: (route: string) => {
+        const { user } = get();
+        if (!user) return false;
+        return hasRouteAccess(route, user.role as UserRole);
+      },
+
+      getDefaultDashboard: () => {
+        const { user } = get();
+        if (!user) return null;
+        return getDefaultRoute(user.role as UserRole);
       },
     }),
     {

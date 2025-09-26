@@ -22,7 +22,7 @@ import {
 import { Button } from '../ui/button';
 
 const loginSchema = z.object({
-  username: z.string().min(1, 'Username is required'),
+  email: z.email('Email is not valid'),
   password: z.string().min(1, 'Password is required'),
 });
 
@@ -31,19 +31,19 @@ type LoginForm = z.infer<typeof loginSchema>;
 const demoCredentials = [
   {
     role: 'Internal Team',
-    username: 'internal',
+    email: 'internal',
     password: 'internal123',
     icon: FileText,
   },
   {
     role: 'Legal Team',
-    username: 'legal',
+    email: 'legal',
     password: 'legal123',
     icon: Shield,
   },
   {
     role: 'Management Team',
-    username: 'management',
+    email: 'management',
     password: 'management123',
     icon: Users,
   },
@@ -53,12 +53,12 @@ export const LoginFormField = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
-  const login = useAuthStore((state) => state.login);
+  const login = useAuthStore(state => state.login);
 
   const form = useForm<LoginForm>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      username: '',
+      email: '',
       password: '',
     },
   });
@@ -66,7 +66,7 @@ export const LoginFormField = () => {
   const onSubmit = async (data: LoginForm) => {
     setIsLoading(true);
     try {
-      const result = await login(data.username, data.password);
+      const result = await login(data.email, data.password);
       if (result.success) {
         toast.success('Login successful!');
         if (result.redirectUrl) {
@@ -96,16 +96,16 @@ export const LoginFormField = () => {
         <CardContent>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="username">Username</Label>
+              <Label htmlFor="email">email</Label>
               <Input
-                id="username"
+                id="email"
                 type="text"
-                placeholder="Enter your username"
-                {...form.register('username')}
+                placeholder="Enter your email"
+                {...form.register('email')}
               />
-              {form.formState.errors.username && (
+              {form.formState.errors.email && (
                 <p className="text-sm text-destructive">
-                  {form.formState.errors.username.message}
+                  {form.formState.errors.email.message}
                 </p>
               )}
             </div>
@@ -160,7 +160,7 @@ export const LoginFormField = () => {
             const IconComponent = cred.icon;
             return (
               <div
-                key={cred.username}
+                key={cred.email}
                 className="flex items-center justify-between p-3 bg-muted rounded-lg"
               >
                 <div className="flex items-center gap-3">
@@ -170,7 +170,7 @@ export const LoginFormField = () => {
                   <div>
                     <p className="font-medium text-sm">{cred.role}</p>
                     <p className="text-xs text-muted-foreground">
-                      {cred.username} / {cred.password}
+                      {cred.email} / {cred.password}
                     </p>
                   </div>
                 </div>
@@ -178,7 +178,7 @@ export const LoginFormField = () => {
                   variant="outline"
                   size="sm"
                   onClick={() => {
-                    form.setValue('username', cred.username);
+                    form.setValue('email', cred.email);
                     form.setValue('password', cred.password);
                   }}
                 >

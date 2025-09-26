@@ -45,17 +45,13 @@ export const MOCK_USERS: User[] = [
 
 // Login credentials for demo
 export const LOGIN_CREDENTIALS = [
-  { username: 'legal', password: 'legal123', role: 'legal', email: 'john.legal@company.com' },
-  { username: 'internal', password: 'internal123', role: 'internal', email: 'sarah.internal@company.com' },
-  { username: 'management', password: 'management123', role: 'management', email: 'mike.manager@company.com' }
+  { email: 'legal', password: 'legal123', role: 'legal', fullEmail: 'john.legal@company.com' },
+  { email: 'internal', password: 'internal123', role: 'internal', fullEmail: 'sarah.internal@company.com' },
+  { email: 'management', password: 'management123', role: 'management', fullEmail: 'mike.manager@company.com' }
 ];
 
 // Role-based dashboard routes
-export const DASHBOARD_ROUTES = {
-  legal: '/legal',
-  internal: '/internal',
-  management: '/management'
-} as const;
+
 
 export const MOCK_CONTRACTS: Contract[] = [
   {
