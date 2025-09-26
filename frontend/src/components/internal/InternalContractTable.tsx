@@ -167,9 +167,6 @@ export function InternalContractTable({
                 Status
               </TableHead>
 
-              <TableHead className="px-4 py-3 text-left text-sm font-medium text-gray-900 border-b">
-                URL Contract
-              </TableHead>
               <TableHead className="px-4 py-3 text-center text-sm font-medium text-gray-900 border-b">
                 Actions
               </TableHead>
@@ -202,23 +199,6 @@ export function InternalContractTable({
                   </span>
                 </TableCell>
 
-                <TableCell className="px-4 py-4 text-sm">
-                  {contract.description ? (
-                    <button
-                      onClick={() => {
-                        console.log(
-                          'View generated contract:',
-                          contract.description
-                        );
-                      }}
-                      className="text-blue-600 hover:text-blue-800 underline text-xs"
-                    >
-                      View Generated
-                    </button>
-                  ) : (
-                    <span className="text-gray-400 text-xs">Not Generated</span>
-                  )}
-                </TableCell>
                 <TableCell className="px-4 py-4 flex items-center justify-center">
                   <div className="flex items-center justify-center gap-2">
                     {/* View Button */}

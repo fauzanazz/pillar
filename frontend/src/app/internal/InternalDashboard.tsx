@@ -4,7 +4,10 @@ import { useMemo, useState, useEffect, useCallback } from 'react';
 import { useContractStore } from '@/stores/contractStore';
 import StatCard from '@/components/dashboard/StatCard';
 import { InternalContractTable } from '@/components/internal/InternalContractTable';
-import { AddContractModal, ContractForm } from '@/components/contracts/AddContractModal';
+import {
+  AddContractModal,
+  ContractForm,
+} from '@/components/contracts/AddContractModal';
 import { EditContractModal } from '@/components/contracts/EditContractModal';
 import { Contract } from '@/api/types.gen';
 import {
@@ -18,8 +21,13 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { generateContract, searchContract, transformSearchMatches } from '@/services/ai';
+import {
+  generateContract,
+  searchContract,
+  transformSearchMatches,
+} from '@/services/ai';
 import { debounce } from '@/utils/debounce';
+import { ViewContractModal } from '@/components/contracts/ViewModal';
 
 interface InternalDashboardProps {
   onEditContract?: (contract: Contract) => void;
@@ -43,15 +51,20 @@ const InternalDashboard = ({
 
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [editingContract, setEditingContract] = useState<Contract | null>(null);
-  
+
   // Search state
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<Contract[]>([]);
   const [isSearching, setIsSearching] = useState(false);
+
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+  const [pdfUrl, setPdfUrl] = useState('');
   const [hasSearched, setHasSearched] = useState(false);
 
   // Filter state
-  const [activeFilter, setActiveFilter] = useState<'all' | 'active' | 'draft' | 'accepted' | 'rejected'>('all');
+  const [activeFilter, setActiveFilter] = useState<
+    'all' | 'active' | 'draft' | 'accepted' | 'rejected'
+  >('all');
 
   // Fetch contracts on component mount
   useEffect(() => {
@@ -71,7 +84,9 @@ const InternalDashboard = ({
       setIsSearching(true);
       try {
         const searchResponse = await searchContract(query);
-        const transformedContracts = transformSearchMatches(searchResponse.matches || []);
+        const transformedContracts = transformSearchMatches(
+          searchResponse.matches || []
+        );
         setSearchResults(transformedContracts);
         setHasSearched(true);
       } catch (error) {
@@ -115,8 +130,8 @@ const InternalDashboard = ({
     switch (activeFilter) {
       case 'active':
         // Active contracts are those currently in progress (not yet decided by management)
-        filteredContracts = baseContracts.filter(c => 
-          c.status === 'Legal Review' || c.status === 'Management Review'
+        filteredContracts = baseContracts.filter(
+          c => c.status === 'Legal Review' || c.status === 'Management Review'
         );
         break;
       case 'draft':
@@ -216,7 +231,7 @@ const InternalDashboard = ({
                 type="text"
                 placeholder="Search contracts..."
                 value={searchQuery}
-                onChange={(e) => handleSearchChange(e.target.value)}
+                onChange={e => handleSearchChange(e.target.value)}
                 disabled={isSearching}
                 className="pl-10 pr-10 w-80 disabled:opacity-50 disabled:cursor-not-allowed"
               />
@@ -225,10 +240,9 @@ const InternalDashboard = ({
               )}
             </div>
             <p className="text-sm text-muted-foreground">
-              {hasSearched 
+              {hasSearched
                 ? `Found ${stats.filteredContracts.length} contracts matching "${searchQuery}"`
-                : `Showing ${stats.filteredContracts.length} contracts`
-              }
+                : `Showing ${stats.filteredContracts.length} contracts`}
             </p>
           </div>
         </div>
@@ -332,7 +346,9 @@ const InternalDashboard = ({
               });
             }}
             onView={contract => {
-              console.log('View contract:', contract);
+              // console.log('View contract:', contract);
+              setPdfUrl(contract.urlContract || '');
+              setIsViewModalOpen(true);
               // TODO: Implement view modal or navigate to detail page
             }}
           />
@@ -343,19 +359,19 @@ const InternalDashboard = ({
       <AddContractModal
         isOpen={isAddModalOpen}
         onClose={() => setIsAddModalOpen(false)}
-        onSubmit={async contractData => {      
+        onSubmit={async contractData => {
           const response = await addContract({
             url: '/api/contracts',
             body: contractData,
           });
 
-          console.log("response", response);
+          console.log('response', response);
 
           // @ts-expect-error - Response type may not have success property
           if (response.success!) {
             // @ts-expect-error - Response data may not have presignedUrl property
             const presignedUrl = response.data?.presignedUrl;
-            
+
             // Convert ContractFormUpload to ContractForm format
             const contractFormData: ContractForm = {
               title: contractData.title,
@@ -366,14 +382,21 @@ const InternalDashboard = ({
                 representation: p.partyRole,
               })),
             };
-            
+
             await generateContract(contractFormData, presignedUrl);
             console.log('Contract generated successfully');
           }
         }}
       />
 
-      {/* Edit Contract Modal */}
+      <ViewContractModal
+        isOpen={isViewModalOpen}
+        onOpenChange={function (isOpen) {
+          setIsViewModalOpen(isOpen);
+        }}
+        pdfUrl={pdfUrl}
+      />
+
       <EditContractModal
         isOpen={!!editingContract}
         contract={editingContract}
