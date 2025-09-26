@@ -9,7 +9,7 @@ from app.models.search import (
     SEARCH_QUERY_SCHEMA
 )
 from app.models.workflow import ContractDraft, ContractStatus
-from app.services.storage import contract_storage
+from app.services.db_storage import db_contract_storage
 from app.services.openai_client import openai_client
 from app.services.search_cache import search_cache
 
@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 
 class SmartSearchService:
     def __init__(self):
-        self.storage = contract_storage
+        self.storage = db_contract_storage
         self.cache = search_cache
         
     async def search(self, query: str, correlation_id: Optional[str] = None) -> SearchResponse:
@@ -126,16 +126,42 @@ Always provide high confidence (0.8+) if you clearly understand the intent."""
             )
     
     async def _execute_search(self, query: SearchQuery, correlation_id: Optional[str] = None) -> List[SearchMatch]:
-        all_contracts = self.storage.list_contracts()
-        matches = []
+        # Use database storage to search contracts including ai_draft_data
+        filters = query.filters
         
-        logger.info(f"Searching through {len(all_contracts)} contracts")
+        # Build search filters for database query
+        db_filters = {}
+        if filters.statuses:
+            db_filters['status'] = filters.statuses[0]  # Take first status for now
+        if filters.party_names:
+            db_filters['party_names'] = filters.party_names
+        if filters.start_date:
+            db_filters['start_date'] = filters.start_date
+        if filters.end_date:
+            db_filters['end_date'] = filters.end_date
+        
+        # Get contracts from database with enhanced search
+        search_query = query.original_query if query.filters.semantic_query else query.filters.semantic_query or query.original_query
+        all_contracts = await self.storage.search_contracts(search_query, db_filters)
+        
+        # If no database results and it's a semantic query, try broader search
+        if not all_contracts and query.intent in [SearchIntent.GENERAL_QUERY, SearchIntent.SEMANTIC_SEARCH]:
+            all_contracts = await self.storage.list_contracts(limit=100)
+        
+        matches = []
+        logger.info(f"Searching through {len(all_contracts)} contracts from database")
         
         for contract in all_contracts:
             score, reasons, highlights = self._score_contract(contract, query)
             
+            # Enhanced scoring with AI draft data
+            ai_draft_score, ai_reasons, ai_highlights = await self._score_ai_draft_data(contract, query)
+            if ai_draft_score > 0:
+                score += ai_draft_score * 0.4  # Give AI draft data significant weight
+                reasons.extend(ai_reasons)
+                highlights.update(ai_highlights)
+            
             # For general queries with no specific filters, always include with semantic scoring  
-            filters = query.filters
             is_semantic_query = (query.intent in [SearchIntent.GENERAL_QUERY, SearchIntent.SEMANTIC_SEARCH])
             
             if score > 0.1 or (is_semantic_query and not any([
@@ -370,6 +396,59 @@ Always provide high confidence (0.8+) if you clearly understand the intent."""
             highlights["keywords"] = matching_words[:5]
         
         return min(similarity, 1.0), highlights
+    
+    async def _score_ai_draft_data(self, contract: ContractDraft, query: SearchQuery) -> tuple[float, List[str], Dict[str, List[str]]]:
+        """Score matches in AI draft data (ai_draft_data JSON field)."""
+        score = 0.0
+        reasons = []
+        highlights = {}
+        
+        # This scoring is already handled by the database search in search_contracts method
+        # But we can add additional semantic analysis here if needed
+        
+        filters = query.filters
+        query_words = set(query.original_query.lower().split())
+        
+        # Score based on clause content in AI draft data
+        if contract.clauses:
+            clause_matches = 0
+            matching_clauses = []
+            
+            for clause in contract.clauses:
+                clause_text = clause.text.lower()
+                clause_title = clause.title.lower()
+                
+                # Check for direct word matches
+                clause_words = set(clause_text.split() + clause_title.split())
+                overlap = query_words.intersection(clause_words)
+                
+                if overlap:
+                    clause_matches += len(overlap) / len(query_words)
+                    matching_clauses.append(f"{clause.title}: {clause.text[:100]}...")
+                
+                # Check for keyword matches
+                if filters.clause_keywords:
+                    for keyword in filters.clause_keywords:
+                        if keyword.lower() in clause_text or keyword.lower() in clause_title:
+                            score += 0.3
+                            reasons.append(f"Found keyword '{keyword}' in AI-generated clause")
+                            if clause.title not in matching_clauses:
+                                matching_clauses.append(f"{clause.title}: {clause.text[:100]}...")
+            
+            if clause_matches > 0:
+                score += min(clause_matches, 1.0) * 0.5
+                reasons.append(f"Found matches in {len(matching_clauses)} AI-generated clauses")
+                highlights["ai_clauses"] = matching_clauses[:3]
+        
+        # Score based on contract description/summary
+        if hasattr(contract.template, 'description') and contract.template.description:
+            desc_words = set(contract.template.description.lower().split())
+            overlap = query_words.intersection(desc_words)
+            if overlap:
+                score += (len(overlap) / len(query_words)) * 0.3
+                reasons.append("Found matches in AI contract summary")
+        
+        return min(score, 1.0), reasons, highlights
     
     def _find_monetary_clauses(self, clauses, filters: SearchFilters) -> List[str]:
         import re

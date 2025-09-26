@@ -20,7 +20,11 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { generateContract } from '@/services/ai';
+import {
+  generateContract,
+  searchContract,
+  transformSearchMatches,
+} from '@/services/ai';
 import { debounce } from '@/utils/debounce';
 
 const InternalDashboard = () => {
@@ -56,14 +60,11 @@ const InternalDashboard = () => {
 
       setIsSearching(true);
       try {
-        // Assuming searchContract exists and is typed correctly
-        // const results = await searchContract(query);
-        // setSearchResults(results.data || []);
-        // Mocking search result for now
-        const filtered = contracts.filter(c =>
-          c.title.toLowerCase().includes(query.toLowerCase())
+        const searchResponse = await searchContract(query);
+        const transformedContracts = transformSearchMatches(
+          searchResponse.matches || []
         );
-        setSearchResults(filtered);
+        setSearchResults(transformedContracts);
         setHasSearched(true);
       } catch (error) {
         console.error('Search failed:', error);
@@ -213,6 +214,8 @@ const InternalDashboard = () => {
               body: { status: newStatus },
             });
           }}
+          isSearched={isSearching}
+          searchedContracts={searchResults}
           onView={contract => {
             console.log('View contract:', contract);
           }}

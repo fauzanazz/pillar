@@ -34,6 +34,8 @@ interface ContractTableProps {
   onDelete: (contract: ContractWithRelations) => void;
   onSendToNextStep: (contract: ContractWithRelations) => void;
   onView?: (contract: ContractWithRelations) => void;
+  isSearched?: boolean;
+  searchedContracts?: Contract[];
 }
 
 interface ConfirmationModalProps {
@@ -85,6 +87,8 @@ export function InternalContractTable({
   onDelete,
   onSendToNextStep,
   onView,
+  isSearched,
+  searchedContracts = [],
 }: ContractTableProps) {
   const [confirmModal, setConfirmModal] = useState<{
     isOpen: boolean;
@@ -103,12 +107,20 @@ export function InternalContractTable({
     totalItems: 0,
   });
 
+  const [selectedContracts, setSelectedContracts] = useState<Contract[]>([]);
+
   const itemsPerPage = 5;
 
   const { contracts, fetchContracts, loading } = useContractStore();
 
   useEffect(() => {
     try {
+      if (isSearched) {
+        console.log('Searched contracts:', searchedContracts);
+        setSelectedContracts(searchedContracts);
+        return;
+      }
+
       const response = fetchContracts({
         url: '/api/contracts',
         query: {
@@ -123,10 +135,12 @@ export function InternalContractTable({
           totalItems: res?.data?.pagination.total ?? 0,
         });
       });
+
+      setSelectedContracts(contracts);
     } catch (error) {
       console.log('Error fetching contracts:', error);
     }
-  }, [currentPage, fetchContracts]);
+  }, [currentPage, fetchContracts, isSearched]);
 
   const handleDeleteClick = (contract: ContractWithRelations) => {
     setConfirmModal({
@@ -220,8 +234,8 @@ export function InternalContractTable({
                   <p className="text-gray-500">Loading contracts...</p>
                 </TableCell>
               </TableRow>
-            ) : contracts.length > 0 ? (
-              contracts.map(contract => (
+            ) : selectedContracts.length > 0 ? (
+              selectedContracts.map(contract => (
                 <TableRow
                   key={contract.id}
                   className="border-b hover:bg-gray-50"
