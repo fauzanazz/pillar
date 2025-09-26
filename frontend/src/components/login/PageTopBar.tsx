@@ -1,72 +1,63 @@
 'use client';
 
-import Link from 'next/link';
-
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Separator } from '@/components/ui/separator';
-import { usePathname } from 'next/navigation';
-import { useAuthStore } from '@/stores/authStore';
+import { useAuth } from '@/hooks/useAuth';
+import { ArrowLeft, LogOut, User } from 'lucide-react';
 
-export function PageTopBar() {
-  const { user, logout } = useAuthStore();
-  const pathname = usePathname();
+interface PageTopBarProps {
+  title: string;
+  subtitle?: string;
+}
+
+export const PageTopBar = ({ title, subtitle }: PageTopBarProps) => {
+  const { user, logout } = useAuth();
+  const router = useRouter();
+
+  if (!user) {
+    return null; // Or a loading skeleton
+  }
+
   return (
-    <header className="w-full bg-[#1c212d] text-white">
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3">
-        <div className="flex items-center gap-3">
-          <div className="h-8 w-8 rounded bg-[#f6d954]" />
-          <span className="font-semibold">People • Contracts</span>
-          <Separator orientation="vertical" className="mx-2 h-6 bg-white/20" />
-          <nav className="hidden gap-4 md:flex">
-            <Link
-              className={`text-sm ${pathname.startsWith('/internal') ? 'font-semibold' : ''}`}
-              href="/internal"
+    <header className="sticky top-0 z-30 bg-white border-b">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between items-center py-4">
+          {/* Left Side: Back Button & Page Title */}
+          <div className="flex items-center gap-4">
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={() => router.back()}
+              className="h-9 w-9"
+              aria-label="Go back to previous page"
             >
-              Internal
-            </Link>
-            <Link
-              className={`text-sm ${pathname.startsWith('/legal') ? 'font-semibold' : ''}`}
-              href="/legal"
-            >
-              Legal
-            </Link>
-            <Link
-              className={`text-sm ${pathname.startsWith('/management') ? 'font-semibold' : ''}`}
-              href="/management"
-            >
-              Management
-            </Link>
-            <Link
-              className={`text-sm ${pathname.startsWith('/notifications') ? 'font-semibold' : ''}`}
-              href="/notifications"
-            >
-              Notifications
-            </Link>
-            <Link
-              className={`text-sm ${pathname.startsWith('/statistics') ? 'font-semibold' : ''}`}
-              href="/statistics"
-            >
-              Statistics
-            </Link>
-          </nav>
-        </div>
-        <div className="flex items-center gap-3">
-          <span className="hidden text-sm text-white/80 md:inline">
-            {user?.name} {user?.role ? `(${user.role})` : ''}
-          </span>
+              <ArrowLeft className="h-4 w-4" />
+            </Button>
+            <div>
+              <h1 className="text-xl font-bold text-gray-900">{title}</h1>
+              {subtitle && <p className="text-sm text-gray-600">{subtitle}</p>}
+            </div>
+          </div>
 
-          <Avatar className="h-8 w-8">
-            <AvatarFallback>
-              {user?.name?.slice(0, 2).toUpperCase() || 'U'}
-            </AvatarFallback>
-          </Avatar>
-
-          <Button variant="secondary" onClick={logout} asChild>
-            <Link href="/login">Logout</Link>
-          </Button>
+          {/* Right Side: User Info & Logout */}
+          <div className="flex items-center gap-4">
+            <div className="hidden sm:flex items-center gap-2 text-sm">
+              <User className="h-4 w-4 text-gray-500" />
+              <span className="font-medium">{user.name}</span>
+              <span className="text-gray-500 capitalize">({user.role})</span>
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={logout}
+              className="flex items-center gap-2"
+            >
+              <LogOut className="h-4 w-4" />
+              <span className="hidden md:inline">Logout</span>
+            </Button>
+          </div>
         </div>
       </div>
     </header>
   );
-}
+};

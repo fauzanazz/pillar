@@ -15,6 +15,7 @@ import {
   Home,
 } from 'lucide-react';
 import UserProfile from './UserProfile';
+import { NotificationDropdown } from './NotificationDropdown';
 
 // Icon mapping for routes
 const iconMap = {
@@ -91,13 +92,15 @@ const Navigation = () => {
 
           {/* User Info and Logout */}
 
-          <UserProfile />
+          {/* <UserProfile /> */}
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2 text-sm">
               <User className="h-4 w-4" />
               <span className="font-medium">{user.name}</span>
               <span className="text-gray-500 capitalize">({user.role})</span>
             </div>
+
+            <NotificationDropdown />
 
             <Button
               variant="outline"

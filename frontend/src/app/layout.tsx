@@ -17,7 +17,8 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="antialiased">
-        <AuthGuard>{children}</AuthGuard>
+        {/* <AuthGuard>{children}</AuthGuard> */}
+        {children}
         <Toaster />
       </body>
     </html>

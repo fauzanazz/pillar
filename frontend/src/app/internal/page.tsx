@@ -26,10 +26,7 @@ export default function InternalPage() {
       <Navigation />
       <div className="max-w-7xl mx-auto">
         <InternalDashboard
-          onEditContract={handleEditContract}
-          onReviewContract={handleReviewContract}
-          onDeleteContract={handleDeleteContract}
-          onCreateContract={handleCreateContract}
+          
         />
       </div>
     </div>

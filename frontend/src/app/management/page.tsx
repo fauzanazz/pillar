@@ -1,7 +1,7 @@
 'use client';
 
 import Navigation from '@/components/layout/Navigation';
-import ManagementDashboard from './ManagementDashboard';
+import ManagementDashboard from '../../components/management/ManagementDashboard';
 import { ContractWithRelations } from '@/api';
 
 export default function ManagementPage() {
@@ -21,11 +21,7 @@ export default function ManagementPage() {
     <div className="min-h-screen bg-gray-50">
       <Navigation />
       <div className="max-w-7xl mx-auto">
-        <ManagementDashboard
-          onEditContract={handleEditContract}
-          onReviewContract={handleReviewContract}
-          onDeleteContract={handleDeleteContract}
-        />
+        <ManagementDashboard />
       </div>
     </div>
   );

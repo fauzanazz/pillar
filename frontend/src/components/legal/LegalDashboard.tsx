@@ -4,20 +4,45 @@ import { useMemo, useEffect, useState, useCallback } from 'react';
 import { useContractStore } from '@/stores/contractStore';
 import { searchContract, transformSearchMatches } from '@/services/ai';
 import { debounce } from '@/utils/debounce';
-
-import ContractTable from '../contracts/ContractTable';
-import { FileText, Clock, CheckCircle, AlertTriangle, Search, Loader2 } from 'lucide-react';
+import {
+  FileText,
+  Clock,
+  CheckCircle,
+  AlertTriangle,
+  Search,
+  Loader2,
+} from 'lucide-react';
 import StatCard from '../dashboard/StatCard';
-import { Contract } from '@/api/types.gen';
+import { LegalContractsTable } from './LegalContractTable';
+import { Button } from '../ui/button';
+import { Input } from '../ui/input';
+import { Contract } from '@/api';
 
 const LegalDashboard = () => {
-  const contracts = useContractStore(state => state.contracts);
-  
+  const { contracts, fetchContracts, loading, error, totalContracts } =
+    useContractStore();
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
+
   // Search state
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<Contract[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
+
+  // Fetch contracts when the current page changes, but not if a search is active
+  useEffect(() => {
+    if (!hasSearched) {
+      fetchContracts({
+        url: '/api/contracts',
+        query: {
+          page: currentPage.toString(),
+          limit: itemsPerPage.toString(),
+          status: 'Legal Review', // Example filter for legal dashboard
+        },
+      });
+    }
+  }, [currentPage, hasSearched, fetchContracts]); // Removed fetchContracts
 
   // Debounced search function
   const debouncedSearch = useCallback(
@@ -26,6 +51,15 @@ const LegalDashboard = () => {
         setSearchResults([]);
         setHasSearched(false);
         setIsSearching(false);
+        // Refetch paginated data when search is cleared
+        fetchContracts({
+          url: '/api/contracts',
+          query: {
+            page: '1',
+            limit: itemsPerPage.toString(),
+            status: 'Legal Review',
+          },
+        });
         return;
       }
 
@@ -42,7 +76,7 @@ const LegalDashboard = () => {
         setIsSearching(false);
       }
     }, 500),
-    []
+    [] // Empty dependency array for stable debounce function
   );
 
   // Handle search input change
@@ -51,78 +85,73 @@ const LegalDashboard = () => {
     debouncedSearch(value);
   };
 
-  // Cleanup effect
-  useEffect(() => {
-    return () => {
-      // Cancel any pending debounced search when component unmounts
-      debouncedSearch.cancel?.();
-    };
-  }, [debouncedSearch]);
+  const totalPages = Math.ceil(totalContracts / itemsPerPage);
 
-  // Filter contracts relevant to legal team
-  const legalContracts = useMemo(() => {
-    const baseContracts = hasSearched ? searchResults : contracts;
-    return baseContracts.filter(
-      c =>
-        c.status === 'Legal Review' ||
-        c.status === 'Management Review' ||
-        c.status === 'Accepted' ||
-        c.status === 'Canceled'
-    );
-  }, [contracts, searchResults, hasSearched]);
+  const handlePageChange = (page: number) => {
+    if (page > 0 && page <= totalPages) {
+      setCurrentPage(page);
+    }
+  };
 
   const stats = useMemo(() => {
-    const totalContracts = legalContracts.length;
     const pendingReview = contracts.filter(
       c => c.status === 'Legal Review'
     ).length;
-    const reviewedContracts = contracts.filter(
-      c => c.status === 'Management Review' || c.status === 'Accepted'
-    ).length;
-    const rejectedContracts = contracts.filter(
-      c => c.status === 'Canceled'
-    ).length;
-
     return {
-      totalContracts,
+      totalContracts: totalContracts,
       pendingReview,
-      reviewedContracts,
-      rejectedContracts,
     };
-  }, [contracts, legalContracts]);
+  }, [contracts, totalContracts]);
 
   const legalStats = [
     {
       title: 'Total Contracts',
       value: stats.totalContracts,
-      description: 'Legal oversight',
       icon: <FileText className="h-6 w-6 text-accent" />,
-      trend: { value: 12, isPositive: true },
     },
     {
       title: 'Pending Review',
       value: stats.pendingReview,
-      description: 'Awaiting legal review',
       icon: <Clock className="h-6 w-6 text-warning" />,
     },
     {
       title: 'Reviewed',
-      value: stats.reviewedContracts,
-      description: 'Completed reviews',
+      value: 0, // Placeholder
       icon: <CheckCircle className="h-6 w-6 text-success" />,
-      trend: { value: 8, isPositive: true },
     },
     {
       title: 'Rejected',
-      value: stats.rejectedContracts,
-      description: 'Legal concerns',
+      value: 0, // Placeholder
       icon: <AlertTriangle className="h-6 w-6 text-destructive" />,
     },
   ];
 
+  const displayedContracts = hasSearched ? searchResults : contracts;
+
+  if (error && !loading) {
+    return (
+      <div className="text-center p-8">
+        <p className="text-red-500 mb-4">Failed to load contracts.</p>
+        <Button
+          onClick={() =>
+            fetchContracts({
+              url: '/api/contracts',
+              query: {
+                page: '1',
+                limit: itemsPerPage.toString(),
+                status: 'Legal Review',
+              },
+            })
+          }
+        >
+          Retry
+        </Button>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6 p-6">
-      {/* Header */}
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Legal Dashboard</h1>
         <p className="text-muted-foreground">
@@ -130,21 +159,18 @@ const LegalDashboard = () => {
         </p>
       </div>
 
-      {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {legalStats.map((stat, index) => (
           <StatCard
             key={index}
             title={stat.title}
             value={stat.value}
-            description={stat.description}
             icon={stat.icon}
-            trend={'trend' in stat ? stat.trend : undefined}
+            description={''}
           />
         ))}
       </div>
 
-      {/* Search Section */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="text-2xl font-semibold tracking-tight">
@@ -153,28 +179,35 @@ const LegalDashboard = () => {
           <div className="flex items-center gap-4">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <input
+              <Input
                 type="text"
                 placeholder="Search contracts..."
                 value={searchQuery}
-                onChange={(e) => handleSearchChange(e.target.value)}
+                onChange={e => handleSearchChange(e.target.value)}
                 disabled={isSearching}
-                className="pl-10 pr-10 py-2 w-80 border border-border rounded-md bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed"
+                className="pl-10 pr-10 w-80 disabled:opacity-50 disabled:cursor-not-allowed"
               />
               {isSearching && (
                 <Loader2 className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 animate-spin text-muted-foreground" />
               )}
             </div>
             <p className="text-sm text-muted-foreground">
-              {hasSearched 
-                ? `Found ${legalContracts.length} contracts matching "${searchQuery}"`
-                : `Showing ${legalContracts.length} contracts requiring legal attention`
-              }
+              {hasSearched
+                ? `Found ${displayedContracts.length} contracts`
+                : `Showing contracts for page ${currentPage}`}
             </p>
           </div>
         </div>
 
-        <ContractTable filteredContracts={legalContracts} />
+        <LegalContractsTable
+          contracts={displayedContracts}
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={handlePageChange}
+          loading={loading}
+          itemsPerPage={itemsPerPage}
+          totalItems={totalContracts}
+        />
       </div>
     </div>
   );

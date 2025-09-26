@@ -2,8 +2,9 @@
  * Creates a debounced function that delays invoking the provided function
  * until after the specified delay in milliseconds has elapsed since the last time it was invoked.
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function debounce<T extends (...args: any[]) => any>(
+export function debounce<
+  T extends (...args: string[]) => string | Promise<void>,
+>(
   func: T,
   delay: number
 ): ((...args: Parameters<T>) => void) & { cancel: () => void } {

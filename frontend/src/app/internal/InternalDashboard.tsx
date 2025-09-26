@@ -9,12 +9,11 @@ import {
   ContractForm,
 } from '@/components/contracts/AddContractModal';
 import { EditContractModal } from '@/components/contracts/EditContractModal';
-import { Contract } from '@/api/types.gen';
+import { Contract, ContractWithRelations } from '@/api';
 import {
   FileText,
   Clock,
   CheckCircle,
-  AlertTriangle,
   Plus,
   Search,
   Loader2,
@@ -29,28 +28,20 @@ import {
 import { debounce } from '@/utils/debounce';
 import { ViewContractModal } from '@/components/contracts/ViewModal';
 
-interface InternalDashboardProps {
-  onEditContract?: (contract: Contract) => void;
-  onReviewContract?: (contract: Contract) => void;
-  onDeleteContract?: (contract: Contract) => void;
-  onCreateContract?: () => void;
-}
-
-const InternalDashboard = ({
-  onEditContract,
-  onReviewContract,
-  onDeleteContract,
-  onCreateContract,
-}: InternalDashboardProps) => {
-  const contracts = useContractStore(state => state.contracts);
-  const fetchContracts = useContractStore(state => state.fetchContracts);
-  const addContract = useContractStore(state => state.addContract);
-  const updateContract = useContractStore(state => state.updateContract);
-  const deleteContract = useContractStore(state => state.deleteContract);
-  const loading = useContractStore(state => state.loading);
+const InternalDashboard = () => {
+  const {
+    contracts,
+    totalContracts,
+    fetchContracts,
+    addContract,
+    updateContract,
+    deleteContract,
+    loading,
+  } = useContractStore();
 
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  const [editingContract, setEditingContract] = useState<Contract | null>(null);
+  const [editingContract, setEditingContract] =
+    useState<ContractWithRelations | null>(null);
 
   // Search state
   const [searchQuery, setSearchQuery] = useState('');
@@ -96,7 +87,7 @@ const InternalDashboard = ({
         setIsSearching(false);
       }
     }, 500),
-    []
+    [contracts] // Recreate debounce if contracts change
   );
 
   // Handle search input change
@@ -108,8 +99,8 @@ const InternalDashboard = ({
   // Cleanup effect
   useEffect(() => {
     return () => {
-      // Cancel any pending debounced search when component unmounts
-      debouncedSearch.cancel?.();
+      // This is a placeholder for a potential cancel method on your debounce function
+      // If your debounce utility has a .cancel(), you would call it here.
     };
   }, [debouncedSearch]);
 
@@ -127,6 +118,7 @@ const InternalDashboard = ({
 
     // Apply status filter
     let filteredContracts = baseContracts;
+
     switch (activeFilter) {
       case 'active':
         // Active contracts are those currently in progress (not yet decided by management)
@@ -152,11 +144,10 @@ const InternalDashboard = ({
     }
 
     return {
-      totalContracts,
+      totalContracts: totalContracts,
       draftContracts,
       activeContracts,
-      // nearExpireContracts,
-      filteredContracts,
+      filteredContracts: hasSearched ? searchResults : contracts,
     };
   }, [contracts, searchResults, hasSearched, activeFilter]);
 
@@ -164,28 +155,22 @@ const InternalDashboard = ({
     {
       title: 'Total Contracts',
       value: stats.totalContracts,
-      description: 'vs last month',
       icon: <FileText className="h-6 w-6 text-accent" />,
-      trend: { value: 15, isPositive: true },
     },
     {
       title: 'Draft Contracts',
       value: stats.draftContracts,
-      description: 'Pending submission',
       icon: <Clock className="h-6 w-6 text-warning" />,
     },
     {
       title: 'Active Contracts',
       value: stats.activeContracts,
-      description: 'Currently active',
       icon: <CheckCircle className="h-6 w-6 text-success" />,
-      trend: { value: 6, isPositive: true },
     },
   ];
 
   return (
     <div className="space-y-6 p-6">
-      {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">
@@ -204,21 +189,18 @@ const InternalDashboard = ({
         </Button>
       </div>
 
-      {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {internalStats.map((stat, index) => (
           <StatCard
             key={index}
             title={stat.title}
             value={stat.value}
-            description={stat.description}
             icon={stat.icon}
-            trend={'trend' in stat ? stat.trend : undefined}
+            description={''}
           />
         ))}
       </div>
 
-      {/* Contracts Table */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="text-2xl font-semibold tracking-tight">
@@ -227,7 +209,7 @@ const InternalDashboard = ({
         </div>
 
         {/* Filter Tabs */}
-      <div className='flex flex-row-reverse justify-between'>
+        <div className="flex flex-row-reverse justify-between">
           <div className="flex items-center gap-4">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -245,8 +227,8 @@ const InternalDashboard = ({
             </div>
             <p className="text-sm text-muted-foreground">
               {hasSearched
-                ? `Found ${stats.filteredContracts.length} contracts matching "${searchQuery}"`
-                : `Showing ${stats.filteredContracts.length} contracts`}
+                ? `Found ${stats.filteredContracts.length} contracts`
+                : `Showing all ${totalContracts} contracts`}
             </p>
           </div>
           <div className="flex items-center gap-1 bg-gray-100 p-1 rounded-lg w-fit">
@@ -310,7 +292,8 @@ const InternalDashboard = ({
           </div>
         ) : (
           <InternalContractTable
-            contracts={stats.filteredContracts}
+            searchedContracts={stats.filteredContracts}
+            isSearched={isSearching}
             onEdit={contract => {
               setEditingContract(contract);
             }}
@@ -357,7 +340,6 @@ const InternalDashboard = ({
         )}
       </div>
 
-      {/* Add Contract Modal */}
       <AddContractModal
         isOpen={isAddModalOpen}
         onClose={() => setIsAddModalOpen(false)}
