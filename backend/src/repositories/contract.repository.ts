@@ -323,12 +323,18 @@ export const createClause = async (
     updatedBy: createdBy,
   }));
 
-  const [newClause] = await db
-    .insert(clauses)
-    .values(mappedClauseData)
-    .returning();
+  const result = await db.transaction(async (tx) => {
+    await tx.delete(clauses).where(eq(clauses.contractId, contractId));
 
-  return newClause;
+    const [newClause] = await tx
+      .insert(clauses)
+      .values(mappedClauseData)
+      .returning();
+
+    return newClause;
+  });
+
+  return result;
 };
 
 // Update contract with AI draft data

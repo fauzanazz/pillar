@@ -42,32 +42,46 @@ export const createContractService = async (
   );
 
   // Create the contract first
-  const newContract = await createContractRepo(contractData, createdBy, url, key);
+  const newContract = await createContractRepo(
+    contractData,
+    createdBy,
+    url,
+    key,
+  );
 
   // Generate AI draft data in the background
   try {
     const aiRequest = {
       use_case: `${contractData.title}${contractData.description ? `\n\n${contractData.description}` : ''}`,
-      parties: contractData.party.map(p => p.partyName),
-      end_date: contractData.endDate || new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // Default to 1 year from now
+      parties: contractData.party.map((p) => p.partyName),
+      end_date:
+        contractData.endDate ||
+        new Date(Date.now() + 365 * 24 * 60 * 60 * 1000)
+          .toISOString()
+          .split('T')[0], // Default to 1 year from now
       jurisdiction: 'ID',
       language: 'id',
       presignedUrl: url,
     };
 
     const { aiDraftData, aiMetadata } = await callAiDraftService(aiRequest);
-    
+
     // Update the contract with AI data
     await updateContractWithAiData(
       newContract.id,
       aiDraftData,
       aiMetadata,
-      createdBy
+      createdBy,
     );
-    
-    console.log(`AI draft generated successfully for contract ${newContract.id}`);
+
+    console.log(
+      `AI draft generated successfully for contract ${newContract.id}`,
+    );
   } catch (error) {
-    console.error(`Failed to generate AI draft for contract ${newContract.id}:`, error);
+    console.error(
+      `Failed to generate AI draft for contract ${newContract.id}:`,
+      error,
+    );
     // Don't fail the contract creation if AI generation fails
     // The contract will still be created without AI data
   }
