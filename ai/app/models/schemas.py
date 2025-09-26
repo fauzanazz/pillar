@@ -15,6 +15,7 @@ class DraftRequest(BaseModel):
     end_date: str = Field(..., description="Contract end date (ISO format)")
     jurisdiction: str = Field(default="ID", description="Jurisdiction code")
     language: str = Field(default="id", description="Language code")
+    presignedUrl: Optional[str] = Field(None, description="Presigned URL for PDF upload", alias="presignedUrl")
 
     @validator('parties')
     def validate_parties(cls, v):
@@ -36,6 +37,7 @@ class Clause(BaseModel):
 class DraftResponse(BaseModel):
     summary: Optional[str] = Field(None, description="Contract summary")
     clauses: List[Clause] = Field(..., description="List of contract clauses")
+    pdf_url: Optional[str] = Field(None, description="URL of the uploaded PDF file")
 
 
 class PdfClause(BaseModel):

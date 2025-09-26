@@ -22,7 +22,7 @@ interface ContractState {
   loading: boolean;
   error: string | null;
   fetchContracts: (params?: GetContractsData) => Promise<void>;
-  addContract: (params: CreateContractData) => Promise<void>;
+  addContract: (params: CreateContractData) => Promise<any>;
   updateContract: (params: UpdateContractData) => Promise<void>;
   deleteContract: (params: DeleteContractData) => Promise<void>;
   getContractById: (
@@ -77,6 +77,8 @@ export const useContractStore = create<ContractState>((set, get) => ({
 
         toast.success('Contract created successfully!');
       }
+      
+      return response.data; // Return the response so it can be used in the UI
     } catch (error) {
       console.error('Error creating contract:', error);
       const errorMessage =
