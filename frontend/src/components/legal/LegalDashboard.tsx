@@ -2,7 +2,7 @@
 
 import { useMemo, useEffect, useState, useCallback } from 'react';
 import { useContractStore } from '@/stores/contractStore';
-import { searchContract } from '@/services/ai';
+import { searchContract, transformSearchMatches } from '@/services/ai';
 import { debounce } from '@/utils/debounce';
 
 import ContractTable from '../contracts/ContractTable';
@@ -31,8 +31,9 @@ const LegalDashboard = () => {
 
       setIsSearching(true);
       try {
-        const results = await searchContract(query);
-        setSearchResults(results.data || []);
+        const searchResponse = await searchContract(query);
+        const transformedContracts = transformSearchMatches(searchResponse.matches || []);
+        setSearchResults(transformedContracts);
         setHasSearched(true);
       } catch (error) {
         console.error('Search failed:', error);

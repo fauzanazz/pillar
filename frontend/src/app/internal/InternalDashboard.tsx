@@ -18,7 +18,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { generateContract, searchContract } from '@/services/ai';
+import { generateContract, searchContract, transformSearchMatches } from '@/services/ai';
 import { debounce } from '@/utils/debounce';
 
 interface InternalDashboardProps {
@@ -67,8 +67,9 @@ const InternalDashboard = ({
 
       setIsSearching(true);
       try {
-        const results = await searchContract(query);
-        setSearchResults(results.data || []);
+        const searchResponse = await searchContract(query);
+        const transformedContracts = transformSearchMatches(searchResponse.matches || []);
+        setSearchResults(transformedContracts);
         setHasSearched(true);
       } catch (error) {
         console.error('Search failed:', error);
