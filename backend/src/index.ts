@@ -8,6 +8,7 @@ import { RequestIdVariables, requestId } from 'hono/request-id';
 import { env } from '@/configs';
 import { rabbitmqConfig } from '@/configs';
 import { rabbitMQService } from '@/lib/rabbitmq';
+import { alertEventConsumer } from '@/services/alert-event-consumer.service';
 
 import { apiRouter } from './controllers/api.controller';
 import { auth } from './lib';
@@ -83,6 +84,10 @@ const initializeRabbitMQ = async () => {
     await rabbitmqConfig.connect();
     await rabbitMQService.initialize();
     console.log('RabbitMQ initialized successfully');
+
+    // Start alert event consumer
+    console.log('Starting Alert Event Consumer...');
+    await alertEventConsumer.startConsuming();
   } catch (error) {
     console.error('Failed to initialize RabbitMQ:', error);
     // Don't exit the process, just log the error
