@@ -1,11 +1,32 @@
 'use client';
 
 import { useState } from 'react';
-import { Edit, Trash2, Send, Eye, AlertTriangle } from 'lucide-react';
+import {
+  Edit,
+  Trash2,
+  Send,
+  Eye,
+  AlertTriangle,
+  MoreHorizontal,
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 import { toast } from 'sonner';
-import { ContractWithRelations } from '@/api';
+import { Contract, ContractWithRelations } from '@/api';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 interface ContractTableProps {
   contracts: ContractWithRelations[];
@@ -59,25 +80,7 @@ function ConfirmationModal({
   );
 }
 
-const statusColors = {
-  draft: 'bg-gray-100 text-gray-800',
-  legal_review: 'bg-blue-100 text-blue-800',
-  management_review: 'bg-yellow-100 text-yellow-800',
-  accepted: 'bg-green-100 text-green-800',
-  rejected: 'bg-red-100 text-red-800',
-  canceled: 'bg-gray-100 text-gray-600',
-};
-
-const statusLabels = {
-  draft: 'Draft',
-  legal_review: 'Legal Review',
-  management_review: 'Management Review',
-  accepted: 'Accepted',
-  rejected: 'Rejected',
-  canceled: 'Canceled',
-};
-
-export function EnhancedContractTable({
+export function InternalContractTable({
   contracts,
   onEdit,
   onDelete,
@@ -129,90 +132,80 @@ export function EnhancedContractTable({
     setConfirmModal({ isOpen: false, type: null, contract: null });
   };
 
-  const getNextStepLabel = (status: ContractWithRelations['status']) => {
-    // switch (status) {
-    //   case 'draft':
-    //     return 'Send to Legal Review';
-    //   case 'legal_review':
-    //     return 'Send to Management';
-    //   case 'management_review':
-    //     return 'Accept Contract';
-    //   default:
-    //     return 'Send to Next Step';
-    // }
+  const NextStepList = ['Draft', 'Rejected'];
+  const EditStepList = ['Draft'];
+  const DeleteStepList = ['Draft', 'Rejected'];
+
+  const canSendToNextStep = (status: Contract['status']) => {
+    return NextStepList.includes(status);
   };
 
-  const canSendToNextStep = (status: ContractWithRelations['status']) => {
-    return ['draft', 'legal_review', 'management_review'].includes(status);
+  const canEdit = (status: Contract['status']) => {
+    return EditStepList.includes(status);
   };
 
-  const canEdit = (status: ContractWithRelations['status']) => {
-    return ['draft'].includes(status);
-  };
-
-  const canDelete = (status: ContractWithRelations['status']) => {
-    return ['draft', 'rejected'].includes(status);
+  const canDelete = (status: Contract['status']) => {
+    return DeleteStepList.includes(status);
   };
 
   return (
     <>
       <div className="overflow-x-auto">
-        <table className="w-full border-collapse bg-white shadow-sm rounded-lg overflow-hidden">
-          <thead>
-            <tr className="bg-gray-50">
-              <th className="px-4 py-3 text-left text-sm font-medium text-gray-900 border-b">
+        <Table className="w-full border-collapse bg-white shadow-sm rounded-lg overflow-hidden">
+          <TableHeader>
+            <TableRow className="bg-gray-50">
+              <TableHead className="px-4 py-3 text-left text-sm font-medium text-gray-900 border-b">
                 Nama
-              </th>
-              <th className="px-4 py-3 text-left text-sm font-medium text-gray-900 border-b">
+              </TableHead>
+              <TableHead className="px-4 py-3 text-left text-sm font-medium text-gray-900 border-b">
                 Deskripsi
-              </th>
-              <th className="px-4 py-3 text-left text-sm font-medium text-gray-900 border-b">
+              </TableHead>
+              <TableHead className="px-4 py-3 text-left text-sm font-medium text-gray-900 border-b">
                 End of Contract
-              </th>
-              <th className="px-4 py-3 text-left text-sm font-medium text-gray-900 border-b">
+              </TableHead>
+              <TableHead className="px-4 py-3 text-left text-sm font-medium text-gray-900 border-b">
                 Status
-              </th>
+              </TableHead>
 
-              <th className="px-4 py-3 text-left text-sm font-medium text-gray-900 border-b">
+              <TableHead className="px-4 py-3 text-left text-sm font-medium text-gray-900 border-b">
                 URL Contract
-              </th>
-              <th className="px-4 py-3 text-center text-sm font-medium text-gray-900 border-b">
+              </TableHead>
+              <TableHead className="px-4 py-3 text-center text-sm font-medium text-gray-900 border-b">
                 Actions
-              </th>
-            </tr>
-          </thead>
-          <tbody>
+              </TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
             {contracts.map(contract => (
-              <tr key={contract.id} className="border-b hover:bg-gray-50">
-                <td className="px-4 py-4 text-sm text-gray-900">
+              <TableRow key={contract.id} className="border-b hover:bg-gray-50">
+                <TableCell className="px-4 py-4 text-sm text-gray-900">
                   <div className="font-medium">{contract.title}</div>
                   {contract.riskScore && (
                     <div className="text-xs text-gray-500">
                       {contract.riskScore}
                     </div>
                   )}
-                </td>
-                <td className="px-4 py-4 text-sm text-gray-600 max-w-xs">
+                </TableCell>
+                <TableCell className="px-4 py-4 text-sm text-gray-600 max-w-xs">
                   <div className="truncate" title={contract.description}>
                     {contract.description}
                   </div>
-                </td>
-                <td className="px-4 py-4 text-sm text-gray-900">
+                </TableCell>
+                <TableCell className="px-4 py-4 text-sm text-gray-900">
                   {new Date(contract.endDate).toLocaleDateString()}
-                </td>
-                <td className="px-4 py-4">
+                </TableCell>
+                <TableCell className="px-4 py-4">
                   <span
                     className={`inline-flex px-2 py-1 text-xs font-medium rounded-full `}
                   >
                     {contract.status}
                   </span>
-                </td>
+                </TableCell>
 
-                <td className="px-4 py-4 text-sm">
+                <TableCell className="px-4 py-4 text-sm">
                   {contract.description ? (
                     <button
                       onClick={() => {
-                        // Open generated contract in new window or modal
                         console.log(
                           'View generated contract:',
                           contract.description
@@ -225,73 +218,63 @@ export function EnhancedContractTable({
                   ) : (
                     <span className="text-gray-400 text-xs">Not Generated</span>
                   )}
-                </td>
-                <td className="px-4 py-4">
+                </TableCell>
+                <TableCell className="px-4 py-4 flex items-center justify-center">
                   <div className="flex items-center justify-center gap-2">
                     {/* View Button */}
-                    {onView && (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => onView(contract)}
-                        className="h-8 w-8 p-0"
-                        title="View Contract"
-                      >
-                        <Eye className="h-4 w-4" />
-                      </Button>
-                    )}
-
-                    {/* Edit Button */}
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => onEdit(contract)}
-                      disabled={!canEdit(contract.status)}
-                      className="h-8 w-8 p-0"
-                      title={
-                        canEdit(contract.status)
-                          ? 'Edit Contract'
-                          : 'Cannot edit this status'
-                      }
-                    >
-                      <Edit className="h-4 w-4" />
-                    </Button>
-
-                    {/* Delete Button */}
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleDeleteClick(contract)}
-                      disabled={!canDelete(contract.status)}
-                      className="h-8 w-8 p-0 text-red-600 hover:text-red-800"
-                      title={
-                        canDelete(contract.status)
-                          ? 'Delete Contract'
-                          : 'Cannot delete this status'
-                      }
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-
-                    {/* Send to Next Step */}
-                    {canSendToNextStep(contract.status) && (
-                      <Button
-                        variant="default"
-                        size="sm"
-                        onClick={() => handleSendClick(contract)}
-                        className="h-8 px-2"
-                        // title={getNextStepLabel(contract.status)}
-                      >
-                        <Send className="h-4 w-4 mr-1" />
-                        Next
-                      </Button>
-                    )}
                   </div>
-                </td>
-              </tr>
+
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="icon">
+                        <MoreHorizontal className="h-4 w-4" />
+                        <span className="sr-only">Actions</span>
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="center">
+                      {/* --- Internal User Actions --- */}
+                      {onView && (
+                        <DropdownMenuItem onSelect={() => onView(contract)}>
+                          <Eye className="mr-2 h-4 w-4" />
+                          <span>View Contract</span>
+                        </DropdownMenuItem>
+                      )}
+
+                      {/* Edit Button */}
+                      {canEdit(contract.status) && (
+                        <DropdownMenuItem onSelect={() => onEdit(contract)}>
+                          <Edit className="mr-2 h-4 w-4" />
+                          <span>Edit Contract</span>
+                        </DropdownMenuItem>
+                      )}
+
+                      {/* Delete Button */}
+                      {canDelete(contract.status) && (
+                        <DropdownMenuItem
+                          onSelect={() => handleDeleteClick(contract)}
+                          className="text-red-600"
+                        >
+                          <Trash2 className="mr-2 h-4 w-4" />
+                          <span>Delete Contract</span>
+                        </DropdownMenuItem>
+                      )}
+
+                      {/* Send to Next Step */}
+                      {canSendToNextStep(contract.status) && (
+                        <DropdownMenuItem
+                          onSelect={() => handleSendClick(contract)}
+                        >
+                          <Send className="mr-2 h-4 w-4" />
+                          <span>Send to Next Step</span>
+                        </DropdownMenuItem>
+                      )}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </TableCell>
+              </TableRow>
             ))}
-          </tbody>
-        </table>
+          </TableBody>
+        </Table>
 
         {contracts.length === 0 && (
           <div className="text-center py-8 text-gray-500">
