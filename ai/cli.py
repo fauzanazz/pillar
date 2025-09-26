@@ -1,5 +1,3 @@
-"""Command Line Interface for Contract Management System."""
-
 import asyncio
 import json
 import os
@@ -25,32 +23,25 @@ console = Console()
 
 
 class CLISession:
-    """CLI Session manager."""
-    
     def __init__(self):
         self.current_role: Optional[UserRole] = None
         self.current_user = "CLI User"
     
     def set_role(self, role: UserRole):
-        """Set current user role."""
         self.current_role = role
         console.print(f"[green]Switched to {role.value.upper()} role[/green]")
 
 
-# Global CLI session
 cli_session = CLISession()
 
 
 def main():
-    """Main interactive CLI loop."""
     console.print("[bold blue]Contract Management System[/bold blue]")
     console.print("Interactive Contract Management CLI")
     
-    # Initial role selection
     if not cli_session.current_role:
         select_role_interactive()
     
-    # Main interactive loop
     while True:
         try:
             show_main_menu()
@@ -71,6 +62,8 @@ def main():
                 show_stats()
             elif choice == "6":
                 list_all_contracts()
+            elif choice == "7":
+                smart_search_interactive()
             elif choice.startswith("work-"):
                 contract_id = choice.split("-", 1)[1]
                 work_on_contract_by_id(contract_id)
@@ -95,11 +88,12 @@ def show_main_menu():
     console.print("4. Switch Role")
     console.print("5. System Stats")
     console.print("6. List All Contracts")
+    console.print("7. Smart Search 🔍")
     console.print("0. Exit")
 
 def get_menu_choices():
     """Get valid menu choices."""
-    choices = ["0", "1", "2", "3", "4", "5", "6", "exit"]
+    choices = ["0", "1", "2", "3", "4", "5", "6", "7", "exit"]
     # Add contract shortcuts from recent contracts
     contracts = workflow_service.get_contracts_for_role(cli_session.current_role) if cli_session.current_role else []
     for contract in contracts[:5]:  # Show first 5 contracts as shortcuts
@@ -511,6 +505,123 @@ def list_all_contracts():
         )
     
     console.print(table)
+    Prompt.ask("Press Enter to continue", default="")
+
+
+def smart_search_interactive():
+    """Interactive smart contract search."""
+    console.print("\n[bold blue]🔍 Smart Contract Search[/bold blue]")
+    console.print("Ask questions in natural language!")
+    console.print("\n[bold]Examples:[/bold]")
+    console.print("• 'Show contracts with ASUS expiring in 90 days'")
+    console.print("• 'Find contracts with penalty clauses over 500 million'") 
+    console.print("• 'All approved contracts from last month'")
+    console.print("• 'Contracts in Jakarta jurisdiction'")
+    
+    while True:
+        console.print()
+        query = Prompt.ask("🔍 Search", default="")
+        
+        if not query or query.lower() in ['exit', 'quit', 'back']:
+            break
+            
+        if query.lower() == 'help':
+            show_search_help()
+            continue
+            
+        # Execute search
+        console.print(f"[yellow]Searching for: {query}...[/yellow]")
+        
+        try:
+            import asyncio
+            from app.services.search_service import search_service
+            
+            # Run async search
+            results = asyncio.run(search_service.search(query))
+            
+            # Display results
+            display_search_results(results)
+            
+        except Exception as e:
+            console.print(f"[red]Search failed: {e}[/red]")
+        
+        # Ask if user wants to continue
+        if not Confirm.ask("Search again?"):
+            break
+
+
+def show_search_help():
+    """Show search help and examples."""
+    console.print("\n[bold green]Smart Search Help[/bold green]")
+    console.print("\n[bold]Query Types:[/bold]")
+    console.print("🏢 [cyan]Party/Vendor:[/cyan] 'contracts with Microsoft', 'ASUS agreements'")
+    console.print("📅 [cyan]Date/Expiry:[/cyan] 'expiring in 30 days', 'contracts from January'") 
+    console.print("💰 [cyan]Value:[/cyan] 'contracts over 1 billion', 'high value agreements'")
+    console.print("📋 [cyan]Status:[/cyan] 'approved contracts', 'pending review'")
+    console.print("📄 [cyan]Clauses:[/cyan] 'penalty clauses', 'confidentiality terms'")
+    console.print("🌍 [cyan]Location:[/cyan] 'Jakarta jurisdiction', 'Indonesian contracts'")
+    
+    console.print("\n[bold]Smart Features:[/bold]")
+    console.print("• Understands synonyms (final = approved, vendor = party)")
+    console.print("• Flexible dates (30 days, next month, this year)")
+    console.print("• Value formats (500 juta, Rp 1 billion, 10M)")
+    console.print("• Fuzzy matching for company names")
+
+
+def display_search_results(results):
+    """Display search results in a nice format."""
+    
+    if results.total_found == 0:
+        console.print("[yellow]No contracts found.[/yellow]")
+        if results.suggestions:
+            console.print("\n[bold]Suggestions:[/bold]")
+            for suggestion in results.suggestions:
+                console.print(f"• {suggestion}")
+        return
+    
+    # Show query understanding
+    console.print(f"\n[bold green]Found {results.total_found} contracts[/bold green] in {results.processing_time_ms}ms")
+    console.print(f"[dim]AI understood: {results.query.explanation}[/dim]")
+    console.print(f"[dim]Confidence: {results.query.confidence:.1%}[/dim]")
+    
+    # Create results table
+    table = Table(title=f"Search Results: '{results.query.original_query}'")
+    table.add_column("ID", style="cyan", width=10)
+    table.add_column("Title", style="white", width=25)
+    table.add_column("Status", style="yellow", width=15)
+    table.add_column("Score", style="green", width=8)
+    table.add_column("Why Match?", style="blue", width=30)
+    
+    for match in results.matches[:10]:  # Show top 10
+        reasons = ", ".join(match.match_reasons[:2])  # Top 2 reasons
+        table.add_row(
+            match.contract.id[:8],
+            match.contract.template.title[:23] + "..." if len(match.contract.template.title) > 23 else match.contract.template.title,
+            match.contract.status.value,
+            f"{match.score:.2f}",
+            reasons
+        )
+    
+    console.print(table)
+    
+    # Show highlights if any
+    if results.matches and results.matches[0].highlights:
+        console.print("\n[bold]Highlights:[/bold]")
+        highlights = results.matches[0].highlights
+        
+        if "keywords" in highlights:
+            console.print(f"🔍 Keywords: {', '.join(highlights['keywords'][:5])}")
+        if "parties" in highlights:
+            console.print(f"🏢 Parties: {', '.join(highlights['parties'][:3])}")
+        if "clauses" in highlights:
+            console.print(f"📄 Clause matches: {len(highlights['clauses'])} found")
+    
+    # Show suggestions
+    if results.suggestions:
+        console.print("\n[bold]Suggestions:[/bold]")
+        for suggestion in results.suggestions[:3]:
+            console.print(f"• {suggestion}")
+    
     Prompt.ask("Press Enter to continue", default="")
 
 
