@@ -1,7 +1,10 @@
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
 import z from 'zod';
 
-import { user } from '@/db/schema';
+import { user, userRoleEnum } from '@/db/schema';
+
+// Role enum for validation
+export const userRoleSchema = z.enum(userRoleEnum.enumValues);
 
 // Create
 export const createUserSchema = createInsertSchema(user).omit({
@@ -21,6 +24,7 @@ export const readUserListSchema = z.array(readUserSchema);
 export const updateUserSchema = createUserSchema.partial();
 
 // Types
+export type UserRole = z.infer<typeof userRoleSchema>;
 export type CreateUser = z.infer<typeof createUserSchema>;
 export type ReadUser = z.infer<typeof readUserSchema>;
 export type ReadUserList = z.infer<typeof readUserListSchema>;

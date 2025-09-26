@@ -1,5 +1,6 @@
 import {
   boolean,
+  pgEnum,
   pgTable,
   text,
   timestamp,
@@ -8,6 +9,12 @@ import {
 
 import { createId, getNow } from '../db-helper';
 
+export const userRoleEnum = pgEnum('user_role', [
+  'internal',
+  'legal',
+  'management',
+]);
+
 export const user = pgTable('user', {
   id: varchar('id').primaryKey().unique().$defaultFn(createId),
   name: text('name').notNull(),
@@ -15,6 +22,7 @@ export const user = pgTable('user', {
   emailVerified: boolean('email_verified')
     .$defaultFn(() => false)
     .notNull(),
+  role: userRoleEnum('role').default('internal').notNull(),
   image: text('image'),
   bio: text('bio'),
   createdAt: timestamp('created_at').$defaultFn(getNow).notNull(),

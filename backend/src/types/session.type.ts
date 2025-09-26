@@ -1,10 +1,13 @@
 import { z } from 'zod';
 
+import { userRoleSchema } from './user.type';
+
 export const sessionUserSchema = z.object({
   id: z.string(),
   email: z.string().email(),
   emailVerified: z.boolean(),
   name: z.string(),
+  role: userRoleSchema,
   createdAt: z.date(),
   updatedAt: z.date(),
   image: z.string().nullable().optional(),
