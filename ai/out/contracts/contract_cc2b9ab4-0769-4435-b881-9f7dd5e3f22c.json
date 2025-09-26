@@ -1,0 +1,158 @@
+{
+  "id": "cc2b9ab4-0769-4435-b881-9f7dd5e3f22c",
+  "template": {
+    "title": "Kontrak Pembangunan Jembatan",
+    "description": "Membangun jembatan di desa Sukamaju",
+    "parties": [
+      {
+        "role": "PIHAK PERTAMA",
+        "name": "RT 1",
+        "rep": "Bambang",
+        "address": "Jalan Sukamaju"
+      },
+      {
+        "role": "PIHAK KEDUA",
+        "name": "RT 2",
+        "rep": "Najwa",
+        "address": "Jalan Sukamundur"
+      }
+    ],
+    "end_date": "2025-09-28",
+    "jurisdiction": "Indonesia",
+    "language": "Indonesian",
+    "value": null,
+    "special_requirements": null
+  },
+  "clauses": [
+    {
+      "id": "203d029a-3153-43fa-ad41-e54ab3c09309",
+      "no": 1,
+      "title": "Definisi dan Interpretasi",
+      "text": "Dalam Kontrak ini, kecuali konteksnya menentukan lain: (a) 'Hari Kerja' berarti hari Senin sampai dengan Jumat, kecuali hari libur nasional; (b) 'Force Majeure' berarti keadaan kahar yang berada di luar kendali para pihak; (c) rujukan kepada undang-undang termasuk peraturan pelaksanaannya.",
+      "status": "pending",
+      "original_text": null,
+      "added_by": "legal",
+      "created_at": "2025-09-26 20:51:45.486280",
+      "updated_at": "2025-09-26 20:51:45.486280",
+      "notes": "AI Generated - Risk: 20/100",
+      "risk_score": 20
+    },
+    {
+      "id": "f7cd1578-9497-4890-a6ff-b2e6db50ae6c",
+      "no": 2,
+      "title": "Ruang Lingkup Pekerjaan",
+      "text": "Pihak Pertama (RT 1) bertanggung jawab untuk membangun jembatan sesuai dengan spesifikasi teknis yang ditetapkan oleh Pihak Kedua (RT 2) dan dalam jangka waktu yang disepakati.",
+      "status": "pending",
+      "original_text": null,
+      "added_by": "legal",
+      "created_at": "2025-09-26 20:51:45.486280",
+      "updated_at": "2025-09-26 20:51:45.486280",
+      "notes": "AI Generated - Risk: 30/100",
+      "risk_score": 30
+    },
+    {
+      "id": "bfebe081-30cc-4e89-b9fd-cd5c275d20a0",
+      "no": 3,
+      "title": "Pembayaran dan Denda",
+      "text": "Pembayaran dilakukan dalam mata uang Rupiah melalui transfer bank. Keterlambatan pembayaran dikenakan denda 0,1% per hari dari jumlah yang terhutang. Pihak yang melanggar kewajiban kontraktual dapat dikenakan penalti maksimal 10% dari nilai kontrak, kecuali disepakati lain.",
+      "status": "pending",
+      "original_text": null,
+      "added_by": "legal",
+      "created_at": "2025-09-26 20:51:45.486280",
+      "updated_at": "2025-09-26 20:51:45.486280",
+      "notes": "AI Generated - Risk: 25/100",
+      "risk_score": 25
+    },
+    {
+      "id": "32808a34-aa1c-460a-8ced-272849198683",
+      "no": 4,
+      "title": "Pemutusan Kontrak",
+      "text": "Kontrak ini dapat diputus oleh salah satu pihak dengan alasan: (1) Pelanggaran material yang tidak diperbaiki dalam 30 hari; (2) Pailit atau likuidasi; (3) Force majeure yang berlangsung lebih dari 90 hari. Pemutusan harus diberitahukan secara tertulis dengan periode pemberitahuan 60 hari.",
+      "status": "pending",
+      "original_text": null,
+      "added_by": "legal",
+      "created_at": "2025-09-26 20:51:45.486280",
+      "updated_at": "2025-09-26 20:51:45.486280",
+      "notes": "AI Generated - Risk: 20/100",
+      "risk_score": 20
+    },
+    {
+      "id": "ebedfd77-f5c4-49f1-abb1-465c6636f560",
+      "no": 5,
+      "title": "Penyelesaian Sengketa",
+      "text": "Setiap perselisihan yang timbul dari atau berkaitan dengan Kontrak ini akan diselesaikan melalui: (1) Musyawarah mufakat dalam jangka waktu 30 hari; (2) Mediasi melalui lembaga mediasi terakreditasi; (3) Arbitrase BANI sesuai prosedur yang berlaku; (4) Pengadilan Negeri Jakarta Pusat sebagai pilihan terakhir.",
+      "status": "pending",
+      "original_text": null,
+      "added_by": "legal",
+      "created_at": "2025-09-26 20:51:45.486280",
+      "updated_at": "2025-09-26 20:51:45.486280",
+      "notes": "AI Generated - Risk: 25/100",
+      "risk_score": 25
+    },
+    {
+      "id": "2cdd33ea-60cc-4cb4-8315-383b9504effe",
+      "no": 6,
+      "title": "Jangka Waktu dan Perpanjangan",
+      "text": "Kontrak ini berlaku selama periode yang ditetapkan dan dapat diperpanjang atas kesepakatan tertulis para pihak. Perpanjangan harus diajukan paling lambat 60 hari sebelum berakhirnya masa berlaku kontrak. Jika tidak ada pemberitahuan perpanjangan, kontrak akan berakhir secara otomatis.",
+      "status": "pending",
+      "original_text": null,
+      "added_by": "legal",
+      "created_at": "2025-09-26 20:51:45.486280",
+      "updated_at": "2025-09-26 20:51:45.486280",
+      "notes": "AI Generated - Risk: 20/100",
+      "risk_score": 20
+    },
+    {
+      "id": "033fce51-a7fe-4d78-b917-c4fa9c2767e2",
+      "no": 7,
+      "title": "Kerahasiaan Informasi",
+      "text": "Para Pihak setuju untuk menjaga kerahasiaan semua informasi yang diterima dari pihak lainnya dan tidak akan membagikan informasi tersebut kepada pihak ketiga tanpa persetujuan tertulis dari pihak yang memberikannya.",
+      "status": "pending",
+      "original_text": null,
+      "added_by": "legal",
+      "created_at": "2025-09-26 20:51:45.486280",
+      "updated_at": "2025-09-26 20:51:45.486280",
+      "notes": "AI Generated - Risk: 35/100",
+      "risk_score": 35
+    },
+    {
+      "id": "5f22151f-e768-4344-8eb7-896a74765b43",
+      "no": 8,
+      "title": "Tanggung Jawab dan Ganti Rugi",
+      "text": "Para pihak sepakat untuk bertanggung jawab atas kerugian yang disebabkan oleh kelalaian atau kesalahan dalam pelaksanaan kontrak. Pihak yang dirugikan berhak untuk mengajukan ganti rugi atas kerugian yang diderita akibat pelanggaran kontrak.",
+      "status": "pending",
+      "original_text": null,
+      "added_by": "legal",
+      "created_at": "2025-09-26 20:51:45.486280",
+      "updated_at": "2025-09-26 20:51:45.486280",
+      "notes": "AI Generated - Risk: 40/100",
+      "risk_score": 40
+    }
+  ],
+  "status": "draft_legal_review",
+  "created_by": "internal",
+  "current_assignee": "legal",
+  "created_at": "2025-09-26 20:50:21.505916",
+  "updated_at": "2025-09-26 20:51:45.560313",
+  "workflow_history": [
+    {
+      "action": "contract_created",
+      "by_role": "internal",
+      "timestamp": "2025-09-26T20:50:21.505916",
+      "notes": "Contract created: Kontrak Pembangunan Jembatan"
+    },
+    {
+      "action": "clauses_generated",
+      "by_role": "internal",
+      "timestamp": "2025-09-26T20:51:45.486280",
+      "notes": "Generated 8 clauses using AI",
+      "old_status": "draft_internal",
+      "new_status": "draft_legal_review"
+    }
+  ],
+  "management_notes": null,
+  "legal_notes": null,
+  "internal_notes": null,
+  "json_file_path": "C:\\Users\\tech\\jasmine\\ifest\\Final-IFest2025\\ai\\out\\contracts\\contract_cc2b9ab4-0769-4435-b881-9f7dd5e3f22c.json",
+  "pdf_file_path": "C:\\Users\\tech\\jasmine\\ifest\\Final-IFest2025\\ai\\out\\pdfs\\contract_cc2b9ab4-0769-4435-b881-9f7dd5e3f22c.pdf"
+}
