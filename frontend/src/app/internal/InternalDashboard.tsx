@@ -224,6 +224,10 @@ const InternalDashboard = ({
           <h2 className="text-2xl font-semibold tracking-tight">
             All Contracts
           </h2>
+        </div>
+
+        {/* Filter Tabs */}
+      <div className='flex flex-row-reverse justify-between'>
           <div className="flex items-center gap-4">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -245,60 +249,58 @@ const InternalDashboard = ({
                 : `Showing ${stats.filteredContracts.length} contracts`}
             </p>
           </div>
-        </div>
-
-        {/* Filter Tabs */}
-        <div className="flex items-center gap-1 bg-gray-100 p-1 rounded-lg w-fit">
-          <button
-            onClick={() => setActiveFilter('all')}
-            className={`px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 ${
-              activeFilter === 'all'
-                ? 'bg-white text-gray-900 shadow-sm'
-                : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-            }`}
-          >
-            All
-          </button>
-          <button
-            onClick={() => setActiveFilter('active')}
-            className={`px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 ${
-              activeFilter === 'active'
-                ? 'bg-white text-gray-900 shadow-sm'
-                : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-            }`}
-          >
-            Active
-          </button>
-          <button
-            onClick={() => setActiveFilter('draft')}
-            className={`px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 ${
-              activeFilter === 'draft'
-                ? 'bg-white text-gray-900 shadow-sm'
-                : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-            }`}
-          >
-            Draft
-          </button>
-          <button
-            onClick={() => setActiveFilter('accepted')}
-            className={`px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 ${
-              activeFilter === 'accepted'
-                ? 'bg-white text-gray-900 shadow-sm'
-                : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-            }`}
-          >
-            Accepted
-          </button>
-          <button
-            onClick={() => setActiveFilter('rejected')}
-            className={`px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 ${
-              activeFilter === 'rejected'
-                ? 'bg-white text-gray-900 shadow-sm'
-                : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-            }`}
-          >
-            Rejected
-          </button>
+          <div className="flex items-center gap-1 bg-gray-100 p-1 rounded-lg w-fit">
+            <button
+              onClick={() => setActiveFilter('all')}
+              className={`px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 ${
+                activeFilter === 'all'
+                  ? 'bg-white text-gray-900 shadow-sm'
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+              }`}
+            >
+              All
+            </button>
+            <button
+              onClick={() => setActiveFilter('active')}
+              className={`px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 ${
+                activeFilter === 'active'
+                  ? 'bg-white text-gray-900 shadow-sm'
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+              }`}
+            >
+              Active
+            </button>
+            <button
+              onClick={() => setActiveFilter('draft')}
+              className={`px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 ${
+                activeFilter === 'draft'
+                  ? 'bg-white text-gray-900 shadow-sm'
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+              }`}
+            >
+              Draft
+            </button>
+            <button
+              onClick={() => setActiveFilter('accepted')}
+              className={`px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 ${
+                activeFilter === 'accepted'
+                  ? 'bg-white text-gray-900 shadow-sm'
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+              }`}
+            >
+              Accepted
+            </button>
+            <button
+              onClick={() => setActiveFilter('rejected')}
+              className={`px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 ${
+                activeFilter === 'rejected'
+                  ? 'bg-white text-gray-900 shadow-sm'
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+              }`}
+            >
+              Rejected
+            </button>
+          </div>
         </div>
 
         {loading ? (

@@ -12,8 +12,9 @@ import {
   Users,
   BarChart,
   Settings,
-  Home
+  Home,
 } from 'lucide-react';
+import UserProfile from './UserProfile';
 
 // Icon mapping for routes
 const iconMap = {
@@ -45,10 +46,10 @@ const Navigation = () => {
           <div className="flex items-center gap-6">
             <div className="flex items-center gap-3">
               <div className="h-10 w-10 bg-[--twilight-gaze]/10 backdrop-blur-sm rounded-xl flex items-center justify-center border border-[--twilight-gaze]/20 shadow-sm p-2">
-                <Image 
-                  src="/logo.png" 
-                  alt="iFest 2025 Logo" 
-                  width={24} 
+                <Image
+                  src="/logo.png"
+                  alt="iFest 2025 Logo"
+                  width={24}
                   height={24}
                   className="w-6 h-6 object-contain"
                 />
@@ -57,20 +58,25 @@ const Navigation = () => {
                 <h1 className="text-xl font-bold text-[--twilight-gaze]">
                   Contract Management
                 </h1>
-                <p className="text-sm text-[--midnight-whisper]/70">{user.role.charAt(0).toUpperCase() + user.role.slice(1)} Portal</p>
+                <p className="text-sm text-[--midnight-whisper]/70">
+                  {user.role.charAt(0).toUpperCase() + user.role.slice(1)}{' '}
+                  Portal
+                </p>
               </div>
             </div>
 
             {/* Navigation Links */}
             <nav className="hidden md:flex items-center space-x-1">
-              {navigationRoutes.map((route) => {
+              {navigationRoutes.map(route => {
                 const isActive = pathname === route.path;
-                const IconComponent = route.icon ? iconMap[route.icon as keyof typeof iconMap] : FileText;
+                const IconComponent = route.icon
+                  ? iconMap[route.icon as keyof typeof iconMap]
+                  : FileText;
 
                 return (
                   <Button
                     key={route.path}
-                    variant={isActive ? "default" : "ghost"}
+                    variant={isActive ? 'default' : 'ghost'}
                     size="sm"
                     onClick={() => router.push(route.path)}
                     className="flex items-center gap-2"
@@ -84,6 +90,8 @@ const Navigation = () => {
           </div>
 
           {/* User Info and Logout */}
+
+          <UserProfile />
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2 text-sm">
               <User className="h-4 w-4" />
@@ -106,14 +114,16 @@ const Navigation = () => {
         {/* Mobile Navigation */}
         <div className="md:hidden pb-4">
           <div className="flex flex-wrap gap-2">
-            {navigationRoutes.map((route) => {
+            {navigationRoutes.map(route => {
               const isActive = pathname === route.path;
-              const IconComponent = route.icon ? iconMap[route.icon as keyof typeof iconMap] : FileText;
+              const IconComponent = route.icon
+                ? iconMap[route.icon as keyof typeof iconMap]
+                : FileText;
 
               return (
                 <Button
                   key={route.path}
-                  variant={isActive ? "default" : "outline"}
+                  variant={isActive ? 'default' : 'outline'}
                   size="sm"
                   onClick={() => router.push(route.path)}
                   className="flex items-center gap-2"
