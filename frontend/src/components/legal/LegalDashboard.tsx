@@ -42,7 +42,7 @@ const LegalDashboard = () => {
         },
       });
     }
-  }, [currentPage, hasSearched]); // Removed fetchContracts
+  }, [currentPage, hasSearched, fetchContracts]); // Removed fetchContracts
 
   // Debounced search function
   const debouncedSearch = useCallback(
