@@ -33,9 +33,6 @@ export const useAuthStore = create<AuthState>()(
           if (!response) {
             return { success: false, error: 'Invalid credentials' };
           }
-
-          console.log(response);
-
           const session = await authApi.getSession();
 
           if (!session) {

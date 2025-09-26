@@ -2,7 +2,7 @@
 
 import ProtectedRoute from '@/components/auth/ProtectedRoute';
 import Navigation from '@/components/layout/Navigation';
-import LegalDashboard from './LegalDashboard';
+import LegalDashboard from '../../components/legal/LegalDashboard';
 
 export default function LegalPage() {
   const handleEditContract = (contract: any) => {
@@ -22,11 +22,7 @@ export default function LegalPage() {
       <div className="min-h-screen bg-gray-50">
         <Navigation />
         <div className="max-w-7xl mx-auto">
-          <LegalDashboard
-            onEditContract={handleEditContract}
-            onReviewContract={handleReviewContract}
-            onDeleteContract={handleDeleteContract}
-          />
+          <LegalDashboard />
         </div>
       </div>
     </ProtectedRoute>

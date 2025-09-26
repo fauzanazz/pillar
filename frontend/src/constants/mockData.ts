@@ -1,14 +1,23 @@
+export interface Party {
+  name: string;
+  representation: string;
+}
+
 export interface Contract {
   id: string;
-  title: string;
+  title: string; // Nama
+  description: string; // Deskripsi
+  endDate: string; // End of contract
+  parties: Party[]; // Pihak (list with name and representation)
+  status: 'draft' | 'legal_review' | 'management_review' | 'accepted' | 'rejected' | 'canceled';
+  version: string; // version
+  generatedContract?: string; // AI generated contract content
+  // Additional fields for backward compatibility
   counterparty: string;
-  status: 'draft' | 'legal_review' | 'management_review' | 'accepted' | 'rejected' | 'near_expire';
   amount?: string;
   startDate: string;
-  endDate: string;
   createdBy: string;
   reviewedBy?: string;
-  description?: string;
 }
 
 export interface User {
@@ -57,71 +66,102 @@ export const MOCK_CONTRACTS: Contract[] = [
   {
     id: '1',
     title: 'Software License Agreement',
-    counterparty: 'TechCorp Inc.',
+    description: 'Annual software license for project management tools',
+    endDate: '2025-12-31',
+    parties: [
+      { name: 'TechCorp Inc.', representation: 'Software Vendor' },
+      { name: 'Our Company', representation: 'Client' }
+    ],
     status: 'legal_review',
+    version: '1.0',
+    counterparty: 'TechCorp Inc.',
     amount: '$50,000',
     startDate: '2025-01-01',
-    endDate: '2025-12-31',
     createdBy: 'Sarah Internal',
-    description: 'Annual software license for project management tools'
   },
   {
     id: '2',
     title: 'Service Agreement',
-    counterparty: 'Consulting Group LLC',
+    description: 'Strategic consulting services for Q1-Q3',
+    endDate: '2025-08-31',
+    parties: [
+      { name: 'Consulting Group LLC', representation: 'Service Provider' },
+      { name: 'Our Company', representation: 'Client' },
+      { name: 'Partner Corp', representation: 'Third Party' }
+    ],
     status: 'management_review',
+    version: '1.1',
+    counterparty: 'Consulting Group LLC',
     amount: '$120,000',
     startDate: '2025-02-01',
-    endDate: '2025-08-31',
     createdBy: 'Sarah Internal',
     reviewedBy: 'John Legal',
-    description: 'Strategic consulting services for Q1-Q3'
   },
   {
     id: '3',
     title: 'Vendor Contract',
-    counterparty: 'Supply Chain Co.',
+    description: 'Supply chain management services',
+    endDate: '2025-06-15',
+    parties: [
+      { name: 'Supply Chain Co.', representation: 'Vendor' },
+      { name: 'Our Company', representation: 'Buyer' }
+    ],
     status: 'accepted',
+    version: '2.0',
+    counterparty: 'Supply Chain Co.',
     amount: '$75,000',
     startDate: '2025-01-15',
-    endDate: '2025-06-15',
     createdBy: 'Sarah Internal',
     reviewedBy: 'Mike Manager',
-    description: 'Supply chain management services'
   },
   {
     id: '4',
     title: 'Marketing Partnership',
-    counterparty: 'Digital Agency',
+    description: 'Digital marketing campaign partnership',
+    endDate: '2025-05-31',
+    parties: [
+      { name: 'Digital Agency', representation: 'Marketing Partner' },
+      { name: 'Our Company', representation: 'Client' }
+    ],
     status: 'draft',
+    version: '1.0',
+    counterparty: 'Digital Agency',
     amount: '$30,000',
     startDate: '2025-03-01',
-    endDate: '2025-05-31',
     createdBy: 'Sarah Internal',
-    description: 'Digital marketing campaign partnership'
   },
   {
     id: '5',
     title: 'Maintenance Agreement',
+    description: 'Equipment maintenance and support',
+    endDate: '2025-01-31',
+    parties: [
+      { name: 'Tech Support Inc.', representation: 'Service Provider' },
+      { name: 'Our Company', representation: 'Client' }
+    ],
+    status: 'accepted',
+    version: '1.0',
     counterparty: 'Tech Support Inc.',
-    status: 'near_expire',
     amount: '$25,000',
     startDate: '2024-01-01',
-    endDate: '2025-01-31',
     createdBy: 'Sarah Internal',
     reviewedBy: 'John Legal',
-    description: 'Equipment maintenance and support'
   },
   {
     id: '6',
     title: 'Data Processing Agreement',
-    counterparty: 'DataCorp Ltd.',
+    description: 'Data processing and analytics services - rejected due to compliance issues',
+    endDate: '2025-12-31',
+    parties: [
+      { name: 'DataCorp Ltd.', representation: 'Data Processor' },
+      { name: 'Our Company', representation: 'Data Controller' }
+    ],
     status: 'rejected',
+    version: '1.2',
+    counterparty: 'DataCorp Ltd.',
     amount: '$40,000',
     startDate: '2025-02-01',
-    endDate: '2025-12-31',
     createdBy: 'Sarah Internal',
     reviewedBy: 'John Legal',
-    description: 'Data processing and analytics services - rejected due to compliance issues'
   }
 ];
