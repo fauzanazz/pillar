@@ -11,10 +11,13 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
-import { ContractWithRelations } from '@/api';
+import { ContractWithRelations, updateContract } from '@/api';
 import { useContractStore } from '@/stores/contractStore';
 import { LegalClause } from '@/types/clauses';
-import { ConvertToLegalClauses } from '@/utils/converter';
+import {
+  ConvertToContractClauses,
+  ConvertToLegalClauses,
+} from '@/utils/converter';
 
 interface LegalReviewClientProps {
   id: string;
@@ -36,12 +39,15 @@ export default function LegalReviewClient({ id }: LegalReviewClientProps) {
         'The liability cap seems too high for a project of this scope.',
     },
   ]);
+
   const [acceptedClauses, setAcceptedClauses] = useState<LegalClause[]>([]);
   const [newClause, setNewClause] = useState({ title: '', description: '' });
   const [isFinalReview, setIsFinalReview] = useState(false);
   const [isRegenerating, setIsRegenerating] = useState(false);
 
-  const { getContractById, updateContract } = useContractStore();
+  // const navigation = useNavigation();
+
+  const { getContractById, createClauseContract } = useContractStore();
 
   useEffect(() => {
     const fetchContract = async () => {
@@ -49,7 +55,7 @@ export default function LegalReviewClient({ id }: LegalReviewClientProps) {
         const contractData = await getContractById({
           url: '/api/contracts/{id}',
           path: { id },
-          
+          query: { includeRelations: 'true' },
         });
         setContract(contractData);
 
@@ -134,14 +140,25 @@ export default function LegalReviewClient({ id }: LegalReviewClientProps) {
   const handleCompleteReview = async () => {
     if (!contract) return;
     try {
-      await updateContract({
-        url: '/api/contracts/{id}',
+      await createClauseContract({
+        url: '/api/contracts/{id}/clause',
         path: { id: contract.id.toString() },
-        body: { status: 'Management Review' },
+        body: ConvertToContractClauses(acceptedClauses),
       });
+
+      console.log('Clauses:', ConvertToContractClauses(acceptedClauses));
+
       toast.success('Legal review completed!', {
         description: `Contract "${contract.title}" has been sent for management review.`,
       });
+
+      await updateContract({
+        path: {
+          id: contract.id.toString(),
+        },
+        body: { status: 'Management Review' },
+      });
+
       window.location.href = '/legal';
     } catch (error) {
       toast.error('Failed to update contract status.');

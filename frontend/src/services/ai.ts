@@ -30,3 +30,15 @@ export const generateContract = async (data: ContractForm ,  presignedUrl: strin
       throw error;
     }
   };
+
+export const searchContract = async (query: string) => {
+  const response = await fetch(`${BASE_AI_URL}/api/v1/ai/search?q=${query}&limit=10`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+  return response.json();
+};
+
+

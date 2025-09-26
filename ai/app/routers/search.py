@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 router = APIRouter(tags=["Smart Search"])
 
 
-@router.get(
+@router.post(
     "/search",
     response_model=SearchResponse,
     summary="Smart Contract Search", 

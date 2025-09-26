@@ -1,10 +1,15 @@
 import {
+  createAlert as createAlertRepo,
   getAlertById as getAlertByIdRepo,
   getAlerts as getAlertsRepo,
   getUnreadAlertsCount as getUnreadAlertsCountRepo,
   markAlertAsRead as markAlertAsReadRepo,
 } from '@/repositories/alert.repository';
-import type { GetAlertsQuery, MarkAlertAsRead } from '@/types/alert.type';
+import type {
+  CreateAlert,
+  GetAlertsQuery,
+  MarkAlertAsRead,
+} from '@/types/alert.type';
 
 export const getAlertsService = async (query: GetAlertsQuery) => {
   return await getAlertsRepo(query);
@@ -23,4 +28,11 @@ export const markAlertAsReadService = async (
 
 export const getUnreadAlertsCountService = async () => {
   return await getUnreadAlertsCountRepo();
+};
+
+export const createAlertService = async (
+  alertData: CreateAlert,
+  createdBy: string,
+) => {
+  return await createAlertRepo(alertData, createdBy);
 };

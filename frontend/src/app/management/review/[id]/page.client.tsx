@@ -47,6 +47,7 @@ export default function ManagementReviewClient({
         const contractData = await getContractById({
           url: '/api/contracts/{id}',
           path: { id },
+          query: { includeRelations: 'true' },
         });
         setContract(contractData);
         setAcceptedClauses(ConvertToLegalClauses(contractData?.clauses ?? []));

@@ -52,6 +52,12 @@ export const markAlertAsReadSchema = z.object({
   isRead: z.boolean(),
 });
 
+export const createAlertSchema = z.object({
+  contractId: z.number(),
+  message: z.string().min(1, 'Message is required'),
+  priority: alertPriorityEnum,
+});
+
 // Response schemas
 export const alertResponseSchema = createResponseSchema(alertSchema);
 export const alertWithContractResponseSchema = createResponseSchema(
@@ -74,3 +80,4 @@ export type Alert = z.infer<typeof alertSchema>;
 export type AlertWithContract = z.infer<typeof alertWithContractSchema>;
 export type GetAlertsQuery = z.infer<typeof getAlertsQuerySchema>;
 export type MarkAlertAsRead = z.infer<typeof markAlertAsReadSchema>;
+export type CreateAlert = z.infer<typeof createAlertSchema>;

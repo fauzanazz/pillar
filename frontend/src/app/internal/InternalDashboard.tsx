@@ -1,37 +1,108 @@
 'use client';
 
-import { ContractWithRelations, Contract } from '@/api';
+import { useMemo, useState, useEffect, useCallback } from 'react';
+import { useContractStore } from '@/stores/contractStore';
+import StatCard from '@/components/dashboard/StatCard';
+import { InternalContractTable } from '@/components/internal/InternalContractTable';
 import {
   AddContractModal,
   ContractForm,
 } from '@/components/contracts/AddContractModal';
 import { EditContractModal } from '@/components/contracts/EditContractModal';
-import StatCard from '@/components/dashboard/StatCard';
-import { InternalContractTable } from '@/components/internal/InternalContractTable';
+import { Contract, ContractWithRelations } from '@/api';
+import {
+  FileText,
+  Clock,
+  CheckCircle,
+  Plus,
+  Search,
+  Loader2,
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useContractStore } from '@/stores/contractStore';
-import { FileText, Clock, CheckCircle, Plus } from 'lucide-react';
-import { useState } from 'react';
+import { Input } from '@/components/ui/input';
 import { generateContract } from '@/services/ai';
+import { debounce } from '@/utils/debounce';
 
 const InternalDashboard = () => {
   const {
+    contracts,
+    totalContracts,
+    fetchContracts,
     addContract,
     updateContract,
     deleteContract,
-    contracts,
-    totalContracts,
+    loading,
   } = useContractStore();
 
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [editingContract, setEditingContract] =
     useState<ContractWithRelations | null>(null);
 
-  const stats = {
-    totalContracts: totalContracts,
-    draftContracts: contracts.filter(c => c.status === 'Draft').length,
-    activeContracts: contracts.filter(c => c.status === 'Accepted').length,
+  // Search state
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState<Contract[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
+  const [hasSearched, setHasSearched] = useState(false);
+
+  // Debounced search function
+  const debouncedSearch = useCallback(
+    debounce(async (query: string) => {
+      if (!query.trim()) {
+        setSearchResults([]);
+        setHasSearched(false);
+        setIsSearching(false);
+        return;
+      }
+
+      setIsSearching(true);
+      try {
+        // Assuming searchContract exists and is typed correctly
+        // const results = await searchContract(query);
+        // setSearchResults(results.data || []);
+        // Mocking search result for now
+        const filtered = contracts.filter(c =>
+          c.title.toLowerCase().includes(query.toLowerCase())
+        );
+        setSearchResults(filtered);
+        setHasSearched(true);
+      } catch (error) {
+        console.error('Search failed:', error);
+        setSearchResults([]);
+      } finally {
+        setIsSearching(false);
+      }
+    }, 500),
+    [contracts] // Recreate debounce if contracts change
+  );
+
+  // Handle search input change
+  const handleSearchChange = (value: string) => {
+    setSearchQuery(value);
+    debouncedSearch(value);
   };
+
+  // Cleanup effect
+  useEffect(() => {
+    return () => {
+      // This is a placeholder for a potential cancel method on your debounce function
+      // If your debounce utility has a .cancel(), you would call it here.
+    };
+  }, [debouncedSearch]);
+
+  // Internal team sees all contracts but focuses on their workflow
+  const stats = useMemo(() => {
+    const draftContracts = contracts.filter(c => c.status === 'Draft').length;
+    const activeContracts = contracts.filter(
+      c => c.status === 'Accepted'
+    ).length;
+
+    return {
+      totalContracts: totalContracts,
+      draftContracts,
+      activeContracts,
+      filteredContracts: hasSearched ? searchResults : contracts,
+    };
+  }, [contracts, searchResults, hasSearched, totalContracts]);
 
   const internalStats = [
     {
@@ -84,7 +155,32 @@ const InternalDashboard = () => {
       </div>
 
       <div className="space-y-4">
-        <h2 className="text-2xl font-semibold tracking-tight">All Contracts</h2>
+        <div className="flex items-center justify-between">
+          <h2 className="text-2xl font-semibold tracking-tight">
+            All Contracts
+          </h2>
+          <div className="flex items-center gap-4">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                type="text"
+                placeholder="Search contracts..."
+                value={searchQuery}
+                onChange={e => handleSearchChange(e.target.value)}
+                disabled={isSearching}
+                className="pl-10 pr-10 w-80 disabled:opacity-50 disabled:cursor-not-allowed"
+              />
+              {isSearching && (
+                <Loader2 className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 animate-spin text-muted-foreground" />
+              )}
+            </div>
+            <p className="text-sm text-muted-foreground">
+              {hasSearched
+                ? `Found ${stats.filteredContracts.length} contracts`
+                : `Showing all ${totalContracts} contracts`}
+            </p>
+          </div>
+        </div>
         <InternalContractTable
           onEdit={contract => setEditingContract(contract)}
           onDelete={contract => {
@@ -101,6 +197,12 @@ const InternalDashboard = () => {
                 break;
               case 'Rejected':
                 newStatus = 'Draft';
+                break;
+              case 'Legal Review':
+                newStatus = 'Management Review';
+                break;
+              case 'Management Review':
+                newStatus = 'Accepted';
                 break;
               default:
                 return;

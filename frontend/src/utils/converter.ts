@@ -1,3 +1,4 @@
+import { CreateClauseData } from '@/api';
 import { LegalClause } from '@/types/clauses';
 
 export function ConvertToLegalClauses(
@@ -19,4 +20,22 @@ export function ConvertToLegalClauses(
   });
 
   return legalClauses;
+}
+
+export function ConvertToContractClauses(
+  LegalClauses: LegalClause[]
+): { clauseText: string; clauseDescription: string }[] {
+  const contractClauses: {
+    clauseText: string;
+    clauseDescription: string;
+  }[] = [];
+
+  LegalClauses.forEach(element => {
+    contractClauses.push({
+      clauseText: element.clauseText,
+      clauseDescription: element.clauseDescription,
+    });
+  });
+
+  return contractClauses;
 }

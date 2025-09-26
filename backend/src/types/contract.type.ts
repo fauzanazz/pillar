@@ -16,11 +16,40 @@ export const contractStatusEnum = z.enum([
 ]);
 export type ContractStatusEnum = z.infer<typeof contractStatusEnum>;
 
+// AI Clause schema from AI service
+export const aiClauseSchema = z.object({
+  title: z.string(),
+  category: z.string().optional(),
+  text: z.string(),
+  risk: z.number().int().min(0).max(100),
+  rationale: z.string().optional(),
+  refs: z.string().optional(),
+  suggested: z.boolean().optional(),
+});
+
+// AI draft response schema
+export const aiDraftResponseSchema = z.object({
+  summary: z.string().optional(),
+  clauses: z.array(aiClauseSchema),
+  pdf_url: z.string().optional(),
+});
+
+// AI metadata schema for tracking AI processing info
+export const aiMetadataSchema = z.object({
+  correlation_id: z.string().optional(),
+  model_name: z.string().optional(),
+  timestamp: z.string().optional(),
+  processing_time_ms: z.number().optional(),
+  error: z.string().optional(),
+});
+
 // Base contract schema
 export const contractSchema = createSelectSchema(contracts, {
   status: contractStatusEnum,
   createdAt: z.union([z.string(), z.date()]),
   updatedAt: z.union([z.string(), z.date()]),
+  aiDraftData: aiDraftResponseSchema.nullable().optional(),
+  aiMetadata: aiMetadataSchema.nullable().optional(),
 }).openapi('Contract');
 
 // Contract with relations
@@ -96,6 +125,7 @@ export const updateContractSchema = z.object({
   description: z.string().optional(),
   endDate: z.string().optional(),
   status: contractStatusEnum.optional(),
+  reason: z.string().optional(),
 });
 
 export const rejectContractSchema = z.object({
@@ -163,3 +193,8 @@ export type RejectContract = z.infer<typeof rejectContractSchema>;
 export type AcceptContract = z.infer<typeof acceptContractSchema>;
 export type CreateClause = z.infer<typeof createClauseSchema>;
 export type ClauseResponse = z.infer<typeof clauseResponseSchema>;
+
+// AI-related types
+export type AiClause = z.infer<typeof aiClauseSchema>;
+export type AiDraftResponse = z.infer<typeof aiDraftResponseSchema>;
+export type AiMetadata = z.infer<typeof aiMetadataSchema>;

@@ -6,6 +6,8 @@ import {
   AcceptContractData,
   Contract,
   ContractWithRelations,
+  createClause,
+  CreateClauseData,
   createContract,
   CreateContractData,
   deleteContract,
@@ -34,6 +36,7 @@ interface ContractState {
   deleteContract: (params: DeleteContractData) => Promise<void>;
   rejectContract: (params: RejectContractData) => Promise<void>;
   acceptContract: (params: AcceptContractData) => Promise<void>;
+  createClauseContract: (param: CreateClauseData) => Promise<void>;
   getContractById: (
     params: GetContractByIdData
   ) => Promise<ContractWithRelations | undefined>;
@@ -74,6 +77,25 @@ export const useContractStore = create<ContractState>((set, get) => ({
       });
 
       toast.error(`Failed to fetch contracts: ${errorMessage}`);
+    }
+  },
+
+  createClauseContract: async param => {
+    set({ loading: true, error: null });
+    try {
+      const response = await createClause(param);
+      const updatedContract = response.data?.data;
+      if (updatedContract) {
+        await get().fetchContracts();
+        toast.success('Clause created successfully!');
+      }
+    } catch (error) {
+      console.error('Error creating clause:', error);
+      const errorMessage =
+        error instanceof Error ? error.message : 'Failed to create clause';
+      set({ error: errorMessage, loading: false });
+      toast.error(`Failed to create clause: ${errorMessage}`);
+      throw error;
     }
   },
 
