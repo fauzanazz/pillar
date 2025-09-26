@@ -1,0 +1,158 @@
+{
+  "id": "0584cdf7-629d-4b03-a754-cb980c41652a",
+  "template": {
+    "title": "Pembelian Mobil Bekas",
+    "description": "Jual beli mobil bekas di kalangan warga desa mekarwangi",
+    "parties": [
+      {
+        "role": "PIHAK PERTAMA",
+        "name": "RW 1",
+        "rep": "Ojan",
+        "address": "desa mekarwangi"
+      },
+      {
+        "role": "PIHAK KEDUA",
+        "name": "Johnny SHowroom",
+        "rep": "John",
+        "address": "jalan rinjani"
+      }
+    ],
+    "end_date": "2026-09-30",
+    "jurisdiction": "Indonesia",
+    "language": "Indonesian",
+    "value": null,
+    "special_requirements": null
+  },
+  "clauses": [
+    {
+      "id": "05809ac3-bcc6-40f6-805a-bbff2cf39a37",
+      "no": 1,
+      "title": "Definisi dan Interpretasi",
+      "text": "Dalam Kontrak ini, kecuali konteksnya menentukan lain: (a) 'Hari Kerja' berarti hari Senin sampai dengan Jumat, kecuali hari libur nasional; (b) 'Mobil' berarti kendaraan bermotor roda empat yang dijual oleh Johnny Showroom dengan kondisi bekas; (c) 'Harga' berarti jumlah uang yang disepakati oleh para Pihak untuk transaksi ini; (d) 'Force Majeure' berarti keadaan kahar yang berada di luar kendali para pihak.",
+      "status": "pending",
+      "original_text": null,
+      "added_by": "legal",
+      "created_at": "2025-09-26 20:57:54.620883",
+      "updated_at": "2025-09-26 20:57:54.620883",
+      "notes": "AI Generated - Risk: 30/100",
+      "risk_score": 30
+    },
+    {
+      "id": "5ccc9c8e-87ed-48a7-b6e9-40464badc270",
+      "no": 2,
+      "title": "Kewajiban Kepatuhan Hukum",
+      "text": "Para Pihak wajib mematuhi seluruh peraturan perundang-undangan yang berlaku di Indonesia, termasuk namun tidak terbatas pada: (a) UU No. 8 Tahun 1999 tentang Perlindungan Konsumen; (b) UU No. 21 Tahun 2008 tentang Perbankan Syariah (jika terkait); (c) peraturan yang ditetapkan oleh instansi berwenang terkait penjualan mobil bekas.",
+      "status": "pending",
+      "original_text": null,
+      "added_by": "legal",
+      "created_at": "2025-09-26 20:57:54.620883",
+      "updated_at": "2025-09-26 20:57:54.620883",
+      "notes": "AI Generated - Risk: 30/100",
+      "risk_score": 30
+    },
+    {
+      "id": "fc8d8d99-c925-48ed-9536-dddfe0776949",
+      "no": 3,
+      "title": "Spesifikasi Mobil",
+      "text": "Johnny Showroom menyatakan bahwa mobil yang dijual dalam kondisi baik dan memenuhi spesifikasi sebagai berikut: (a) Tahun pembuatan; (b) Kilometer; (c) Riwayat pemeliharaan; (d) Kondisi fisik mobil. Pihak Pembeli berhak untuk melakukan pemeriksaan sebelum transaksi final.",
+      "status": "pending",
+      "original_text": null,
+      "added_by": "legal",
+      "created_at": "2025-09-26 20:57:54.620883",
+      "updated_at": "2025-09-26 20:57:54.620883",
+      "notes": "AI Generated - Risk: 40/100",
+      "risk_score": 40
+    },
+    {
+      "id": "04c7d3c7-7442-4717-90b4-89dafe6ba3d9",
+      "no": 4,
+      "title": "Pembayaran dan Denda",
+      "text": "Pembayaran dilakukan dalam mata uang Rupiah melalui transfer bank kepada nomor rekening yang ditentukan oleh pihak penjual. Keterlambatan pembayaran dikenakan denda 0,1% per hari dari jumlah yang terhutang. Jika Pembeli gagal membayar dalam waktu 30 hari setelah jatuh tempo, Johnny Showroom berhak membatalkan transaksi.",
+      "status": "pending",
+      "original_text": null,
+      "added_by": "legal",
+      "created_at": "2025-09-26 20:57:54.620883",
+      "updated_at": "2025-09-26 20:57:54.620883",
+      "notes": "AI Generated - Risk: 50/100",
+      "risk_score": 50
+    },
+    {
+      "id": "ac834e0a-1fb7-4efd-a193-dfd0ed1f845f",
+      "no": 5,
+      "title": "Jangka Waktu Kontrak",
+      "text": "Kontrak ini berlaku selama periode dari tanggal penandatanganan hingga 30 September 2026 dan tidak dapat diperpanjang.",
+      "status": "pending",
+      "original_text": null,
+      "added_by": "legal",
+      "created_at": "2025-09-26 20:57:54.620883",
+      "updated_at": "2025-09-26 20:57:54.620883",
+      "notes": "AI Generated - Risk: 20/100",
+      "risk_score": 20
+    },
+    {
+      "id": "97dc5a3b-27a5-468f-aca6-59edb340847a",
+      "no": 6,
+      "title": "Penyelesaian Sengketa",
+      "text": "Setiap perselisihan yang timbul dari atau berkaitan dengan Kontrak ini akan diselesaikan melalui: (1) Musyawarah mufakat dalam jangka waktu 30 hari; (2) Mediasi melalui lembaga mediasi terakreditasi; (3) Pengadilan Negeri setempat sebagai pilihan terakhir.",
+      "status": "pending",
+      "original_text": null,
+      "added_by": "legal",
+      "created_at": "2025-09-26 20:57:54.620883",
+      "updated_at": "2025-09-26 20:57:54.620883",
+      "notes": "AI Generated - Risk: 40/100",
+      "risk_score": 40
+    },
+    {
+      "id": "a8cf4ad2-428c-47cc-bc2b-7a6bdaf2d3e9",
+      "no": 7,
+      "title": "Kerahasiaan Data Transaksi",
+      "text": "Kedua Pihak sepakat untuk menjaga kerahasiaan informasi yang bersangkutan dengan transaksi ini dan tidak akan mengungkapkan kepada pihak ketiga tanpa persetujuan tertulis dari Pihak lainnya, kecuali diwajibkan oleh hukum.",
+      "status": "pending",
+      "original_text": null,
+      "added_by": "legal",
+      "created_at": "2025-09-26 20:57:54.620883",
+      "updated_at": "2025-09-26 20:57:54.620883",
+      "notes": "AI Generated - Risk: 30/100",
+      "risk_score": 30
+    },
+    {
+      "id": "07a90daf-f70a-407f-bd9b-8d4b73de9cfc",
+      "no": 8,
+      "title": "Pemberitahuan",
+      "text": "Setiap pemberitahuan yang berkaitan dengan kontrak ini harus dilakukan secara tertulis dan dikirimkan ke alamat yang ditentukan oleh para pihak.",
+      "status": "pending",
+      "original_text": null,
+      "added_by": "legal",
+      "created_at": "2025-09-26 20:57:54.620883",
+      "updated_at": "2025-09-26 20:57:54.620883",
+      "notes": "AI Generated - Risk: 20/100",
+      "risk_score": 20
+    }
+  ],
+  "status": "draft_legal_review",
+  "created_by": "internal",
+  "current_assignee": "legal",
+  "created_at": "2025-09-26 20:57:07.601860",
+  "updated_at": "2025-09-26 20:57:54.691480",
+  "workflow_history": [
+    {
+      "action": "contract_created",
+      "by_role": "internal",
+      "timestamp": "2025-09-26T20:57:07.601860",
+      "notes": "Contract created: Pembelian Mobil Bekas"
+    },
+    {
+      "action": "clauses_generated",
+      "by_role": "internal",
+      "timestamp": "2025-09-26T20:57:54.620883",
+      "notes": "Generated 8 clauses using AI",
+      "old_status": "draft_internal",
+      "new_status": "draft_legal_review"
+    }
+  ],
+  "management_notes": null,
+  "legal_notes": null,
+  "internal_notes": null,
+  "json_file_path": "C:\\Users\\tech\\jasmine\\ifest\\Final-IFest2025\\ai\\out\\contracts\\contract_0584cdf7-629d-4b03-a754-cb980c41652a.json",
+  "pdf_file_path": "C:\\Users\\tech\\jasmine\\ifest\\Final-IFest2025\\ai\\out\\pdfs\\contract_0584cdf7-629d-4b03-a754-cb980c41652a.pdf"
+}
