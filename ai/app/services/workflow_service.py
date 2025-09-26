@@ -8,7 +8,7 @@ from app.models.workflow import (
     ContractDraft, ContractTemplate, ContractClause, ContractStatus, 
     UserRole, ClauseStatus, WorkflowAction
 )
-from app.services.storage import contract_storage
+from app.services.db_storage import db_contract_storage
 from app.services.openai_client import openai_client
 from app.services.rag import rag_service
 from app.services.prompts import get_system_prompt, get_user_prompt_template
@@ -22,9 +22,9 @@ class WorkflowService:
     """Service for managing contract workflow."""
     
     def __init__(self):
-        self.storage = contract_storage
+        self.storage = db_contract_storage
     
-    def create_contract(self, template: ContractTemplate, created_by: UserRole = UserRole.INTERNAL) -> ContractDraft:
+    async def create_contract(self, template: ContractTemplate, created_by: UserRole = UserRole.INTERNAL) -> ContractDraft:
         """Create new contract from template."""
         contract = ContractDraft(
             template=template,
@@ -47,14 +47,14 @@ class WorkflowService:
             contract.pdf_file_path = pdf_path
         
         # Save contract
-        self.storage.save_contract(contract)
+        await self.storage.save_contract(contract)
         
         logger.info(f"Contract created: {contract.id} by {created_by.value}")
         return contract
     
     async def generate_clauses(self, contract_id: str, correlation_id: Optional[str] = None) -> ContractDraft:
         """Generate AI clauses for contract."""
-        contract = self.storage.load_contract(contract_id)
+        contract = await self.storage.load_contract(contract_id)
         if not contract:
             raise ValueError(f"Contract {contract_id} not found")
         
@@ -138,16 +138,16 @@ class WorkflowService:
             contract.pdf_file_path = pdf_path
         
         # Save updated contract
-        self.storage.save_contract(contract)
+        await self.storage.save_contract(contract)
         
         logger.info(f"Generated {len(clauses)} clauses for contract {contract_id}")
         return contract
     
-    def review_clause(self, contract_id: str, clause_id: str, status: ClauseStatus, 
+    async def review_clause(self, contract_id: str, clause_id: str, status: ClauseStatus, 
                      edited_text: Optional[str] = None, notes: Optional[str] = None,
                      reviewed_by: UserRole = UserRole.LEGAL) -> ContractDraft:
         """Review a clause (accept/reject/edit)."""
-        contract = self.storage.load_contract(contract_id)
+        contract = await self.storage.load_contract(contract_id)
         if not contract:
             raise ValueError(f"Contract {contract_id} not found")
         
@@ -184,15 +184,15 @@ class WorkflowService:
         })
         
         contract.updated_at = datetime.now()
-        self.storage.save_contract(contract)
+        await self.storage.save_contract(contract)
         
         logger.info(f"Clause {clause_id} in contract {contract_id} marked as {status.value}")
         return contract
     
-    def add_manual_clause(self, contract_id: str, no: int, title: str, text: str, 
+    async def add_manual_clause(self, contract_id: str, no: int, title: str, text: str, 
                          notes: Optional[str] = None, added_by: UserRole = UserRole.LEGAL) -> ContractDraft:
         """Add manual clause by legal."""
-        contract = self.storage.load_contract(contract_id)
+        contract = await self.storage.load_contract(contract_id)
         if not contract:
             raise ValueError(f"Contract {contract_id} not found")
         
@@ -221,15 +221,15 @@ class WorkflowService:
         })
         
         contract.updated_at = datetime.now()
-        self.storage.save_contract(contract)
+        await self.storage.save_contract(contract)
         
         logger.info(f"Manual clause added to contract {contract_id}: {title}")
         return contract
     
-    def submit_to_management(self, contract_id: str, submitted_by: UserRole = UserRole.LEGAL,
+    async def submit_to_management(self, contract_id: str, submitted_by: UserRole = UserRole.LEGAL,
                            notes: Optional[str] = None) -> ContractDraft:
         """Submit contract to management for approval."""
-        contract = self.storage.load_contract(contract_id)
+        contract = await self.storage.load_contract(contract_id)
         if not contract:
             raise ValueError(f"Contract {contract_id} not found")
         
@@ -263,7 +263,7 @@ class WorkflowService:
         if pdf_path:
             contract.pdf_file_path = pdf_path
         
-        self.storage.save_contract(contract)
+        await self.storage.save_contract(contract)
         
         logger.info(f"Contract {contract_id} submitted to management")
         return contract
