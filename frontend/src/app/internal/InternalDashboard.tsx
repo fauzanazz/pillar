@@ -15,6 +15,7 @@ import {
   Plus,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { generateContract } from '@/services/ai';
 
 interface InternalDashboardProps {
   onEditContract?: (contract: Contract) => void;
@@ -188,11 +189,33 @@ const InternalDashboard = ({
       <AddContractModal
         isOpen={isAddModalOpen}
         onClose={() => setIsAddModalOpen(false)}
-        onSubmit={contractData => {
-          addContract({
+        onSubmit={async contractData => {      
+          const response = await addContract({
             url: '/api/contracts',
             body: contractData,
           });
+
+          console.log("response", response);
+
+          // @ts-ignore
+          if (response.success!) {
+            // @ts-ignore
+            const presignedUrl = response.data?.presignedUrl;
+            
+            // Convert ContractFormUpload to ContractForm format
+            const contractFormData: ContractForm = {
+              title: contractData.title,
+              description: contractData.description || '',
+              endDate: contractData.endDate || '',
+              parties: contractData.party.map(p => ({
+                name: p.partyName,
+                representation: p.partyRole,
+              })),
+            };
+            
+            await generateContract(contractFormData, presignedUrl);
+            console.log('Contract generated successfully');
+          }
         }}
       />
 

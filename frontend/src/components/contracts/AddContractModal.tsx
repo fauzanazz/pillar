@@ -46,43 +46,7 @@ const contractSchema = z.object({
   parties: z.array(partySchema).min(2, 'At least 2 parties are required'),
 });
 
-type ContractForm = z.infer<typeof contractSchema>;
-
-// Mock AI contract generation function
-const generateContract = async (data: ContractForm): Promise<string> => {
-  // Simulate AI processing time
-  await new Promise(resolve => setTimeout(resolve, 3000));
-
-  const partiesText = data.parties
-    .map(
-      (party, index) => `${index + 1}. ${party.name} (${party.representation})`
-    )
-    .join('\n');
-
-  return `
-CONTRACT AGREEMENT
-
-Title: ${data.title}
-
-Description: ${data.description}
-
-Parties:
-${partiesText}
-
-Contract Duration: Until ${data.endDate}
-
-Terms and Conditions:
-1. This contract governs the relationship between the parties as outlined above.
-2. All parties agree to fulfill their respective obligations as defined in this agreement.
-3. This contract shall remain in effect until ${data.endDate} unless terminated earlier by mutual consent.
-4. Any disputes arising from this contract shall be resolved through arbitration.
-5. This contract is binding upon all parties and their respective successors.
-
-Generated on: ${new Date().toLocaleDateString()}
-
-[This is an AI-generated contract template. Please review and modify as needed.]
-  `.trim();
-};
+export type ContractForm = z.infer<typeof contractSchema>;
 
 export function AddContractModal({
   isOpen,
@@ -123,15 +87,12 @@ export function AddContractModal({
     setIsGenerating(true);
 
     try {
-      // Generate AI contract
-      const generatedContract = await generateContract(data);
 
       const newContract: ContractFormUpload = {
         title: data.title,
         description: data.description,
         endDate: data.endDate,
-        party: data.parties.map((party, idx) => ({
-          id: idx,
+        party: data.parties.map((party) => ({
           partyName: party.name,
           partyRole: party.representation,
         })),

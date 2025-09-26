@@ -8,7 +8,8 @@ from fastapi.responses import Response
 from app.models.workflow import (
     CreateContractRequest, GenerateClausesRequest, ReviewClauseRequest,
     AddClauseRequest, SubmitDraftRequest, ManagementDecisionRequest,
-    ContractListResponse, ContractResponse, UserRole, ContractStatus
+    ContractListResponse, ContractResponse, UserRole, ContractStatus,
+    GenerateClausesResponse
 )
 from app.services.workflow_service import workflow_service
 from app.services.pdf_service import pdf_service
@@ -56,7 +57,7 @@ async def generate_clauses(
     contract_id: str,
     correlation_id: str = Depends(get_correlation_id),
     _: None = Depends(rate_limit)
-) -> ContractResponse:
+) -> GenerateClausesResponse:
     """Generate AI clauses for contract."""
     try:
         logger.info(
@@ -65,11 +66,12 @@ async def generate_clauses(
         )
         
         contract = await workflow_service.generate_clauses(contract_id, correlation_id)
-        actions = workflow_service._get_available_actions(contract, UserRole.LEGAL)
         
-        return ContractResponse(
-            contract=contract,
-            actions_available=actions
+        # Convert clauses to the required API format
+        clause_items = [clause.to_api_response_format() for clause in contract.clauses]
+        
+        return GenerateClausesResponse(
+            clauses=clause_items
         )
         
     except ValueError as e:

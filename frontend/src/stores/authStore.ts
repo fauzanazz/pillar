@@ -27,6 +27,7 @@ interface AuthState {
   logout: () => void;
   updateUser: (updates: Partial<User>) => void;
   initializeAuth: () => void;
+  getSession: () => Promise<void>;
   hasAccess: (route: string) => boolean;
   getDefaultDashboard: () => string | null;
 }
@@ -85,6 +86,33 @@ export const useAuthStore = create<AuthState>()(
       initializeAuth: () => {
         // This is called on app initialization
         // Zustand persist middleware handles restoration
+      },
+
+      getSession: async () => {
+        try {
+          const session = await authApi.getSession();
+
+          if (session && session.user) {
+            set({
+              user: session.user,
+              isAuthenticated: true,
+            });
+          } else {
+            // Clear auth state if session is invalid
+            set({
+              user: null,
+              isAuthenticated: false,
+            });
+          }
+        } catch (error) {
+          console.error('Session check failed:', error);
+          // Clear auth state on error
+          set({
+            user: null,
+            isAuthenticated: false,
+          });
+          throw error;
+        }
       },
 
       hasAccess: (route: string) => {

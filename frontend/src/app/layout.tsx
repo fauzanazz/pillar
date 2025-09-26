@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Toaster } from '@/components/ui/sonner';
+import AuthGuard from '@/components/auth/AuthGuard';
 import './global.css';
 
 export const metadata: Metadata = {
@@ -13,11 +14,10 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  
   return (
     <html lang="en">
       <body className="antialiased">
-        {children}
+        <AuthGuard>{children}</AuthGuard>
         <Toaster />
       </body>
     </html>
