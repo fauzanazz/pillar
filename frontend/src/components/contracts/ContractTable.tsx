@@ -79,7 +79,6 @@ interface ContractTableProps {
 }
 
 const ContractTable = ({ filteredContracts }: ContractTableProps) => {
-  // --- Hooks and State Management ---
   const { user } = useAuthStore(); // Fetched role from the authentication store
   const {
     contracts,
@@ -90,7 +89,7 @@ const ContractTable = ({ filteredContracts }: ContractTableProps) => {
 
   useEffect(() => {
     fetchContracts();
-  }, [fetchContracts]);
+  }, []);
 
   const displayContracts = filteredContracts || contracts;
 

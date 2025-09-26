@@ -60,7 +60,7 @@ const InternalDashboard = () => {
   // Fetch contracts on component mount
   useEffect(() => {
     fetchContracts();
-  }, [fetchContracts]);
+  }, []);
 
   // Debounced search function
   const debouncedSearch = useCallback(
@@ -149,7 +149,7 @@ const InternalDashboard = () => {
       activeContracts,
       filteredContracts: hasSearched ? searchResults : contracts,
     };
-  }, [contracts, searchResults, hasSearched, activeFilter]);
+  }, []);
 
   const internalStats = [
     {
@@ -292,8 +292,8 @@ const InternalDashboard = () => {
           </div>
         ) : (
           <InternalContractTable
-            searchedContracts={stats.filteredContracts}
-            isSearched={isSearching}
+            searchedContracts={hasSearched ? searchResults : contracts}
+            isSearched={hasSearched}
             onEdit={contract => {
               setEditingContract(contract);
             }}

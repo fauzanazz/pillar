@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import {
   Edit,
   Trash2,
@@ -107,40 +107,11 @@ export function InternalContractTable({
     totalItems: 0,
   });
 
-  const [selectedContracts, setSelectedContracts] = useState<Contract[]>([]);
-
   const itemsPerPage = 5;
 
-  const { contracts, fetchContracts, loading } = useContractStore();
+  const { contracts, loading } = useContractStore();
 
-  useEffect(() => {
-    try {
-      if (isSearched) {
-        console.log('Searched contracts:', searchedContracts);
-        setSelectedContracts(searchedContracts);
-        return;
-      }
-
-      const response = fetchContracts({
-        url: '/api/contracts',
-        query: {
-          page: currentPage.toString(),
-          limit: itemsPerPage.toString(),
-        },
-      });
-
-      response.then(res => {
-        setPagesProps({
-          totalPages: res?.data?.pagination.totalPages ?? 0,
-          totalItems: res?.data?.pagination.total ?? 0,
-        });
-        setSelectedContracts(res?.data?.contracts ?? []);
-        console.log('contracts');
-      });
-    } catch (error) {
-      console.log('Error fetching contracts:', error);
-    }
-  }, [currentPage, fetchContracts, isSearched]);
+  const displayContracts = isSearched ? searchedContracts : contracts;
 
   const handleDeleteClick = (contract: ContractWithRelations) => {
     setConfirmModal({
@@ -225,8 +196,8 @@ export function InternalContractTable({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {selectedContracts.length > 0 ? (
-              selectedContracts.map(contract => (
+            {displayContracts.length > 0 ? (
+              displayContracts.map(contract => (
                 <TableRow
                   key={contract.id}
                   className="border-b hover:bg-gray-50"

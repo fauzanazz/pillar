@@ -100,7 +100,7 @@ const Navigation = () => {
               <span className="text-gray-500 capitalize">({user.role})</span>
             </div>
 
-            <NotificationDropdown />
+            {/* <NotificationDropdown /> */}
 
             <Button
               variant="outline"
