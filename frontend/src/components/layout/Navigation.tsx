@@ -94,23 +94,15 @@ const Navigation = () => {
 
           {/* <UserProfile /> */}
           <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2 text-sm">
-              <User className="h-4 w-4" />
-              <span className="font-medium">{user.name}</span>
-              <span className="text-gray-500 capitalize">({user.role})</span>
-            </div>
+            <NotificationDropdown />
+
+            <UserProfile
+              name={user.name}
+              role={user.role}
+              handleLogout={logout}
+            />
 
             {/* <NotificationDropdown /> */}
-
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={logout}
-              className="flex items-center gap-2"
-            >
-              <LogOut className="h-4 w-4" />
-              Logout
-            </Button>
           </div>
         </div>
 

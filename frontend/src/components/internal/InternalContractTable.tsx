@@ -204,11 +204,6 @@ export function InternalContractTable({
                 >
                   <TableCell className="px-4 py-4 text-sm text-gray-900">
                     <div className="font-medium">{contract.title}</div>
-                    {contract.riskScore && (
-                      <div className="text-xs text-gray-500">
-                        {contract.riskScore}
-                      </div>
-                    )}
                   </TableCell>
                   <TableCell className="px-4 py-4 text-sm text-gray-600 max-w-xs">
                     <div className="truncate" title={contract.description}>

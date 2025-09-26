@@ -5,19 +5,16 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { LogOut } from 'lucide-react';
+import { ChevronDown, LogOut } from 'lucide-react';
 
 interface UserProfileProps {
   name: string;
   role: string;
+  handleLogout?: () => void;
 }
 
-const UserProfile = ({ name, role }: UserProfileProps) => {
+const UserProfile = ({ name, role, handleLogout }: UserProfileProps) => {
   // Placeholder for the actual logout function
-  const handleLogout = () => {
-    console.log('User logged out');
-    // Add your actual logout logic here (e.g., clear session, redirect)
-  };
 
   return (
     <DropdownMenu>
@@ -30,8 +27,12 @@ const UserProfile = ({ name, role }: UserProfileProps) => {
             <AvatarFallback>CN</AvatarFallback>
           </Avatar>
           <div className="text-left">
-            <p className="font-semibold text-sm"></p>
-            <p className="text-xs text-muted-foreground">Administrator</p>
+            <p className="font-semibold text-base">{name}</p>
+            <p className="text-sm text-muted-foreground">{role}</p>
+          </div>
+
+          <div className="flex items-start">
+            <ChevronDown className="w-4 h-4 ml-2" />
           </div>
         </button>
       </DropdownMenuTrigger>
