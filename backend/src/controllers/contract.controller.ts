@@ -84,7 +84,7 @@ protectedContractRouter.openapi(updateContractRoute, async (c) => {
       id,
       contractData,
       user.id,
-      user.role,
+      user.role as string,
     );
 
     if (!updatedContract) {
