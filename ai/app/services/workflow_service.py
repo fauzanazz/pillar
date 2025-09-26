@@ -58,7 +58,7 @@ class WorkflowService:
         if not contract:
             raise ValueError(f"Contract {contract_id} not found")
         
-        if contract.status != ContractStatus.DRAFT:
+        if contract.status != ContractStatus.LEGAL_REVIEW:
             raise ValueError(f"Cannot generate clauses for contract in status {contract.status}")
         
         logger.info(f"Generating clauses for contract {contract_id}")
