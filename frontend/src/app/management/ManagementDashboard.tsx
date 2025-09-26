@@ -4,7 +4,6 @@ import { useMemo } from 'react';
 import { useContractStore } from '@/stores/contractStore';
 import StatCard from '@/components/dashboard/StatCard';
 import ContractTable from '../../components/contracts/ContractTable';
-import { Contract } from '@/constants/mockData';
 import {
   FileText,
   Clock,
@@ -13,11 +12,12 @@ import {
   TrendingUp,
   Users,
 } from 'lucide-react';
+import { ContractWithRelations } from '@/api';
 
 interface ManagementDashboardProps {
-  onEditContract?: (contract: Contract) => void;
-  onReviewContract?: (contract: Contract) => void;
-  onDeleteContract?: (contract: Contract) => void;
+  onEditContract?: (contract: ContractWithRelations) => void;
+  onReviewContract?: (contract: ContractWithRelations) => void;
+  onDeleteContract?: (contract: ContractWithRelations) => void;
 }
 
 const ManagementDashboard = ({
@@ -31,44 +31,35 @@ const ManagementDashboard = ({
   const managementContracts = useMemo(() => {
     return contracts.filter(
       c =>
-        c.status === 'management_review' ||
-        c.status === 'accepted' ||
-        c.status === 'rejected'
+        c.status === 'Management Review' ||
+        c.status === 'Accepted' ||
+        c.status === 'Rejected'
     );
   }, [contracts]);
 
   const stats = useMemo(() => {
     const totalContracts = managementContracts.length;
     const pendingApproval = contracts.filter(
-      c => c.status === 'management_review'
+      c => c.status === 'Management Review'
     ).length;
     const approvedContracts = contracts.filter(
-      c => c.status === 'accepted'
+      c => c.status === 'Accepted'
     ).length;
 
     // Calculate total contract value
-    const totalValue = contracts
-      .filter(c => c.amount && c.status === 'accepted')
-      .reduce((sum, c) => {
-        const amount = parseFloat(c.amount?.replace(/[$,]/g, '') || '0');
-        return sum + amount;
-      }, 0);
+    // const totalValue = contracts
+    //   .filter(c => c.amount && c.status === 'Accepted')
+    //   .reduce((sum, c) => {
+    //     const amount = parseFloat(c.amount?.replace(/[$,]/g, '') || '0');
+    //     return sum + amount;
+    //   }, 0);
 
     // Calculate average contract value
-    const avgValue = approvedContracts > 0 ? totalValue / approvedContracts : 0;
 
     return {
       totalContracts,
       pendingApproval,
       approvedContracts,
-      totalValue: totalValue.toLocaleString('en-US', {
-        style: 'currency',
-        currency: 'USD',
-      }),
-      avgValue: avgValue.toLocaleString('en-US', {
-        style: 'currency',
-        currency: 'USD',
-      }),
     };
   }, [contracts, managementContracts]);
 
@@ -92,30 +83,6 @@ const ManagementDashboard = ({
       description: 'Management approved',
       icon: <CheckCircle className="h-6 w-6 text-success" />,
       trend: { value: 12, isPositive: true },
-    },
-    {
-      title: 'Total Value',
-      value: stats.totalValue,
-      description: 'Active contracts',
-      icon: <DollarSign className="h-6 w-6 text-accent" />,
-      trend: { value: 25, isPositive: true },
-    },
-  ];
-
-  const additionalStats = [
-    {
-      title: 'Avg Contract Value',
-      value: stats.avgValue,
-      description: 'Per contract',
-      icon: <TrendingUp className="h-6 w-6 text-blue-500" />,
-    },
-    {
-      title: 'Active Partners',
-      value: new Set(
-        contracts.filter(c => c.status === 'accepted').map(c => c.counterparty)
-      ).size,
-      description: 'Unique counterparties',
-      icon: <Users className="h-6 w-6 text-purple-500" />,
     },
   ];
 
@@ -147,7 +114,7 @@ const ManagementDashboard = ({
 
       {/* Additional Insights */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {additionalStats.map((stat, index) => (
+        {/* {additionalStats.map((stat, index) => (
           <StatCard
             key={`additional-${index}`}
             title={stat.title}
@@ -155,7 +122,7 @@ const ManagementDashboard = ({
             description={stat.description}
             icon={stat.icon}
           />
-        ))}
+        ))} */}
       </div>
 
       {/* Contracts Table */}
@@ -169,12 +136,7 @@ const ManagementDashboard = ({
           </p>
         </div>
 
-        <ContractTable
-          filteredContracts={managementContracts}
-          onEditContract={onEditContract}
-          onReviewContract={onReviewContract}
-          onDeleteContract={onDeleteContract}
-        />
+        <ContractTable filteredContracts={managementContracts} />
       </div>
     </div>
   );
