@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ header.title }}</title>
+</head>
+<body>
+    <!-- Watermark -->
+    {% if watermark %}
+    <div class="watermark">{{ watermark }}</div>
+    {% endif %}
+
+    <!-- Header -->
+    <header class="document-header">
+        <h1>{{ header.title }}</h1>
+        {% if header.number %}
+        <p class="contract-number">Nomor: {{ header.number }}</p>
+        {% endif %}
+        <p class="generation-date">Dibuat pada: {{ current_date }}</p>
+    </header>
+
+    <!-- Parties Section -->
+    <section class="parties-section">
+        <h2>PARA PIHAK</h2>
+        
+        {% for party in parties %}
+        <div class="party">
+            <h3>PIHAK {{ party.number }}</h3>
+            <p><strong>Nama:</strong> {{ party.name }}</p>
+            <p><strong>Alamat:</strong> {{ party.address }}</p>
+            {% if party.rep %}
+            <p><strong>Diwakili oleh:</strong> {{ party.rep }}</p>
+            {% endif %}
+            <p class="party-role">Selanjutnya disebut sebagai "{{ party.role }}"</p>
+        </div>
+        {% endfor %}
+
+        <p class="parties-intro">
+            Para Pihak dengan ini menyatakan telah sepakat untuk membuat dan menandatangani 
+            kontrak ini dengan syarat dan ketentuan sebagai berikut:
+        </p>
+    </section>
+
+    <!-- Clauses Section -->
+    <section class="clauses-section">
+        <h2>SYARAT DAN KETENTUAN</h2>
+        
+        {% for clause in clauses %}
+        <div class="clause">
+            <h3 class="clause-title">
+                PASAL {{ clause.roman }}
+                <br>
+                {{ clause.title|upper }}
+            </h3>
+            <div class="clause-content">
+                {{ clause.text|safe }}
+            </div>
+        </div>
+        
+        {% if not loop.last %}
+        <div class="clause-separator"></div>
+        {% endif %}
+        {% endfor %}
+    </section>
+
+    <!-- Footer Section -->
+    <footer class="document-footer">
+        <div class="footer-content">
+            <div class="signatures">
+                <div class="signature-section">
+                    {% for party in parties %}
+                    <div class="signature-block">
+                        <p><strong>{{ party.role }}</strong></p>
+                        <div class="signature-space"></div>
+                        <p class="signature-line">{{ party.name }}</p>
+                        {% if party.rep %}
+                        <p class="representative">{{ party.rep }}</p>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <div class="document-info">
+                {% if footer.hash %}
+                <p><strong>Hash Dokumen:</strong> {{ footer.hash }}</p>
+                {% endif %}
+                {% if footer.version %}
+                <p><strong>Versi:</strong> {{ footer.version }}</p>
+                {% endif %}
+                <p><strong>Tanggal Pembuatan:</strong> {{ current_date }}</p>
+                <p class="small-text">Dokumen ini dibuat menggunakan sistem manajemen kontrak ILCS</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
