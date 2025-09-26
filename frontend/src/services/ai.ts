@@ -1,8 +1,8 @@
 import { ContractForm } from "@/components/contracts/AddContractModal";
 
 
-const BASE_AI_URL = 'https://ai.ifest.fauzanazz.com';
-// const BASE_AI_URL = 'http://localhost:8081';
+// const BASE_AI_URL = 'https://ai.ifest.fauzanazz.com';
+const BASE_AI_URL = 'http://localhost:8081';
 export const generateContract = async (data: ContractForm ,  presignedUrl: string ): Promise<string> => {
     try {
       const draftResponse = await fetch(`${BASE_AI_URL}/ai/draft`, {
@@ -30,3 +30,13 @@ export const generateContract = async (data: ContractForm ,  presignedUrl: strin
       throw error;
     }
   };
+
+export const searchContract = async (query: string) => {
+  const response = await fetch(`${BASE_AI_URL}/api/v1/ai/search?q=${query}&limit=10`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+  return response.json();
+};

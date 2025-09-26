@@ -7,6 +7,7 @@ import {
   getContractById as getContractByIdRepo,
   getContracts as getContractsRepo,
   updateContract as updateContractRepo,
+  updateContractWithAiData,
 } from '@/repositories/contract.repository';
 import type {
   AcceptContract,
@@ -16,6 +17,7 @@ import type {
   RejectContract,
   UpdateContract,
 } from '@/types/contract.type';
+import { callAiDraftService } from '@/utils/ai.util';
 
 export const getContractsService = async (query: GetContractsQuery) => {
   return await getContractsRepo(query);
@@ -39,7 +41,38 @@ export const createContractService = async (
     60 * 5,
   );
 
-  return await createContractRepo(contractData, createdBy, url, key);
+  // Create the contract first
+  const newContract = await createContractRepo(contractData, createdBy, url, key);
+
+  // Generate AI draft data in the background
+  try {
+    const aiRequest = {
+      use_case: `${contractData.title}${contractData.description ? `\n\n${contractData.description}` : ''}`,
+      parties: contractData.party.map(p => p.partyName),
+      end_date: contractData.endDate || new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // Default to 1 year from now
+      jurisdiction: 'ID',
+      language: 'id',
+      presignedUrl: url,
+    };
+
+    const { aiDraftData, aiMetadata } = await callAiDraftService(aiRequest);
+    
+    // Update the contract with AI data
+    await updateContractWithAiData(
+      newContract.id,
+      aiDraftData,
+      aiMetadata,
+      createdBy
+    );
+    
+    console.log(`AI draft generated successfully for contract ${newContract.id}`);
+  } catch (error) {
+    console.error(`Failed to generate AI draft for contract ${newContract.id}:`, error);
+    // Don't fail the contract creation if AI generation fails
+    // The contract will still be created without AI data
+  }
+
+  return newContract;
 };
 
 export const updateContractService = async (
