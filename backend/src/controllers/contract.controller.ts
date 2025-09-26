@@ -9,6 +9,7 @@ import {
   deleteContractRoute,
   getContractByIdRoute,
   getContractsRoute,
+  rejectContractRoute,
   updateContractRoute,
 } from '@/routes/contract.route';
 import {
@@ -17,6 +18,7 @@ import {
   deleteContractService,
   getContractByIdService,
   getContractsService,
+  rejectContractService,
   updateContractService,
 } from '@/services/contract.service';
 
@@ -158,5 +160,63 @@ protectedContractRouter.openapi(createClauseRoute, async (c) => {
       return c.json(createErrorResponse('Contract not found', 404), 404);
     }
     return c.json(createErrorResponse('Failed to create clause', 500), 500);
+  }
+});
+
+protectedContractRouter.openapi(rejectContractRoute, async (c) => {
+  const { id } = c.req.valid('param');
+  const rejectData = c.req.valid('json');
+  const user = c.var.user;
+
+  if (!user) {
+    return c.json(createErrorResponse('User not authenticated', 401), 401);
+  }
+
+  if (user.role !== 'management') {
+    return c.json(createErrorResponse('Forbidden', 403), 403);
+  }
+
+  try {
+    // First check if the contract exists
+    const existingContract = await getContractByIdService(id);
+    if (!existingContract) {
+      return c.json(createErrorResponse('Contract not found', 404), 404);
+    }
+
+    // Check if contract is in a state that can be rejected
+    const rejectable = ['Management Review'];
+    if (!rejectable.includes(existingContract.status)) {
+      return c.json(
+        createErrorResponse(
+          `Cannot reject contract with status: ${existingContract.status}`,
+          400,
+        ),
+        400,
+      );
+    }
+
+    const rejectedContract = await rejectContractService(
+      id,
+      rejectData,
+      user.id,
+    );
+
+    if (!rejectedContract) {
+      return c.json(createErrorResponse('Contract not found', 404), 404);
+    }
+
+    const message =
+      rejectData.rejectType === 'legal'
+        ? 'Contract rejected and sent to legal review'
+        : 'Contract rejected completely';
+
+    return c.json(createSuccessResponse(rejectedContract, message, 200), 200);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    console.error('Error rejecting contract:', error);
+    return c.json(
+      createErrorResponse(error.message || 'Failed to reject contract', 500),
+      500,
+    );
   }
 });

@@ -12,6 +12,7 @@ import type {
   CreateClause,
   CreateContract,
   GetContractsQuery,
+  RejectContract,
   UpdateContract,
 } from '@/types/contract.type';
 
@@ -59,4 +60,20 @@ export const createClauseService = async (
   createdBy: string,
 ) => {
   return await createClauseRepo(contractId, clauseData, createdBy);
+};
+
+export const rejectContractService = async (
+  id: number,
+  rejectData: RejectContract,
+  rejectedBy: string,
+) => {
+  // Determine the status based on reject type
+  const status =
+    rejectData.rejectType === 'legal' ? 'Rejected Legal' : 'Rejected';
+
+  const updateData: UpdateContract = {
+    status: status as 'Rejected' | 'Rejected Legal',
+  };
+
+  return await updateContractRepo(id, updateData, rejectedBy, 'system');
 };

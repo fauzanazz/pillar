@@ -11,6 +11,7 @@ import {
   createContractSchema,
   getContractParamsSchema,
   getContractsQuerySchema,
+  rejectContractSchema,
   updateContractSchema,
 } from '@/types/contract.type';
 
@@ -159,6 +160,34 @@ export const createClauseRoute = createRoute({
       content: {
         'application/json': {
           schema: clauseCreatedResponseSchema,
+        },
+      },
+    },
+    ...GenericErrorResponses,
+  },
+});
+
+export const rejectContractRoute = createRoute({
+  operationId: 'rejectContract',
+  tags: ['contracts'],
+  method: 'post',
+  path: '/contracts/{id}/reject',
+  request: {
+    params: getContractParamsSchema,
+    body: {
+      content: {
+        'application/json': {
+          schema: rejectContractSchema,
+        },
+      },
+    },
+  },
+  responses: {
+    200: {
+      description: 'Contract rejected successfully',
+      content: {
+        'application/json': {
+          schema: contractResponseSchema,
         },
       },
     },
