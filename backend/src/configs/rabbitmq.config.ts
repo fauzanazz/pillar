@@ -178,6 +178,7 @@ export const ROUTING_KEYS = {
   ALERTS_CONTRACT_EXPIRING: 'contract.expiring',
   ALERTS_CONTRACT_CLAUSE_MISSING: 'contract.clause.missing',
   ALERTS_CONTRACT_ANOMALY: 'contract.anomaly',
+  ALERTS_AI_RISK_IDENTIFIED: 'alert.ai.risk.identified', // New routing key for AI-generated alerts
 } as const;
 
 export type QueueName = (typeof QUEUES)[keyof typeof QUEUES];

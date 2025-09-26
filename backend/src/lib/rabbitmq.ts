@@ -144,6 +144,11 @@ export class RabbitMQService {
         EXCHANGES.ALERTS,
         ROUTING_KEYS.ALERTS_CONTRACT_ANOMALY,
       ),
+      channel.bindQueue(
+        QUEUES.ALERTS_EVENTS,
+        EXCHANGES.ALERTS,
+        ROUTING_KEYS.ALERTS_AI_RISK_IDENTIFIED,
+      ),
       // DLQ bindings to dead exchange
       channel.bindQueue(
         QUEUES.CONTRACTS_OBJECT_UPLOADED_DLQ,

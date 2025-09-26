@@ -47,7 +47,12 @@ class AlertService:
                     response = self.client.table('alerts').insert(alert_data).execute()
                     if response.data:
                         created_alerts.extend(response.data)
+                        alert_record = response.data[0]
                         logger.info(f"Created alert for risk: {risk.get('risk_type', 'unknown')}")
+                        
+                        # Publish alert to RabbitMQ
+                        await self._publish_alert_to_rabbitmq(alert_record, risk, contract_id)
+                        
                 except Exception as e:
                     logger.error(f"Failed to create alert for risk {risk.get('risk_type')}: {e}")
                     
@@ -181,6 +186,73 @@ class AlertService:
                 'medium_priority': 0,
                 'low_priority': 0
             }
+    
+    async def _publish_alert_to_rabbitmq(self, alert_record: Dict[str, Any], risk_data: Dict[str, Any], contract_id: str):
+        """
+        Publish alert to RabbitMQ.
+        
+        Args:
+            alert_record: The alert record from database
+            risk_data: Original risk data from risk identification
+            contract_id: Contract ID
+        """
+        try:
+            # Import here to avoid circular imports
+            import asyncio
+            from app.services.rabbitmq_publisher import get_rabbitmq_publisher
+            
+            # Map risk level to severity
+            risk_level_to_severity = {
+                'critical': 'CRITICAL',
+                'high': 'HIGH',
+                'medium': 'MEDIUM',
+                'low': 'LOW'
+            }
+            
+            # Extract alert data
+            alert_id = alert_record.get('id')
+            risk_type = risk_data.get('risk_type', 'unknown_risk')
+            severity = risk_level_to_severity.get(risk_data.get('risk_level', 'low'), 'LOW')
+            
+            # Prepare facts
+            facts = {
+                'risk_score': risk_data.get('risk_score', 0),
+                'risk_level': risk_data.get('risk_level', 'low'),
+                'risk_type': risk_type,
+                'deadline': risk_data.get('deadline'),
+                'clause_reference': risk_data.get('clause_reference')
+            }
+            
+            # Prepare rendered message
+            rendered_message = {
+                'subject': f"Risk Alert: {risk_data.get('description', 'Unknown risk identified')}",
+                'body_text': alert_record.get('message', '')
+            }
+            
+            # Run RabbitMQ publish in thread pool since pika is synchronous
+            loop = asyncio.get_event_loop()
+            
+            def publish_with_new_instance():
+                publisher = get_rabbitmq_publisher()
+                return publisher.publish_ai_alert(
+                    alert_id=alert_id,
+                    contract_id=contract_id,
+                    alert_type=risk_type,
+                    severity=severity,
+                    facts=facts,
+                    rendered_message=rendered_message
+                )
+                
+            success = await loop.run_in_executor(None, publish_with_new_instance)
+            
+            if success:
+                logger.info(f"Successfully published alert {alert_id} to RabbitMQ")
+            else:
+                logger.warning(f"Failed to publish alert {alert_id} to RabbitMQ")
+                
+        except Exception as e:
+            logger.error(f"Error publishing alert to RabbitMQ: {e}")
+            # Don't re-raise - we don't want RabbitMQ issues to break alert creation
 
 
 # Global service instance

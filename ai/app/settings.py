@@ -31,5 +31,8 @@ class Settings(BaseSettings):
     supabase_key: str = Field(default="", description="Supabase anon/service key")
     # Optional: Direct PostgreSQL connection (for SQLAlchemy)
     database_url: str = Field(default="", description="PostgreSQL connection URL")
+    
+    # RabbitMQ configuration
+    rabbitmq_url: str = Field(default="amqp://localhost:5672", description="RabbitMQ connection URL")
 
 settings = Settings()
