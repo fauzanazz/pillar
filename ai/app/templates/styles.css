@@ -1,0 +1,290 @@
+/* General Document Styling */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 12pt;
+    line-height: 1.6;
+    color: #000;
+    background: white;
+}
+
+/* Page Setup */
+@page {
+    size: A4;
+    margin: 2.5cm;
+    @bottom-center {
+        content: counter(page);
+        font-size: 10pt;
+        color: #666;
+    }
+}
+
+/* Header Section */
+.header {
+    text-align: center;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid #000;
+}
+
+.title {
+    font-size: 18pt;
+    font-weight: bold;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+}
+
+.contract-number {
+    font-size: 11pt;
+    margin-top: 5px;
+    font-style: italic;
+}
+
+/* Date Section */
+.date-section {
+    margin-bottom: 20px;
+    text-align: justify;
+}
+
+/* Parties Section */
+.parties-section {
+    margin: 30px 0;
+}
+
+.party {
+    margin-bottom: 25px;
+    page-break-inside: avoid;
+}
+
+.party-number {
+    font-weight: bold;
+    margin-bottom: 8px;
+    font-size: 11pt;
+}
+
+.party-details {
+    margin-left: 20px;
+}
+
+.party-details p {
+    margin: 5px 0;
+}
+
+.party-name {
+    font-weight: bold;
+    font-size: 11pt;
+}
+
+.party-representative,
+.party-address {
+    font-size: 11pt;
+}
+
+.party-role {
+    font-style: italic;
+    margin-top: 8px;
+}
+
+/* Preamble */
+.preamble {
+    margin: 30px 0;
+    text-align: justify;
+}
+
+.preamble p {
+    margin-bottom: 10px;
+}
+
+/* Clauses Section */
+.clauses-section {
+    margin: 30px 0;
+}
+
+.clause {
+    margin-bottom: 25px;
+    page-break-inside: avoid;
+}
+
+.clause-title {
+    text-align: center;
+    font-size: 12pt;
+    font-weight: bold;
+    margin: 20px 0 15px 0;
+    page-break-after: avoid;
+}
+
+.clause-subject {
+    display: block;
+    margin-top: 5px;
+    font-size: 11pt;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.clause-content {
+    text-align: justify;
+    margin-top: 10px;
+}
+
+.clause-content p {
+    margin-bottom: 10px;
+    text-indent: 30px;
+}
+
+.clause-content p:first-child {
+    text-indent: 0;
+}
+
+/* Lists within clauses */
+.clause-content ol,
+.clause-content ul {
+    margin-left: 30px;
+    margin-bottom: 10px;
+}
+
+.clause-content li {
+    margin-bottom: 5px;
+}
+
+/* Signature Section */
+.signature-section {
+    margin-top: 50px;
+    page-break-before: avoid;
+    page-break-inside: avoid;
+}
+
+.signature-section > p {
+    text-align: justify;
+    margin-bottom: 40px;
+}
+
+.signatures {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    margin-top: 60px;
+}
+
+.signature-block {
+    text-align: center;
+    width: 40%;
+    margin-bottom: 20px;
+}
+
+.signature-party {
+    font-weight: bold;
+    margin-bottom: 60px;
+    font-size: 11pt;
+}
+
+.signature-line {
+    border-bottom: 1px solid #000;
+    width: 200px;
+    margin: 0 auto 5px auto;
+}
+
+.signature-name {
+    font-size: 11pt;
+}
+
+/* Watermark */
+.watermark {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-45deg);
+    font-size: 72pt;
+    color: rgba(0, 0, 0, 0.1);
+    z-index: -1;
+    text-transform: uppercase;
+    letter-spacing: 10px;
+    font-weight: bold;
+}
+
+/* Footer */
+.footer {
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid #ccc;
+    font-size: 9pt;
+    color: #666;
+    text-align: center;
+}
+
+.footer-item {
+    margin: 2px 0;
+}
+
+.footer-item.generated {
+    font-style: italic;
+}
+
+/* Page Breaks */
+.page-break {
+    page-break-after: always;
+}
+
+.no-break {
+    page-break-inside: avoid;
+}
+
+/* Tables (if needed) */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 15px 0;
+}
+
+th, td {
+    border: 1px solid #000;
+    padding: 8px;
+    text-align: left;
+}
+
+th {
+    background-color: #f0f0f0;
+    font-weight: bold;
+}
+
+/* Special formatting */
+.highlight {
+    background-color: #ffff99;
+}
+
+.bold {
+    font-weight: bold;
+}
+
+.italic {
+    font-style: italic;
+}
+
+.underline {
+    text-decoration: underline;
+}
+
+/* Print-specific styles */
+@media print {
+    body {
+        color: #000;
+        background: white;
+    }
+    
+    .no-print {
+        display: none;
+    }
+    
+    .clause {
+        page-break-inside: avoid;
+    }
+    
+    .signature-section {
+        page-break-before: auto;
+    }
+}
