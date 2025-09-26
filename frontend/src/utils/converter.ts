@@ -1,4 +1,5 @@
 import { CreateClauseData } from '@/api';
+import { ClausesGenerationResponse } from '@/services/ai';
 import { LegalClause } from '@/types/clauses';
 
 export function ConvertToLegalClauses(
@@ -39,3 +40,23 @@ export function ConvertToContractClauses(
 
   return contractClauses;
 }
+
+export const mapGeneratedClausesToLegalClauses = (
+  response: ClausesGenerationResponse
+): LegalClause[] => {
+  const generatedClauses = response?.clauses;
+
+  if (!Array.isArray(generatedClauses)) {
+    console.error(
+      "Invalid input: response does not contain a 'clauses' array."
+    );
+    return [];
+  }
+
+  return generatedClauses.map(clause => ({
+    id: parseInt(clause.id, 10), // Convert the string ID to a number.
+    clauseText: clause.clauseText,
+    clauseDescription: clause.clauseDescription,
+    isEditing: false, // Set a default value for the optional isEditing property.
+  }));
+};

@@ -134,9 +134,9 @@ export function InternalContractTable({
           totalPages: res?.data?.pagination.totalPages ?? 0,
           totalItems: res?.data?.pagination.total ?? 0,
         });
+        setSelectedContracts(res?.data?.contracts ?? []);
+        console.log('contracts');
       });
-
-      setSelectedContracts(contracts);
     } catch (error) {
       console.log('Error fetching contracts:', error);
     }

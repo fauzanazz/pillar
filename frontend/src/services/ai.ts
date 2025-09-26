@@ -1,36 +1,38 @@
-import { ContractForm } from "@/components/contracts/AddContractModal";
-import { Contract } from "@/api/types.gen";
-
+import { ContractForm } from '@/components/contracts/AddContractModal';
+import { Contract } from '@/api/types.gen';
 
 const BASE_AI_URL = 'https://ai.ifest.fauzanazz.com';
 // const BASE_AI_URL = 'http://localhost:8081';
-export const generateContract = async (data: ContractForm ,  presignedUrl: string ): Promise<string> => {
-    try {
-      const draftResponse = await fetch(`${BASE_AI_URL}/ai/draft`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          use_case: data.description,
-          parties: data.parties.map(party => party.name),
-          end_date: data.endDate,
-          jurisdiction: 'ID',
-          language: 'id',
-          presignedUrl: presignedUrl
-        })
-      });
-  
-      if (!draftResponse.ok) {
-        throw new Error(`Draft API failed: ${draftResponse.status}`);
-      }
+export const generateContract = async (
+  data: ContractForm,
+  presignedUrl: string
+): Promise<string> => {
+  try {
+    const draftResponse = await fetch(`${BASE_AI_URL}/ai/draft`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        use_case: data.description,
+        parties: data.parties.map(party => party.name),
+        end_date: data.endDate,
+        jurisdiction: 'ID',
+        language: 'id',
+        presignedUrl: presignedUrl,
+      }),
+    });
 
-      return 'Contract generated successfully';
-    } catch (error) {
-      console.error('Contract generation failed:', error);
-      throw error;
+    if (!draftResponse.ok) {
+      throw new Error(`Draft API failed: ${draftResponse.status}`);
     }
-  };
+
+    return 'Contract generated successfully';
+  } catch (error) {
+    console.error('Contract generation failed:', error);
+    throw error;
+  }
+};
 
 export interface SearchMatch {
   contract: {
@@ -85,18 +87,23 @@ export interface SearchResponse {
   suggestions: unknown;
 }
 
-export const searchContract = async (query: string): Promise<SearchResponse> => {
-  const response = await fetch(`${BASE_AI_URL}/api/v1/search?q=${query}&limit=10`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  });
-  
+export const searchContract = async (
+  query: string
+): Promise<SearchResponse> => {
+  const response = await fetch(
+    `${BASE_AI_URL}/api/v1/search?q=${query}&limit=10`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    }
+  );
+
   if (!response.ok) {
     throw new Error(`Search failed: ${response.status}`);
   }
-  
+
   return response.json();
 };
 
@@ -104,18 +111,25 @@ export const searchContract = async (query: string): Promise<SearchResponse> => 
 export const transformSearchMatches = (matches: SearchMatch[]): Contract[] => {
   return matches.map(match => {
     const { contract } = match;
-    
+
     // Map AI service status to frontend status
     const mapStatus = (status: string): Contract['status'] => {
       switch (status.toLowerCase()) {
-        case 'draft': return 'Draft';
-        case 'legal_review': return 'Legal Review';
-        case 'management_review': return 'Management Review';
+        case 'draft':
+          return 'Draft';
+        case 'legal_review':
+          return 'Legal Review';
+        case 'management_review':
+          return 'Management Review';
         case 'approved':
-        case 'accepted': return 'Accepted';
-        case 'rejected': return 'Rejected';
-        case 'canceled': return 'Canceled';
-        default: return 'Draft';
+        case 'accepted':
+          return 'Accepted';
+        case 'rejected':
+          return 'Rejected';
+        case 'canceled':
+          return 'Canceled';
+        default:
+          return 'Draft';
       }
     };
 
@@ -133,4 +147,38 @@ export const transformSearchMatches = (matches: SearchMatch[]): Contract[] => {
       updatedAt: contract.updated_at,
     };
   });
+};
+
+export interface ClausesGenerationRequest {
+  contract_id: number;
+}
+
+export interface ClausesGenerationResponse {
+  clauses: Array<{
+    id: string;
+    clauseText: string;
+    clauseDescription: string;
+    riskLevel: string;
+  }>;
+}
+
+export const generateClauses = async (
+  request: ClausesGenerationRequest
+): Promise<ClausesGenerationResponse> => {
+  const response = await fetch(
+    `${BASE_AI_URL}/api/v1/contracts/${request.contract_id}/clauses/generate`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(request),
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error(`Clauses generation failed: ${response.status}`);
+  }
+
+  return response.json();
 };

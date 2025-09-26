@@ -17,7 +17,9 @@ import { LegalClause } from '@/types/clauses';
 import {
   ConvertToContractClauses,
   ConvertToLegalClauses,
+  mapGeneratedClausesToLegalClauses,
 } from '@/utils/converter';
+import { generateClauses } from '@/services/ai';
 
 interface LegalReviewClientProps {
   id: string;
@@ -25,20 +27,7 @@ interface LegalReviewClientProps {
 
 export default function LegalReviewClient({ id }: LegalReviewClientProps) {
   const [contract, setContract] = useState<ContractWithRelations>();
-  const [aiSuggestions, setAiSuggestions] = useState<LegalClause[]>([
-    {
-      id: 1,
-      clauseText: 'Confidentiality Clause',
-      clauseDescription:
-        'The confidentiality clause should be extended to 5 years post-termination.',
-    },
-    {
-      id: 2,
-      clauseText: 'Liability Cap',
-      clauseDescription:
-        'The liability cap seems too high for a project of this scope.',
-    },
-  ]);
+  const [aiSuggestions, setAiSuggestions] = useState<LegalClause[]>([]);
 
   const [acceptedClauses, setAcceptedClauses] = useState<LegalClause[]>([]);
   const [newClause, setNewClause] = useState({ title: '', description: '' });
@@ -113,28 +102,41 @@ export default function LegalReviewClient({ id }: LegalReviewClientProps) {
     );
   };
 
-  const handleRegenerateSuggestions = () => {
-    setIsRegenerating(true);
-    toast.info('Regenerating AI suggestions...');
-    // Mock regeneration
-    setTimeout(() => {
-      setAiSuggestions([
-        {
-          id: 3,
-          clauseText: 'Force Majeure Clause',
-          clauseDescription:
-            'Consider adding a pandemic clause to the Force Majeure section.',
-        },
-        {
-          id: 4,
-          clauseText: 'Governing Law',
-          clauseDescription:
-            'The governing law should be specified as the State of California.',
-        },
-      ]);
+  const handleRegenerateSuggestions = async () => {
+    try {
+      setIsRegenerating(true);
+      toast.info('Regenerating AI suggestions...');
+      // Mock regeneration
+      // setTimeout(() => {
+      //   setAiSuggestions([
+      //     {
+      //       id: 3,
+      //       clauseText: 'Force Majeure Clause',
+      //       clauseDescription:
+      //         'Consider adding a pandemic clause to the Force Majeure section.',
+      //     },
+      //     {
+      //       id: 4,
+      //       clauseText: 'Governing Law',
+      //       clauseDescription:
+      //         'The governing law should be specified as the State of California.',
+      //     },
+      //   ]);
+      //   toast.success('AI suggestions have been updated.');
+      //   setIsRegenerating(false);
+      // }, 1500);
+
+      const generatedClauses = await generateClauses({
+        contract_id: contract?.id ?? 0,
+      });
+
+      setAiSuggestions(mapGeneratedClausesToLegalClauses(generatedClauses));
+
       toast.success('AI suggestions have been updated.');
       setIsRegenerating(false);
-    }, 1500);
+    } catch (error) {
+      console.error('Failed to regenerate AI suggestions:', error);
+    }
   };
 
   const handleCompleteReview = async () => {
