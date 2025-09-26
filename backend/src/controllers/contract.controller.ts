@@ -66,6 +66,7 @@ protectedContractRouter.openapi(createContractRoute, async (c) => {
       201,
     );
   } catch (_error) {
+    console.error(_error);
     return c.json(createErrorResponse('Failed to create contract', 500), 500);
   }
 });
@@ -125,7 +126,7 @@ protectedContractRouter.openapi(deleteContractRoute, async (c) => {
 
     return c.json(
       createSuccessResponse(
-        { success: true, message: 'Contract deleted successfully' },
+        deletedContract,
         'Contract deleted successfully',
         200,
       ),

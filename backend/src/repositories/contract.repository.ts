@@ -175,9 +175,17 @@ export const createContract = async (
         createdBy,
         updatedBy: createdBy,
       }));
-
       await tx.insert(contractParties).values(partyValues);
     }
+
+    // Insert version 1
+    await tx.insert(contractVersions).values({
+      contractId: newContract.id,
+      filePath: `https://${env.S3_ENDPOINT}/${env.S3_BUCKET_NAME}/${key}`,
+      versionNo: 1,
+      createdBy,
+      updatedBy: createdBy,
+    });
 
     return newContract;
   });
@@ -208,14 +216,25 @@ export const updateContract = async (
   }
 
   // Validate status
-  if (
-    !validateContractStatus(
-      contract.status,
-      contractData.status || contract.status,
-      updaterRole,
-    )
-  ) {
+  const prevStatus = contract.status;
+  const nextStatus = contractData.status || contract.status;
+  if (!validateContractStatus(prevStatus, nextStatus, updaterRole)) {
     throw new Error('Invalid contract status');
+  }
+
+  // If status changes from Accepted to Draft, increment version
+  let newVersionNo: number | null = null;
+  if (prevStatus === 'Accepted' && nextStatus === 'Draft') {
+    // Get latest version number
+    const latestVersion = await db
+      .select({ versionNo: contractVersions.versionNo })
+      .from(contractVersions)
+      .where(eq(contractVersions.contractId, id))
+      .orderBy(contractVersions.versionNo)
+      .limit(1);
+    const lastVersion =
+      latestVersion.length > 0 ? latestVersion[0].versionNo : 1;
+    newVersionNo = lastVersion + 1;
   }
 
   const [updatedContract] = await db
@@ -230,6 +249,17 @@ export const updateContract = async (
 
   if (!updatedContract) {
     return null;
+  }
+
+  // Insert new version if needed
+  if (newVersionNo) {
+    await db.insert(contractVersions).values({
+      contractId: id,
+      filePath: updatedContract.urlContract || '',
+      versionNo: newVersionNo,
+      createdBy: updatedBy,
+      updatedBy: updatedBy,
+    });
   }
 
   return {

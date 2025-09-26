@@ -130,10 +130,7 @@ export const deleteContractRoute = createRoute({
       description: 'Contract deleted successfully',
       content: {
         'application/json': {
-          schema: z.object({
-            success: z.boolean(),
-            message: z.string(),
-          }),
+          schema: contractResponseSchema,
         },
       },
     },
