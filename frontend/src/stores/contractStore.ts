@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { MOCK_CONTRACTS, Contract } from '@/constants/mockData';
+import { contractApi } from '@/services/api';
 
 interface ContractState {
   contracts: Contract[];
@@ -17,16 +18,28 @@ export const useContractStore = create<ContractState>((set, get) => ({
   loading: false,
   error: null,
 
-  fetchContracts: () => {
+  fetchContracts: async () => {
     set({ loading: true, error: null });
 
-    // Simulate API call delay
-    setTimeout(() => {
+    try {
+      // Try API call first when backend is ready
+      // const contracts = await contractApi.getContracts();
+
+      // For now, use mock data with simulated delay
+      await new Promise(resolve => setTimeout(resolve, 100));
+
       set({
         contracts: MOCK_CONTRACTS,
         loading: false,
       });
-    }, 100);
+    } catch (error) {
+      console.error('Error fetching contracts:', error);
+      set({
+        error: 'Failed to fetch contracts',
+        loading: false,
+        contracts: MOCK_CONTRACTS, // Fallback to mock data
+      });
+    }
   },
 
   addContract: (contractData) => {
