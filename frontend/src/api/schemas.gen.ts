@@ -56,6 +56,76 @@ export const ContractSchema = {
       type: 'string',
       nullable: true,
     },
+    aiDraftData: {
+      type: 'object',
+      nullable: true,
+      properties: {
+        summary: {
+          type: 'string',
+        },
+        clauses: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              title: {
+                type: 'string',
+              },
+              category: {
+                type: 'string',
+              },
+              text: {
+                type: 'string',
+              },
+              risk: {
+                type: 'integer',
+                minimum: 0,
+                maximum: 100,
+              },
+              rationale: {
+                type: 'string',
+              },
+              refs: {
+                type: 'string',
+              },
+              suggested: {
+                type: 'boolean',
+              },
+            },
+            required: ['title', 'text', 'risk'],
+          },
+        },
+        pdf_url: {
+          type: 'string',
+        },
+      },
+      required: ['clauses'],
+    },
+    aiMetadata: {
+      type: 'object',
+      nullable: true,
+      properties: {
+        correlation_id: {
+          type: 'string',
+        },
+        model_name: {
+          type: 'string',
+        },
+        timestamp: {
+          type: 'string',
+        },
+        processing_time_ms: {
+          type: 'number',
+        },
+        error: {
+          type: 'string',
+        },
+      },
+    },
+    draftSummary: {
+      type: 'string',
+      nullable: true,
+    },
     createdAt: {
       anyOf: [
         {
@@ -91,6 +161,7 @@ export const ContractSchema = {
     'updatedBy',
     'deleted',
     'urlContract',
+    'draftSummary',
     'createdAt',
     'updatedAt',
   ],

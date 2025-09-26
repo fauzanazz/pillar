@@ -23,6 +23,27 @@ export type Contract = {
   updatedBy: string;
   deleted: boolean;
   urlContract: string;
+  aiDraftData?: {
+    summary?: string;
+    clauses: Array<{
+      title: string;
+      category?: string;
+      text: string;
+      risk: number;
+      rationale?: string;
+      refs?: string;
+      suggested?: boolean;
+    }>;
+    pdf_url?: string;
+  };
+  aiMetadata?: {
+    correlation_id?: string;
+    model_name?: string;
+    timestamp?: string;
+    processing_time_ms?: number;
+    error?: string;
+  };
+  draftSummary: string;
   createdAt: string;
   updatedAt: string;
 };
@@ -419,6 +440,7 @@ export type UpdateContractData = {
       | 'Rejected'
       | 'Rejected Legal'
       | 'Canceled';
+    reason?: string;
   };
   path: {
     id: string;
@@ -754,6 +776,77 @@ export type GetAlertsResponses = {
 };
 
 export type GetAlertsResponse = GetAlertsResponses[keyof GetAlertsResponses];
+
+export type CreateAlertData = {
+  body?: {
+    contractId: number;
+    message: string;
+    priority: 'low' | 'medium' | 'high' | 'critical';
+  };
+  path?: never;
+  query?: never;
+  url: '/api/alerts';
+};
+
+export type CreateAlertErrors = {
+  /**
+   * Bad Request
+   */
+  400: {
+    success: boolean;
+    message: string;
+    code?: number;
+  };
+  /**
+   * Unauthorized
+   */
+  401: {
+    success: boolean;
+    message: string;
+    code?: number;
+  };
+  /**
+   * Forbidden
+   */
+  403: {
+    success: boolean;
+    message: string;
+    code?: number;
+  };
+  /**
+   * Not Found
+   */
+  404: {
+    success: boolean;
+    message: string;
+    code?: number;
+  };
+  /**
+   * Internal Server Error
+   */
+  500: {
+    success: boolean;
+    message: string;
+    code?: number;
+  };
+};
+
+export type CreateAlertError = CreateAlertErrors[keyof CreateAlertErrors];
+
+export type CreateAlertResponses = {
+  /**
+   * Alert created successfully
+   */
+  201: {
+    success: boolean;
+    message: string;
+    code?: number;
+    data?: AlertWithContract;
+  };
+};
+
+export type CreateAlertResponse =
+  CreateAlertResponses[keyof CreateAlertResponses];
 
 export type GetAlertByIdData = {
   body?: never;

@@ -11,8 +11,9 @@ import {
   Users,
   BarChart,
   Settings,
-  Home
+  Home,
 } from 'lucide-react';
+import { NotificationDropdown } from './NotificationDropdown';
 
 // Icon mapping for routes
 const iconMap = {
@@ -50,20 +51,25 @@ const Navigation = () => {
                 <h1 className="text-xl font-bold text-gray-900">
                   Contract Management
                 </h1>
-                <p className="text-sm text-gray-600">{user.role.charAt(0).toUpperCase() + user.role.slice(1)} Portal</p>
+                <p className="text-sm text-gray-600">
+                  {user.role.charAt(0).toUpperCase() + user.role.slice(1)}{' '}
+                  Portal
+                </p>
               </div>
             </div>
 
             {/* Navigation Links */}
             <nav className="hidden md:flex items-center space-x-1">
-              {navigationRoutes.map((route) => {
+              {navigationRoutes.map(route => {
                 const isActive = pathname === route.path;
-                const IconComponent = route.icon ? iconMap[route.icon as keyof typeof iconMap] : FileText;
+                const IconComponent = route.icon
+                  ? iconMap[route.icon as keyof typeof iconMap]
+                  : FileText;
 
                 return (
                   <Button
                     key={route.path}
-                    variant={isActive ? "default" : "ghost"}
+                    variant={isActive ? 'default' : 'ghost'}
                     size="sm"
                     onClick={() => router.push(route.path)}
                     className="flex items-center gap-2"
@@ -84,6 +90,8 @@ const Navigation = () => {
               <span className="text-gray-500 capitalize">({user.role})</span>
             </div>
 
+            <NotificationDropdown />
+
             <Button
               variant="outline"
               size="sm"
@@ -99,14 +107,16 @@ const Navigation = () => {
         {/* Mobile Navigation */}
         <div className="md:hidden pb-4">
           <div className="flex flex-wrap gap-2">
-            {navigationRoutes.map((route) => {
+            {navigationRoutes.map(route => {
               const isActive = pathname === route.path;
-              const IconComponent = route.icon ? iconMap[route.icon as keyof typeof iconMap] : FileText;
+              const IconComponent = route.icon
+                ? iconMap[route.icon as keyof typeof iconMap]
+                : FileText;
 
               return (
                 <Button
                   key={route.path}
-                  variant={isActive ? "default" : "outline"}
+                  variant={isActive ? 'default' : 'outline'}
                   size="sm"
                   onClick={() => router.push(route.path)}
                   className="flex items-center gap-2"

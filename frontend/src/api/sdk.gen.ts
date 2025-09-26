@@ -11,6 +11,9 @@ import type {
   AcceptContractData,
   AcceptContractErrors,
   AcceptContractResponses,
+  CreateAlertData,
+  CreateAlertErrors,
+  CreateAlertResponses,
   CreateClauseData,
   CreateClauseErrors,
   CreateClauseResponses,
@@ -239,6 +242,24 @@ export const getAlerts = <ThrowOnError extends boolean = false>(
     responseType: 'json',
     url: '/api/alerts',
     ...options,
+  });
+};
+
+export const createAlert = <ThrowOnError extends boolean = false>(
+  options?: Options<CreateAlertData, ThrowOnError>
+) => {
+  return (options?.client ?? client).post<
+    CreateAlertResponses,
+    CreateAlertErrors,
+    ThrowOnError
+  >({
+    responseType: 'json',
+    url: '/api/alerts',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options?.headers,
+    },
   });
 };
 
