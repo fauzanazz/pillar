@@ -4,7 +4,7 @@ import { useMemo, useState, useEffect } from 'react';
 import { useContractStore } from '@/stores/contractStore';
 import StatCard from '@/components/dashboard/StatCard';
 import { InternalContractTable } from '@/components/internal/InternalContractTable';
-import { AddContractModal } from '@/components/contracts/AddContractModal';
+import { AddContractModal, ContractForm } from '@/components/contracts/AddContractModal';
 import { EditContractModal } from '@/components/contracts/EditContractModal';
 import { Contract } from '@/api/types.gen';
 import {
@@ -197,9 +197,9 @@ const InternalDashboard = ({
 
           console.log("response", response);
 
-          // @ts-ignore
+          // @ts-expect-error - Response type may not have success property
           if (response.success!) {
-            // @ts-ignore
+            // @ts-expect-error - Response data may not have presignedUrl property
             const presignedUrl = response.data?.presignedUrl;
             
             // Convert ContractFormUpload to ContractForm format

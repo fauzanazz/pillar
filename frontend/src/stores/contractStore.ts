@@ -21,7 +21,7 @@ interface ContractState {
   loading: boolean;
   error: string | null;
   fetchContracts: (params?: GetContractsData) => Promise<void>;
-  addContract: (params: CreateContractData) => Promise<any>;
+  addContract: (params: CreateContractData) => Promise<unknown>;
   updateContract: (params: UpdateContractData) => Promise<void>;
   deleteContract: (params: DeleteContractData) => Promise<void>;
   getContractById: (
