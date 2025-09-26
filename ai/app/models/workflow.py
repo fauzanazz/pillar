@@ -9,8 +9,8 @@ import uuid
 
 class ContractStatus(str, Enum):
     """Contract status in the workflow."""
-    DRAFT_INTERNAL = "draft_internal"           # Internal created, waiting for legal
-    DRAFT_LEGAL_REVIEW = "draft_legal_review"   # Legal reviewing clauses
+    DRAFT_INTERNAL = "Draft"           # Internal created, waiting for legal
+    DRAFT_LEGAL_REVIEW = "Legal Review"   # Legal reviewing clauses
     DRAFT_LEGAL_REJECTED = "draft_legal_rejected"  # Legal rejected, back to internal
     DRAFT_MANAGEMENT = "draft_management"       # Sent to management for approval
     APPROVED = "approved"                       # Management approved
