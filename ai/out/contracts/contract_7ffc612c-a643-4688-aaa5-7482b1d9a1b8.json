@@ -1,0 +1,241 @@
+{
+  "id": "7ffc612c-a643-4688-aaa5-7482b1d9a1b8",
+  "template": {
+    "title": "Kontrak Perdagangan Mouse",
+    "description": "menjual mouse dengan kualitas bagus, tetapi pengiriman lebih dari 30 hari karena dikirim dari kutub utara",
+    "parties": [
+      {
+        "role": "PIHAK PERTAMA",
+        "name": "Valen",
+        "rep": "Verina Kue",
+        "address": "jalan dipatiukur"
+      },
+      {
+        "role": "PIHAK KEDUA",
+        "name": "ASUS",
+        "rep": "Maha",
+        "address": "jalan cisitu"
+      }
+    ],
+    "end_date": "2026-09-12",
+    "jurisdiction": "Indonesia",
+    "language": "Indonesian",
+    "value": null,
+    "special_requirements": "pink mouse"
+  },
+  "clauses": [
+    {
+      "id": "73cf62f9-8266-45c0-87ad-0f0a415681be",
+      "no": 1,
+      "title": "Definisi dan Interpretasi",
+      "text": "hari ini",
+      "status": "edited",
+      "original_text": "Dalam Kontrak ini, kecuali konteksnya menentukan lain: (a) 'Hari Kerja' berarti hari Senin sampai dengan Jumat, kecuali hari libur nasional; (b) 'Force Majeure' berarti keadaan kahar yang berada di luar kendali para pihak, termasuk tetapi tidak terbatas pada bencana alam, peperangan, atau pandemik; (c) 'Pengiriman' berarti pengiriman produk dari titik asal di Kutub Utara sampai ke lokasi yang ditentukan oleh Pembeli.",
+      "added_by": "legal",
+      "created_at": "2025-09-26 12:45:03.534602",
+      "updated_at": "2025-09-26 12:46:30.401108",
+      "notes": "jelek nih"
+    },
+    {
+      "id": "6b600775-b38f-4016-974d-4a43b8d60bc7",
+      "no": 2,
+      "title": "Ruang Lingkup Kontrak",
+      "text": "Kontrak ini mengatur penyediaan mouse berwarna pink sebanyak 1,000 unit oleh Penjual kepada Pembeli dengan harga yang disepakati oleh kedua belah pihak.",
+      "status": "accepted",
+      "original_text": null,
+      "added_by": "legal",
+      "created_at": "2025-09-26 12:45:03.534602",
+      "updated_at": "2025-09-26 12:46:36.837098",
+      "notes": "AI Generated - Risk: 20/100"
+    },
+    {
+      "id": "17bc728d-245e-4db4-bd09-4cd6597f5cd3",
+      "no": 3,
+      "title": "Kepatuhan Hukum",
+      "text": "Para pihak sepakat untuk mematuhi semua peraturan dan hukum yang berlaku di Indonesia terkait dengan perdagangan dan perlindungan konsumen.",
+      "status": "accepted",
+      "original_text": null,
+      "added_by": "legal",
+      "created_at": "2025-09-26 12:45:03.534602",
+      "updated_at": "2025-09-26 12:47:09.123022",
+      "notes": "AI Generated - Risk: 15/100"
+    },
+    {
+      "id": "e023b20c-83bd-47b8-b9f8-d9f4f4d7d7d7",
+      "no": 4,
+      "title": "Pembayaran dan Denda",
+      "text": "Pembayaran atas produk dilakukan dalam mata uang Rupiah dan ditransfer ke rekening yang ditentukan oleh Penjual. Keterlambatan pembayaran akan dikenakan denda 0,1% per hari dari total terutang. Penalti atas pelanggaran kontrak tidak lebih dari 10% dari nilai kontrak.",
+      "status": "accepted",
+      "original_text": null,
+      "added_by": "legal",
+      "created_at": "2025-09-26 12:45:03.534602",
+      "updated_at": "2025-09-26 12:47:10.884750",
+      "notes": "AI Generated - Risk: 25/100"
+    },
+    {
+      "id": "c252d1df-e1d1-46e7-835e-9c7fa25f897d",
+      "no": 5,
+      "title": "Jangka Waktu dan Pengiriman",
+      "text": "Kontrak ini berlaku dari tanggal penandatanganan sampai dengan 12 September 2026, dengan ketentuan pengiriman dilakukan dalam jangka waktu 30 hari setelah penandatanganan kontrak.",
+      "status": "accepted",
+      "original_text": null,
+      "added_by": "legal",
+      "created_at": "2025-09-26 12:45:03.534602",
+      "updated_at": "2025-09-26 12:47:12.453089",
+      "notes": "AI Generated - Risk: 30/100"
+    },
+    {
+      "id": "d7b8d024-4a6c-4982-b9b5-d14bab1ecf8c",
+      "no": 6,
+      "title": "Tanggung Jawab dan Asuransi",
+      "text": "Setiap pihak bertanggung jawab atas kerugian yang disebabkan oleh kelalaian atau pelanggaran kontrak. Pihak yang berisiko tinggi wajib memiliki asuransi dengan nilai pertanggungan minimal 200% dari nilai kontrak.",
+      "status": "accepted",
+      "original_text": null,
+      "added_by": "legal",
+      "created_at": "2025-09-26 12:45:03.534602",
+      "updated_at": "2025-09-26 12:47:16.570470",
+      "notes": "AI Generated - Risk: 20/100"
+    },
+    {
+      "id": "96d1bee2-382f-4d62-ab1c-d17f45bf13e7",
+      "no": 7,
+      "title": "Penyelesaian Sengketa",
+      "text": "Setiap perselisihan yang timbul dari atau berkaitan dengan Kontrak ini akan diselesaikan melalui: (1) Musyawarah mufakat dalam jangka waktu 30 hari; (2) Mediasi melalui lembaga mediasi terakreditasi; (3) Arbitrase BANI sesuai prosedur yang berlaku; (4) Pengadilan Negeri Jakarta Pusat sebagai pilihan terakhir.",
+      "status": "accepted",
+      "original_text": null,
+      "added_by": "legal",
+      "created_at": "2025-09-26 12:45:03.534602",
+      "updated_at": "2025-09-26 12:47:19.649835",
+      "notes": "AI Generated - Risk: 15/100"
+    },
+    {
+      "id": "474bd1af-258a-4e91-a6ae-40c6cc6d87ba",
+      "no": 8,
+      "title": "Pemutusan Kontrak",
+      "text": "Kontrak dapat diputus oleh salah satu pihak dengan alasan: (1) Pelanggaran material yang tidak diperbaiki dalam 30 hari; (2) Pailit atau likuidasi; (3) Force majeure yang berlangsung lebih dari 90 hari. Pemutusan harus diberitahukan secara tertulis dengan periode notice 60 hari.",
+      "status": "accepted",
+      "original_text": null,
+      "added_by": "legal",
+      "created_at": "2025-09-26 12:45:03.534602",
+      "updated_at": "2025-09-26 12:47:22.316574",
+      "notes": "AI Generated - Risk: 20/100"
+    },
+    {
+      "id": "76f7df33-9215-40e7-9f99-2b20468f7682",
+      "no": 9,
+      "title": "Kerahasiaan Informasi",
+      "text": "Kedua pihak sepakat untuk menjaga kerahasiaan semua informasi yang diperoleh selama kontrak berlangsung dan tidak akan mengungkapkan informasi tersebut kepada pihak ketiga tanpa persetujuan tertulis dari pihak lainnya.",
+      "status": "accepted",
+      "original_text": null,
+      "added_by": "legal",
+      "created_at": "2025-09-26 12:45:03.534602",
+      "updated_at": "2025-09-26 12:47:24.607054",
+      "notes": "AI Generated - Risk: 15/100"
+    }
+  ],
+  "status": "approved",
+  "created_by": "internal",
+  "current_assignee": "management",
+  "created_at": "2025-09-26 12:40:15.737502",
+  "updated_at": "2025-09-26 12:51:07.033072",
+  "workflow_history": [
+    {
+      "action": "contract_created",
+      "by_role": "internal",
+      "timestamp": "2025-09-26T12:40:15.737502",
+      "notes": "Contract created: Kontrak Perdagangan Mouse"
+    },
+    {
+      "action": "clauses_generated",
+      "by_role": "internal",
+      "timestamp": "2025-09-26T12:45:03.534602",
+      "notes": "Generated 9 clauses using AI",
+      "old_status": "draft_internal",
+      "new_status": "draft_legal_review"
+    },
+    {
+      "action": "clause_edited",
+      "by_role": "legal",
+      "timestamp": "2025-09-26T12:46:30.401108",
+      "notes": "Clause 1: Definisi dan Interpretasi - edited - jelek nih",
+      "clause_id": "73cf62f9-8266-45c0-87ad-0f0a415681be"
+    },
+    {
+      "action": "clause_accepted",
+      "by_role": "legal",
+      "timestamp": "2025-09-26T12:46:36.837098",
+      "notes": "Clause 2: Ruang Lingkup Kontrak - accepted",
+      "clause_id": "6b600775-b38f-4016-974d-4a43b8d60bc7"
+    },
+    {
+      "action": "clause_accepted",
+      "by_role": "legal",
+      "timestamp": "2025-09-26T12:47:09.123022",
+      "notes": "Clause 3: Kepatuhan Hukum - accepted",
+      "clause_id": "17bc728d-245e-4db4-bd09-4cd6597f5cd3"
+    },
+    {
+      "action": "clause_accepted",
+      "by_role": "legal",
+      "timestamp": "2025-09-26T12:47:10.884750",
+      "notes": "Clause 4: Pembayaran dan Denda - accepted",
+      "clause_id": "e023b20c-83bd-47b8-b9f8-d9f4f4d7d7d7"
+    },
+    {
+      "action": "clause_accepted",
+      "by_role": "legal",
+      "timestamp": "2025-09-26T12:47:12.453089",
+      "notes": "Clause 5: Jangka Waktu dan Pengiriman - accepted",
+      "clause_id": "c252d1df-e1d1-46e7-835e-9c7fa25f897d"
+    },
+    {
+      "action": "clause_accepted",
+      "by_role": "legal",
+      "timestamp": "2025-09-26T12:47:16.570470",
+      "notes": "Clause 6: Tanggung Jawab dan Asuransi - accepted",
+      "clause_id": "d7b8d024-4a6c-4982-b9b5-d14bab1ecf8c"
+    },
+    {
+      "action": "clause_accepted",
+      "by_role": "legal",
+      "timestamp": "2025-09-26T12:47:19.649835",
+      "notes": "Clause 7: Penyelesaian Sengketa - accepted",
+      "clause_id": "96d1bee2-382f-4d62-ab1c-d17f45bf13e7"
+    },
+    {
+      "action": "clause_accepted",
+      "by_role": "legal",
+      "timestamp": "2025-09-26T12:47:22.316574",
+      "notes": "Clause 8: Pemutusan Kontrak - accepted",
+      "clause_id": "474bd1af-258a-4e91-a6ae-40c6cc6d87ba"
+    },
+    {
+      "action": "clause_accepted",
+      "by_role": "legal",
+      "timestamp": "2025-09-26T12:47:24.607054",
+      "notes": "Clause 9: Kerahasiaan Informasi - accepted",
+      "clause_id": "76f7df33-9215-40e7-9f99-2b20468f7682"
+    },
+    {
+      "action": "submitted_to_management",
+      "by_role": "legal",
+      "timestamp": "2025-09-26T12:50:45.463030",
+      "notes": "submit",
+      "old_status": "draft_legal_review",
+      "new_status": "draft_management"
+    },
+    {
+      "action": "management_approve",
+      "by_role": "management",
+      "timestamp": "2025-09-26T12:51:07.033072",
+      "notes": "bagus",
+      "old_status": "draft_management",
+      "new_status": "approved"
+    }
+  ],
+  "management_notes": "bagus",
+  "legal_notes": "submit",
+  "internal_notes": null,
+  "json_file_path": "C:\\Users\\tech\\jasmine\\ifest\\Final-IFest2025\\ai\\out\\contracts\\contract_7ffc612c-a643-4688-aaa5-7482b1d9a1b8.json",
+  "pdf_file_path": null
+}

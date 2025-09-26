@@ -87,7 +87,7 @@ export const auth = betterAuth({
   },
   cookies: {
     sessionToken: {
-      name: 'nusa-session',
+      name: 'modyv-session',
       options: {
         httpOnly: true,
         sameSite: 'none',
@@ -95,7 +95,7 @@ export const auth = betterAuth({
         path: '/',
         domain:
           process.env.NODE_ENV === 'production'
-            ? '.nusa.vtriadi.site'
+            ? '.ifest.fauzanazz.com'
             : undefined, // Set domain for production
         maxAge: 60 * 60 * 24 * 7, // 7 days
       },
@@ -103,12 +103,12 @@ export const auth = betterAuth({
   },
   advanced: {
     defaultCookieAttributes: {
-      name: 'nusa-session',
+      name: 'modyv-session',
       sameSite: 'none',
       secure: true,
       domain:
         process.env.NODE_ENV === 'production'
-          ? '.nusa.vtriadi.site'
+          ? '.ifest.fauzanazz.com'
           : undefined, // Set domain for production
       httpOnly: true,
       partitioned: true,

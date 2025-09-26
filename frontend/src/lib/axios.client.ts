@@ -6,13 +6,14 @@ export const axiosClient = axios.create({
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
-    'Accept': 'application/json',
+    Accept: 'application/json',
   },
+  withCredentials: true,
 });
 
 // Request interceptor to add auth token
 axiosClient.interceptors.request.use(
-  (config) => {
+  config => {
     // Get token from localStorage or your auth store
     if (typeof window !== 'undefined') {
       const authStorage = localStorage.getItem('auth-storage');
@@ -30,17 +31,17 @@ axiosClient.interceptors.request.use(
     }
     return config;
   },
-  (error) => {
+  error => {
     return Promise.reject(error);
   }
 );
 
 // Response interceptor for error handling
 axiosClient.interceptors.response.use(
-  (response) => {
+  response => {
     return response;
   },
-  (error) => {
+  error => {
     if (error.response) {
       // Server responded with error status
       const { status, data } = error.response;
@@ -55,13 +56,19 @@ axiosClient.interceptors.response.use(
           break;
         case 403:
           // Forbidden
-          console.error('Access denied:', data.message || 'Insufficient permissions');
+          console.error(
+            'Access denied:',
+            data.message || 'Insufficient permissions'
+          );
           break;
         case 404:
           console.error('Resource not found:', error.config.url);
           break;
         case 500:
-          console.error('Server error:', data.message || 'Internal server error');
+          console.error(
+            'Server error:',
+            data.message || 'Internal server error'
+          );
           break;
         default:
           console.error('API Error:', data.message || error.message);

@@ -81,6 +81,13 @@ export const createContractSchema = z.object({
   status: contractStatusEnum.default('Draft'),
 });
 
+export const updateContractSchema = z.object({
+  title: z.string().min(1, 'Title is required').optional(),
+  description: z.string().optional(),
+  endDate: z.string().optional(),
+  status: contractStatusEnum.optional(),
+});
+
 // Response schemas
 export const contractResponseSchema = createResponseSchema(
   contractSchema.extend({ presignedUrl: z.string() }),
@@ -106,3 +113,4 @@ export type ContractWithRelations = z.infer<typeof contractWithRelationsSchema>;
 export type GetContractParams = z.infer<typeof getContractParamsSchema>;
 export type GetContractsQuery = z.infer<typeof getContractsQuerySchema>;
 export type CreateContract = z.infer<typeof createContractSchema>;
+export type UpdateContract = z.infer<typeof updateContractSchema>;

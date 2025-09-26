@@ -7,11 +7,13 @@ import {
   createContractRoute,
   getContractByIdRoute,
   getContractsRoute,
+  updateContractRoute,
 } from '@/routes/contract.route';
 import {
   createContractService,
   getContractByIdService,
   getContractsService,
+  updateContractService,
 } from '@/services/contract.service';
 
 export const protectedContractRouter = createAuthRouter();
@@ -61,5 +63,38 @@ protectedContractRouter.openapi(createContractRoute, async (c) => {
     );
   } catch (_error) {
     return c.json(createErrorResponse('Failed to create contract', 500), 500);
+  }
+});
+
+protectedContractRouter.openapi(updateContractRoute, async (c) => {
+  const { id } = c.req.valid('param');
+  const contractData = c.req.valid('json');
+  const user = c.var.user;
+
+  if (!user) {
+    return c.json(createErrorResponse('User not authenticated', 401), 401);
+  }
+
+  try {
+    const updatedContract = await updateContractService(
+      id,
+      contractData,
+      user.id,
+    );
+
+    if (!updatedContract) {
+      return c.json(createErrorResponse('Contract not found', 404), 404);
+    }
+
+    return c.json(
+      createSuccessResponse(
+        updatedContract,
+        'Contract updated successfully',
+        200,
+      ),
+      200,
+    );
+  } catch (_error) {
+    return c.json(createErrorResponse('Failed to update contract', 500), 500);
   }
 });
