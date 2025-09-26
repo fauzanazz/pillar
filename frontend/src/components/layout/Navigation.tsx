@@ -3,6 +3,7 @@
 import { useRouter, usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
+import Image from 'next/image';
 import {
   FileText,
   LogOut,
@@ -43,14 +44,20 @@ const Navigation = () => {
           {/* Logo and Title */}
           <div className="flex items-center gap-6">
             <div className="flex items-center gap-3">
-              <div className="h-8 w-8 bg-accent rounded-lg flex items-center justify-center">
-                <FileText className="h-4 w-4 text-accent-foreground" />
+              <div className="h-10 w-10 bg-[--twilight-gaze]/10 backdrop-blur-sm rounded-xl flex items-center justify-center border border-[--twilight-gaze]/20 shadow-sm p-2">
+                <Image 
+                  src="/logo.png" 
+                  alt="iFest 2025 Logo" 
+                  width={24} 
+                  height={24}
+                  className="w-6 h-6 object-contain"
+                />
               </div>
               <div>
-                <h1 className="text-xl font-bold text-gray-900">
+                <h1 className="text-xl font-bold text-[--twilight-gaze]">
                   Contract Management
                 </h1>
-                <p className="text-sm text-gray-600">{user.role.charAt(0).toUpperCase() + user.role.slice(1)} Portal</p>
+                <p className="text-sm text-[--midnight-whisper]/70">{user.role.charAt(0).toUpperCase() + user.role.slice(1)} Portal</p>
               </div>
             </div>
 

@@ -45,37 +45,46 @@
 
 :root {
   --radius: 0.625rem;
-  --background: oklch(0.972 0.02 248.33); /* #f2f7fa */
-  --foreground: oklch(0.266 0.03 259.62); /* #1c212d */
+  
+  /* New Twilight-themed Color Palette */
+  --twilight-gaze: #501F5B;        /* Main purple */
+  --moonlit-lilac: #B89AC9;        /* Light purple */
+  --midnight-whisper: #29264C;     /* Dark blue-purple */
+  --enchanted-amethyst: #8F7AB8;   /* Medium purple */
+  --violet-spell: #794C9E;         /* Rich purple */
+  --blushing-dawn: #F9CBDF;        /* Soft pink */
+  
+  --background: linear-gradient(135deg, #F9CBDF 0%, #B89AC9 50%, #501F5B 100%); /* Gradient background */
+  --foreground: var(--midnight-whisper);
 
-  --card: oklch(1 0 0); /* #ffffff */
-  --card-foreground: oklch(0.266 0.03 259.62); /* #1c212d */
+  --card: rgba(255, 255, 255, 0.95);
+  --card-foreground: var(--midnight-whisper);
 
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
+  --popover: rgba(255, 255, 255, 0.98);
+  --popover-foreground: var(--midnight-whisper);
 
-  --primary: oklch(0.266 0.03 259.62); /* #1c212d */
-  --primary-foreground: oklch(1 0 0); /* #ffffff */
+  --primary: var(--twilight-gaze);
+  --primary-foreground: #ffffff;
 
   --warning: 50 89% 66%; /* #f6d954 */
   --warning-foreground: 214 26% 18%;
 
-  --secondary: oklch(0.972 0.02 248.33); /* #f2f7fa */
-  --secondary-foreground: oklch(0.266 0.03 259.62); /* #1c212d */
+  --secondary: var(--moonlit-lilac);
+  --secondary-foreground: var(--midnight-whisper);
 
-  --muted: oklch(0.958 0.02 248.33);
-  --muted-foreground: oklch(0.528 0.02 258.11);
+  --muted: rgba(184, 154, 201, 0.1);
+  --muted-foreground: var(--enchanted-amethyst);
 
-  --accent: oklch(0.463 0.06 195.8); /* #366865 */
-  --accent-foreground: oklch(1 0 0);
+  --accent: var(--enchanted-amethyst);
+  --accent-foreground: #ffffff;
 
   /* Warning/Highlight - Yellow */
   --warning: oklch(0.875 0.18 103.3); /* #f6d954 */
-  --warning-foreground: oklch(0.266 0.03 259.62);
+  --warning-foreground: var(--midnight-whisper);
 
-  /* Success - Teal variant */
-  --success: oklch(0.534 0.07 195.8);
-  --success-foreground: oklch(1 0 0);
+  /* Success - Purple variant */
+  --success: var(--violet-spell);
+  --success-foreground: #ffffff;
 
   /* Destructive */
   --destructive: oklch(0.654 0.24 25.4);
@@ -87,9 +96,9 @@
   --rejected: oklch(0.654 0.24 25.4);
   --expired: oklch(0.584 0.22 25.4);
 
-  --border: oklch(0.932 0.01 259.5);
-  --input: oklch(1 0 0);
-  --ring: oklch(0.463 0.06 195.8);
+  --border: rgba(184, 154, 201, 0.2);
+  --input: rgba(255, 255, 255, 0.8);
+  --ring: var(--enchanted-amethyst);
 
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);

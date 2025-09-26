@@ -50,6 +50,9 @@ const InternalDashboard = ({
   const [isSearching, setIsSearching] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
 
+  // Filter state
+  const [activeFilter, setActiveFilter] = useState<'all' | 'active' | 'draft' | 'accepted' | 'rejected'>('all');
+
   // Fetch contracts on component mount
   useEffect(() => {
     fetchContracts();
@@ -107,7 +110,31 @@ const InternalDashboard = ({
     //   c => c.status === 'near_expire'
     // ).length;
 
-    const filteredContracts = baseContracts; // Use search results or all contracts
+    // Apply status filter
+    let filteredContracts = baseContracts;
+    switch (activeFilter) {
+      case 'active':
+        // Active contracts are those currently in progress (not yet decided by management)
+        filteredContracts = baseContracts.filter(c => 
+          c.status === 'Legal Review' || c.status === 'Management Review'
+        );
+        break;
+      case 'draft':
+        filteredContracts = baseContracts.filter(c => c.status === 'Draft');
+        break;
+      case 'accepted':
+        // Contracts accepted by management
+        filteredContracts = baseContracts.filter(c => c.status === 'Accepted');
+        break;
+      case 'rejected':
+        // Contracts rejected by management
+        filteredContracts = baseContracts.filter(c => c.status === 'Rejected');
+        break;
+      case 'all':
+      default:
+        filteredContracts = baseContracts;
+        break;
+    }
 
     return {
       totalContracts,
@@ -116,7 +143,7 @@ const InternalDashboard = ({
       // nearExpireContracts,
       filteredContracts,
     };
-  }, [contracts, searchResults, hasSearched]);
+  }, [contracts, searchResults, hasSearched, activeFilter]);
 
   const internalStats = [
     {
@@ -204,6 +231,60 @@ const InternalDashboard = ({
               }
             </p>
           </div>
+        </div>
+
+        {/* Filter Tabs */}
+        <div className="flex items-center gap-1 bg-gray-100 p-1 rounded-lg w-fit">
+          <button
+            onClick={() => setActiveFilter('all')}
+            className={`px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 ${
+              activeFilter === 'all'
+                ? 'bg-white text-gray-900 shadow-sm'
+                : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+            }`}
+          >
+            All
+          </button>
+          <button
+            onClick={() => setActiveFilter('active')}
+            className={`px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 ${
+              activeFilter === 'active'
+                ? 'bg-white text-gray-900 shadow-sm'
+                : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+            }`}
+          >
+            Active
+          </button>
+          <button
+            onClick={() => setActiveFilter('draft')}
+            className={`px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 ${
+              activeFilter === 'draft'
+                ? 'bg-white text-gray-900 shadow-sm'
+                : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+            }`}
+          >
+            Draft
+          </button>
+          <button
+            onClick={() => setActiveFilter('accepted')}
+            className={`px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 ${
+              activeFilter === 'accepted'
+                ? 'bg-white text-gray-900 shadow-sm'
+                : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+            }`}
+          >
+            Accepted
+          </button>
+          <button
+            onClick={() => setActiveFilter('rejected')}
+            className={`px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 ${
+              activeFilter === 'rejected'
+                ? 'bg-white text-gray-900 shadow-sm'
+                : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+            }`}
+          >
+            Rejected
+          </button>
         </div>
 
         {loading ? (

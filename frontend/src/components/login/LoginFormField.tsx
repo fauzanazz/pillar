@@ -87,111 +87,79 @@ export const LoginFormField = () => {
 
   return (
     <>
-      <Card className="w-full max-w-md mx-auto shadow-lg">
-        <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold text-center">
+      <Card className="w-full card-glass shadow-2xl shadow-purple-500/20 border-0 rounded-2xl overflow-hidden">
+        <CardHeader className="space-y-2 pb-4 sm:pb-6 text-center">
+          <CardTitle className="text-2xl sm:text-3xl font-bold text-slate-800">
             Welcome Back
           </CardTitle>
-          <CardDescription className="text-center">
+          <CardDescription className="text-slate-700 text-sm sm:text-base font-medium">
             Sign in to access the contract management system
           </CardDescription>
         </CardHeader>
-        <CardContent>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="email">email</Label>
+        <CardContent className="px-6 sm:px-8 pb-6 sm:pb-8">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5 sm:space-y-6">
+            <div className="space-y-2 sm:space-y-3">
+              <Label htmlFor="email" className="text-sm font-semibold text-gray-700">
+                Email
+              </Label>
               <Input
                 id="email"
                 type="text"
-                placeholder="Enter your email"
+                placeholder="miklos@mail.co"
+                className="input-twilight h-11 sm:h-12 text-base rounded-xl border-0 focus:ring-2 focus:ring-purple-400 focus:ring-opacity-50 transition-all duration-200"
                 {...form.register('email')}
               />
               {form.formState.errors.email && (
-                <p className="text-sm text-destructive">
+                <p className="text-sm text-red-500 font-medium">
                   {form.formState.errors.email.message}
                 </p>
               )}
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+            <div className="space-y-2 sm:space-y-3">
+              <Label htmlFor="password" className="text-sm font-semibold text-gray-700">
+                Password
+              </Label>
               <div className="relative">
                 <Input
                   id="password"
                   type={showPassword ? 'text' : 'password'}
-                  placeholder="Enter your password"
+                  placeholder="••••••"
+                  className="input-twilight h-11 sm:h-12 text-base rounded-xl border-0 focus:ring-2 focus:ring-purple-400 focus:ring-opacity-50 transition-all duration-200 pr-12"
                   {...form.register('password')}
                 />
                 <Button
                   type="button"
                   variant="ghost"
                   size="sm"
-                  className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                  className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent text-gray-500 hover:text-gray-700"
                   onClick={() => setShowPassword(!showPassword)}
                 >
                   {showPassword ? (
-                    <EyeOff className="h-4 w-4" />
+                    <EyeOff className="h-4 w-4 sm:h-5 sm:w-5" />
                   ) : (
-                    <Eye className="h-4 w-4" />
+                    <Eye className="h-4 w-4 sm:h-5 sm:w-5" />
                   )}
                 </Button>
               </div>
               {form.formState.errors.password && (
-                <p className="text-sm text-destructive">
+                <p className="text-sm text-red-500 font-medium">
                   {form.formState.errors.password.message}
                 </p>
               )}
             </div>
 
-            <Button type="submit" className="w-full" disabled={isLoading}>
+            <Button 
+              type="submit" 
+              className="w-full btn-twilight h-11 sm:h-12 text-base font-semibold rounded-xl border-0 shadow-lg" 
+              disabled={isLoading}
+            >
               {isLoading ? 'Signing in...' : 'Sign In'}
             </Button>
           </form>
         </CardContent>
       </Card>
 
-      {/* DEMO */}
-      <Card className="w-full max-w-md mx-auto">
-        <CardHeader>
-          <CardTitle className="text-lg">Demo Credentials</CardTitle>
-          <CardDescription>
-            Use these credentials to test different user roles
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          {demoCredentials.map(cred => {
-            const IconComponent = cred.icon;
-            return (
-              <div
-                key={cred.email}
-                className="flex items-center justify-between p-3 bg-muted rounded-lg"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="h-8 w-8 bg-accent/10 rounded-lg flex items-center justify-center">
-                    <IconComponent className="h-4 w-4 text-accent" />
-                  </div>
-                  <div>
-                    <p className="font-medium text-sm">{cred.role}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {cred.email} / {cred.password}
-                    </p>
-                  </div>
-                </div>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => {
-                    form.setValue('email', cred.email);
-                    form.setValue('password', cred.password);
-                  }}
-                >
-                  Use
-                </Button>
-              </div>
-            );
-          })}
-        </CardContent>
-      </Card>
     </>
   );
 };
