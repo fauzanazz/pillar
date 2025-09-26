@@ -104,6 +104,7 @@ export const getContractById = async (
     // Handle JSON fields properly
     aiDraftData: contract[0].aiDraftData as any,
     aiMetadata: contract[0].aiMetadata as any,
+    riskData: contract[0].riskData as any,
   };
 
   if (!includeRelations) {

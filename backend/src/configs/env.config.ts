@@ -38,6 +38,10 @@ const EnvSchema = z.object({
   MAX_RETRIES_BATCH: z.coerce.number().default(5),
   RETRY_BACKOFF_MAX_SEC: z.coerce.number().default(300),
   WORKER_METRICS_PORT: z.coerce.number().default(9108),
+
+  // Web Push Configuration
+  VAPID_PUBLIC_KEY: z.string().optional(),
+  VAPID_PRIVATE_KEY: z.string().optional(),
 });
 
 const result = EnvSchema.safeParse(process.env);
