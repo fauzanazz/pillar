@@ -5,6 +5,7 @@ import { alerts, contracts } from '@/db/schema';
 import type {
   AlertPriorityEnum,
   AlertWithContract,
+  CreateAlert,
   GetAlertsQuery,
 } from '@/types/alert.type';
 
@@ -146,4 +147,39 @@ export const getUnreadAlertsCount = async (): Promise<number> => {
     .where(eq(alerts.isRead, false));
 
   return count;
+};
+
+export const createAlert = async (
+  alertData: CreateAlert,
+  createdBy: string,
+): Promise<AlertWithContract> => {
+  // First check if contract exists
+  const existingContract = await db
+    .select()
+    .from(contracts)
+    .where(eq(contracts.id, alertData.contractId))
+    .limit(1);
+
+  if (existingContract.length === 0) {
+    throw new Error('Contract not found');
+  }
+
+  const [newAlert] = await db
+    .insert(alerts)
+    .values({
+      contractId: alertData.contractId,
+      message: alertData.message,
+      priority: alertData.priority,
+      isRead: false,
+      createdBy,
+    })
+    .returning();
+
+  // Get the created alert with contract details
+  const result = await getAlertById(newAlert.id);
+  if (!result) {
+    throw new Error('Failed to retrieve created alert');
+  }
+
+  return result;
 };
