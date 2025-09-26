@@ -27,6 +27,9 @@ const EnvSchema = z.object({
   S3_ENDPOINT: z.string(),
   S3_REGION: z.string().default('us-east-1'),
 
+  // AI Service Configuration
+  AI_SERVICE_URL: z.string().default('http://localhost:8081'),
+
   // RabbitMQ Configuration
   RABBITMQ_URL: z.string().default('amqp://localhost:5672'),
 

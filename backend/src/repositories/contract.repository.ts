@@ -10,6 +10,8 @@ import {
 } from '@/db/schema';
 import { getPresignedUrlByUrl } from '@/lib/s3';
 import type {
+  AiDraftResponse,
+  AiMetadata,
   ContractStatusEnum,
   ContractWithRelations,
   CreateClause,
@@ -98,6 +100,9 @@ export const getContractById = async (
     status: contract[0].status as ContractStatusEnum,
     createdAt: contract[0].createdAt.toISOString(),
     updatedAt: contract[0].updatedAt.toISOString(),
+    // Handle JSON fields properly
+    aiDraftData: contract[0].aiDraftData as any,
+    aiMetadata: contract[0].aiMetadata as any,
   };
 
   if (!includeRelations) {
@@ -145,6 +150,7 @@ export const getContractById = async (
     })),
     parties,
     clauses: contractClauses,
+    // JSON fields are already handled in baseContract
   };
 };
 
@@ -323,4 +329,36 @@ export const createClause = async (
     .returning();
 
   return newClause;
+};
+
+// Update contract with AI draft data
+export const updateContractWithAiData = async (
+  contractId: number,
+  aiDraftData: AiDraftResponse,
+  aiMetadata: AiMetadata,
+  updatedBy: string,
+) => {
+  const [updatedContract] = await db
+    .update(contracts)
+    .set({
+      aiDraftData: aiDraftData as any, // JSON column
+      aiMetadata: aiMetadata as any, // JSON column
+      draftSummary: aiDraftData.summary || null,
+      updatedBy,
+      updatedAt: new Date(),
+    })
+    .where(eq(contracts.id, contractId))
+    .returning();
+
+  if (!updatedContract) {
+    throw new Error('Contract not found or failed to update');
+  }
+
+  return {
+    ...updatedContract,
+    urlContract: await getPresignedUrlByUrl(updatedContract.urlContract || ''),
+    status: updatedContract.status as ContractStatusEnum,
+    createdAt: updatedContract.createdAt.toISOString(),
+    updatedAt: updatedContract.updatedAt.toISOString(),
+  };
 };

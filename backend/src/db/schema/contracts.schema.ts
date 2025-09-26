@@ -2,6 +2,7 @@ import {
   boolean,
   date,
   integer,
+  json,
   pgTable,
   text,
   timestamp,
@@ -22,6 +23,10 @@ export const contracts = pgTable('contracts', {
   updatedBy: varchar('updated_by'),
   deleted: boolean('deleted').default(false).notNull(),
   urlContract: text('url_contract'), // lokasi PDF / file
+  // JSON fields for AI-generated data
+  aiDraftData: json('ai_draft_data'), // Complete AI draft response including clauses
+  aiMetadata: json('ai_metadata'), // AI processing metadata (correlation_id, model, timestamp, etc.)
+  draftSummary: text('draft_summary'), // AI-generated contract summary
   createdAt: timestamp('created_at').$defaultFn(getNow).notNull(),
   updatedAt: timestamp('updated_at').$defaultFn(getNow).notNull(),
 });
