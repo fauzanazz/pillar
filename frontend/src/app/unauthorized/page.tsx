@@ -5,7 +5,13 @@ import { useAuthStore } from '@/stores/authStore';
 import { getDefaultRoute } from '@/config/routes';
 import type { UserRole } from '@/config/routes';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { AlertTriangle, Home, LogOut } from 'lucide-react';
 
 export default function UnauthorizedPage() {
@@ -37,14 +43,16 @@ export default function UnauthorizedPage() {
             Access Denied
           </CardTitle>
           <CardDescription>
-            You don't have permission to access this page. Please contact your administrator if you believe this is an error.
+            You don&apos;t have permission to access this page. Please contact
+            your administrator if you believe this is an error.
           </CardDescription>
         </CardHeader>
 
         <CardContent className="space-y-4">
           {user && (
             <div className="text-center text-sm text-gray-600">
-              Signed in as: <span className="font-medium">{user.name}</span> ({user.role})
+              Signed in as: <span className="font-medium">{user.name}</span> (
+              {user.role})
             </div>
           )}
 

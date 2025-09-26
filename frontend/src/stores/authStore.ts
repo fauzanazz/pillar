@@ -1,9 +1,21 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { MOCK_USERS, LOGIN_CREDENTIALS, User } from '@/constants/mockData';
+
 import { getDefaultRoute, hasRouteAccess } from '@/config/routes';
 import type { UserRole } from '@/config/routes';
 import { authApi } from '@/services/api';
+
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+  emailVerified: boolean;
+  role: 'internal' | 'legal' | 'management';
+  image: string | null;
+  bio: string | null;
+  createdAt: string | Date;
+  updatedAt: string | Date;
+}
 
 interface AuthState {
   user: User | null;
@@ -33,9 +45,6 @@ export const useAuthStore = create<AuthState>()(
           if (!response) {
             return { success: false, error: 'Invalid credentials' };
           }
-
-          console.log(response);
-
           const session = await authApi.getSession();
 
           if (!session) {
