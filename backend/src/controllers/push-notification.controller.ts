@@ -1,9 +1,12 @@
 import { createAuthRouter, createSuccessResponse } from '@/lib';
 import { webPushService } from '@/lib/web-push';
+import { pushSubscriptionRepository } from '@/repositories/push-subscription.repository';
 import {
   getVapidPublicKeyRoute,
   simulatePushNotificationRoute,
+  subscribeToPushNotificationsRoute,
   testPushNotificationRoute,
+  unsubscribeFromPushNotificationsRoute,
 } from '@/routes/push-notification.route';
 
 export const pushNotificationRouter = createAuthRouter();
@@ -93,3 +96,39 @@ pushNotificationRouter.openapi(simulatePushNotificationRoute, async (c) => {
     200,
   );
 });
+
+// Subscribe to push notifications
+pushNotificationRouter.openapi(subscribeToPushNotificationsRoute, async (c) => {
+  const user = c.var.user;
+  const { subscription } = c.req.valid('json');
+
+  await pushSubscriptionRepository.saveSubscription(user.id, subscription);
+
+  return c.json(
+    createSuccessResponse(
+      { message: 'Subscription saved successfully' },
+      'Push notification subscription activated',
+      200,
+    ),
+    200,
+  );
+});
+
+// Unsubscribe from push notifications
+pushNotificationRouter.openapi(
+  unsubscribeFromPushNotificationsRoute,
+  async (c) => {
+    const user = c.var.user;
+
+    await pushSubscriptionRepository.removeSubscription(user.id);
+
+    return c.json(
+      createSuccessResponse(
+        { message: 'Subscription removed successfully' },
+        'Push notification subscription deactivated',
+        200,
+      ),
+      200,
+    );
+  },
+);

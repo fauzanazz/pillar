@@ -218,36 +218,63 @@ export class AlertEventConsumer {
     event: AIAlertEvent | null,
   ): Promise<void> {
     try {
-      // In a real implementation, you would:
-      // 1. Query database for user push subscriptions
-      // 2. Filter subscriptions based on user preferences and contract access
-      // 3. Send notifications to filtered subscriptions
+      // Get relevant users for this notification
+      const userIds = await this.getRelevantUserIds(event?.aggregate_id);
 
-      // Demo: Simulating subscriptions (replace with actual database query)
-      const mockSubscriptions = await this.getMockUserSubscriptions(
-        event?.aggregate_id,
-      );
-
-      if (mockSubscriptions.length === 0) {
-        console.log('📭 No active push subscriptions found');
+      if (userIds.length === 0) {
+        console.log('📭 No relevant users found for notification');
         return;
       }
 
-      console.log(
-        `📤 Sending push notification to ${mockSubscriptions.length} subscribers...`,
-      );
+      console.log(`📤 Sending push notification to ${userIds.length} users...`);
 
-      // Send notifications
-      const result = await webPushService.sendNotificationToMultiple(
-        mockSubscriptions,
+      // Send notifications to users using the database-driven approach
+      const results = await webPushService.sendNotificationToUsers(
+        userIds,
         notification,
       );
 
+      const successful = results.filter((r) => r.success).length;
+      const failed = results.filter((r) => !r.success).length;
+
       console.log(
-        `✅ Push notifications sent: ${result.success} successful, ${result.failed} failed`,
+        `✅ Push notifications sent: ${successful} successful, ${failed} failed`,
       );
     } catch (error) {
       console.error('❌ Error sending notifications to subscribers:', error);
+    }
+  }
+
+  /**
+   * Get relevant user IDs for notification based on contract access and preferences
+   */
+  private async getRelevantUserIds(contractId?: string): Promise<string[]> {
+    try {
+      // In a real implementation, you would:
+      // 1. Query users who have access to the specific contract (if contractId provided)
+      // 2. Filter users based on their notification preferences
+      // 3. Return user IDs who should receive this notification
+
+      // For demo purposes, return all users with push subscriptions
+      // TODO: Implement proper user filtering based on contract access and preferences
+      const { pushSubscriptionRepository } = await import(
+        '@/repositories/push-subscription.repository'
+      );
+
+      const allSubscriptions =
+        await pushSubscriptionRepository.getAllSubscriptions();
+      const uniqueUserIds = [
+        ...new Set(allSubscriptions.map((sub) => sub.userId)),
+      ];
+
+      console.log(
+        `🔍 Found ${uniqueUserIds.length} users with push subscriptions for contract: ${contractId || 'all'}`,
+      );
+
+      return uniqueUserIds;
+    } catch (error) {
+      console.error('❌ Error getting relevant user IDs:', error);
+      return [];
     }
   }
 

@@ -349,32 +349,15 @@ class DBStorage:
                 except:
                     pass
             
-            # Map old status values to new workflow statuses
-            status_mapping = {
-                'Draft': 'draft_internal',
-                'draft': 'draft_internal',
-                'Legal Review': 'draft_legal_review',
-                'legal_review': 'draft_legal_review',
-                'Management Review': 'draft_management',
-                'management_review': 'draft_management',
-                'Accepted': 'approved',
-                'accepted': 'approved',
-                'approved': 'approved',
-                'Rejected': 'rejected_to_internal',
-                'rejected': 'rejected_to_internal',
-                'Canceled': 'rejected_to_internal',
-                'canceled': 'rejected_to_internal'
-            }
-            
-            raw_status = data.get('status', 'draft_internal')
-            mapped_status = status_mapping.get(raw_status, raw_status)
+            # Get status directly - the database now uses the simplified enum values
+            raw_status = data.get('status', 'Draft')
             
             # Ensure status is valid
-            valid_statuses = ['draft_internal', 'draft_legal_review', 'draft_legal_rejected', 
-                             'draft_management', 'approved', 'rejected_to_legal', 
-                             'rejected_to_internal', 'rejected_to_both']
-            if mapped_status not in valid_statuses:
-                mapped_status = 'draft_internal'
+            valid_statuses = ['Draft', 'Legal Review', 'Management Review', 'Accepted', 'Rejected', 'Canceled']
+            if raw_status not in valid_statuses:
+                mapped_status = ContractStatus.DRAFT
+            else:
+                mapped_status = ContractStatus(raw_status)
             
             # Create ContractDraft
             created_by_value = metadata.get('created_by', 'internal')
@@ -389,7 +372,7 @@ class DBStorage:
                 id=str(data.get('id', uuid.uuid4())),
                 template=template,
                 clauses=clauses,
-                status=ContractStatus(mapped_status),
+                status=mapped_status,
                 current_assignee=UserRole(current_assignee_value),
                 created_by=UserRole(created_by_value),
                 created_at=created_at,

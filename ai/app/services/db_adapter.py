@@ -168,22 +168,12 @@ class ContractDBAdapter:
                     risk_score=c.get('risk', 0)
                 ))
         
-        # Map old status values to new workflow statuses
-        status_mapping = {
-            'Draft': 'draft_internal',
-            'Legal Review': 'draft_legal_review',
-            'Management Review': 'draft_management',
-            'Accepted': 'approved',
-            'Rejected': 'rejected_to_internal',
-            'Canceled': 'rejected_to_internal'
-        }
-        
-        status = data.get('status', 'draft_internal')
-        mapped_status = status_mapping.get(status, status)
-        if mapped_status not in ['draft_internal', 'draft_legal_review', 'draft_legal_rejected', 
-                                 'draft_management', 'approved', 'rejected_to_legal', 
-                                 'rejected_to_internal', 'rejected_to_both']:
-            mapped_status = 'draft_internal'
+        # No status mapping needed, as the enum now matches the DB
+        status = data.get('status', 'Draft')
+        try:
+            mapped_status = ContractStatus(status)
+        except ValueError:
+            mapped_status = ContractStatus.DRAFT
         
         # Create contract
         return ContractDraft(
@@ -239,20 +229,8 @@ class ContractDBAdapter:
             'risk_scan': getattr(contract, 'risk_scan_data', None)
         }
         
-        # Reverse status mapping
-        status_mapping = {
-            'draft_internal': 'Draft',
-            'draft_legal_review': 'Legal Review',
-            'draft_legal_rejected': 'Draft',
-            'draft_management': 'Management Review',
-            'approved': 'Accepted',
-            'rejected_to_legal': 'Legal Review',
-            'rejected_to_internal': 'Rejected',
-            'rejected_to_both': 'Rejected'
-        }
-        
-        status_value = contract.status.value if hasattr(contract.status, 'value') else str(contract.status)
-        db_status = status_mapping.get(status_value, 'Draft')
+        # No reverse mapping needed, as the enum now matches the DB
+        db_status = contract.status.value
         
         # Convert ID to integer if possible
         try:

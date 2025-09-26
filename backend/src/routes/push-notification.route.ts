@@ -111,3 +111,75 @@ export const simulatePushNotificationRoute = createRoute({
   },
   ...GenericErrorResponses,
 });
+
+// Subscription request schema
+const subscriptionRequestSchema = z.object({
+  subscription: z.object({
+    endpoint: z.string(),
+    keys: z.object({
+      p256dh: z.string(),
+      auth: z.string(),
+    }),
+  }),
+});
+
+// Subscribe to push notifications route
+export const subscribeToPushNotificationsRoute = createRoute({
+  operationId: 'subscribeToPushNotifications',
+  tags: ['push-notifications'],
+  method: 'post',
+  path: '/push/subscribe',
+  request: {
+    body: {
+      content: {
+        'application/json': {
+          schema: subscriptionRequestSchema,
+        },
+      },
+    },
+  },
+  responses: {
+    200: {
+      description: 'Successfully subscribed to push notifications',
+      content: {
+        'application/json': {
+          schema: z.object({
+            success: z.boolean(),
+            data: z.object({
+              message: z.string(),
+            }),
+            message: z.string(),
+            code: z.number(),
+          }),
+        },
+      },
+    },
+  },
+  ...GenericErrorResponses,
+});
+
+// Unsubscribe from push notifications route
+export const unsubscribeFromPushNotificationsRoute = createRoute({
+  operationId: 'unsubscribeFromPushNotifications',
+  tags: ['push-notifications'],
+  method: 'post',
+  path: '/push/unsubscribe',
+  responses: {
+    200: {
+      description: 'Successfully unsubscribed from push notifications',
+      content: {
+        'application/json': {
+          schema: z.object({
+            success: z.boolean(),
+            data: z.object({
+              message: z.string(),
+            }),
+            message: z.string(),
+            code: z.number(),
+          }),
+        },
+      },
+    },
+  },
+  ...GenericErrorResponses,
+});

@@ -287,7 +287,7 @@ async def export_contract_pdf(
                 hash=f"CONTRACT-{contract.id}",
                 version="1.0"
             ),
-            watermark="DRAFT" if contract.status != ContractStatus.APPROVED else None
+            watermark="DRAFT" if contract.status != ContractStatus.ACCEPTED else None
         )
         
         # Generate PDF
