@@ -1,5 +1,4 @@
 import amqp from 'amqplib';
-import { logger } from 'better-auth';
 
 import { env } from './env.config';
 
@@ -23,72 +22,95 @@ export class RabbitMQConfig {
 
   public async connect(
     maxRetries: number = 10,
-    retryDelay: number = 2000,
+    retryDelay: number = 1000,
   ): Promise<void> {
     // If already connected, return immediately
     if (this.connection && this.channel) {
+      console.log('RabbitMQ already connected, skipping connect');
       return;
     }
 
-    // If already connecting, wait for the connection to complete
+    // If already connecting, wait for the connection to complete with timeout
     if (this.isConnecting) {
-      while (this.isConnecting) {
+      console.log('RabbitMQ connection already in progress, waiting...');
+      let waitTime = 0;
+      const maxWaitTime = 30000; // 30 seconds timeout
+      while (this.isConnecting && waitTime < maxWaitTime) {
         await new Promise((resolve) => setTimeout(resolve, 100));
+        waitTime += 100;
       }
-      return;
+
+      if (waitTime >= maxWaitTime) {
+        console.error('Timeout waiting for existing connection attempt');
+        this.isConnecting = false; // Reset the flag
+        throw new Error('Connection timeout');
+      }
+
+      // Check if connection was successful after waiting
+      if (this.connection && this.channel) {
+        console.log('RabbitMQ connection completed while waiting');
+        return;
+      }
     }
 
+    console.log('Starting new RabbitMQ connection attempt');
     this.isConnecting = true;
 
     let attempt = 0;
     while (attempt < maxRetries) {
       try {
-        logger.info(
-          `Connecting to RabbitMQ... (attempt ${attempt + 1}/${maxRetries})`,
+        console.log(
+          `Connecting to RabbitMQ... (attempt ${attempt + 1}/${maxRetries}) - URL: ${this.url}`,
         );
         this.connection = await amqp.connect(this.url);
         this.channel = await this.connection.createChannel();
 
         // Handle connection events
         this.connection.on('error', (error) => {
-          logger.error('RabbitMQ connection error:', error);
+          console.error('RabbitMQ connection error:', error);
           this.connection = null;
           this.channel = null;
           this.isConnecting = false;
         });
 
         this.connection.on('close', () => {
-          logger.warn('RabbitMQ connection closed');
+          console.warn('RabbitMQ connection closed');
           this.connection = null;
           this.channel = null;
           this.isConnecting = false;
         });
 
         this.isConnecting = false;
-        logger.info('Connected to RabbitMQ successfully');
+        console.log('Connected to RabbitMQ successfully');
         return;
       } catch (error) {
         attempt++;
-        logger.warn(
+        console.warn(
           `Failed to connect to RabbitMQ (attempt ${attempt}/${maxRetries}):`,
           error,
         );
 
         if (attempt >= maxRetries) {
           this.isConnecting = false;
-          logger.error('Max RabbitMQ connection attempts reached');
+          console.error('Max RabbitMQ connection attempts reached');
           throw error;
         }
 
         // Exponential backoff with jitter
         const delay =
           retryDelay * Math.pow(2, attempt - 1) + Math.random() * 1000;
-        logger.info(
+        console.log(
           `Retrying RabbitMQ connection in ${Math.round(delay)}ms...`,
         );
         await new Promise((resolve) => setTimeout(resolve, delay));
       }
     }
+
+    // If we reach here, all retries failed
+    this.isConnecting = false;
+    throw new Error(
+      `Failed to connect to RabbitMQ after ${maxRetries} attempts`,
+    );
   }
 
   public async getChannel(): Promise<amqp.Channel> {
@@ -114,9 +136,9 @@ export class RabbitMQConfig {
         this.connection = null;
       }
       this.isConnecting = false;
-      logger.info('RabbitMQ connection closed');
+      console.log('RabbitMQ connection closed');
     } catch (error) {
-      logger.error('Error closing RabbitMQ connection:', error);
+      console.error('Error closing RabbitMQ connection:', error);
     }
   }
 
