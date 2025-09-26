@@ -1,0 +1,27 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "strict": true,
+    "types": ["bun"],
+    "jsx": "react-jsx",
+    "jsxImportSource": "hono/jsx",
+    "noImplicitAny": true,
+    "paths": {
+      "@/*": ["./src/*"],
+      "@configs/*": ["./src/configs/*"],
+      "@controllers/*": ["./src/controllers/*"],
+      "@db/*": ["./src/db/*"],
+      "@lib/*": ["./src/lib/*"],
+      "@middlewares/*": ["./src/middlewares/*"],
+      "@repositories/*": ["./src/repositories/*"],
+      "@routes/*": ["./src/routes/*"],
+      "@types/*": ["./src/types/*"],
+      "@utils/*": ["src/lib/*"]
+    },
+    "baseUrl": ".",
+    "skipLibCheck": true,
+    "experimentalDecorators": true
+  }
+}
