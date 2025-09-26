@@ -284,6 +284,28 @@ class WorkflowService:
         if decision == "approve":
             contract.status = ContractStatus.APPROVED
             contract.current_assignee = UserRole.MANAGEMENT  # Process complete
+            
+            # Trigger risk identification for approved contracts (background task)
+            import threading
+            try:
+                def run_risk_identification():
+                    import asyncio
+                    try:
+                        loop = asyncio.new_event_loop()
+                        asyncio.set_event_loop(loop)
+                        loop.run_until_complete(
+                            self._trigger_risk_identification_async(contract, correlation_id=None)
+                        )
+                    except Exception as e:
+                        logger.error(f"Background risk identification failed for {contract_id}: {e}")
+                    finally:
+                        loop.close()
+                
+                thread = threading.Thread(target=run_risk_identification, daemon=True)
+                thread.start()
+                logger.info(f"Risk identification task started in background for contract {contract_id}")
+            except Exception as e:
+                logger.warning(f"Failed to start background risk identification for contract {contract_id}: {e}")
         elif decision == "reject_to_legal":
             contract.status = ContractStatus.REJECTED_TO_LEGAL
             contract.current_assignee = UserRole.LEGAL
@@ -451,6 +473,216 @@ class WorkflowService:
         except Exception as e:
             logger.error(f"Failed to generate PDF for contract {contract.id}: {e}")
             return None
+    
+    def _trigger_risk_identification(self, contract: ContractDraft, correlation_id: Optional[str] = None):
+        try:
+            from app.services.risk_identification import risk_identification_service
+            
+            contract_text = f"Title: {contract.template.title}\n\n"
+            if contract.template.description:
+                contract_text += f"Description: {contract.template.description}\n\n"
+            
+            contract_text += "Parties:\n"
+            for party in contract.template.parties:
+                contract_text += f"- {party.role}: {party.name}\n"
+            contract_text += "\n"
+            
+            contract_text += "Clauses:\n"
+            for clause in contract.clauses:
+                contract_text += f"{clause.no}. {clause.title}\n{clause.text}\n\n"
+            
+            contract_metadata = {
+                "contract_id": contract.id,
+                "title": contract.template.title,
+                "description": contract.template.description,
+                "end_date": contract.template.end_date,
+                "jurisdiction": contract.template.jurisdiction,
+                "language": contract.template.language,
+                "status": contract.status.value,
+                "parties": [{"name": p.name, "role": p.role} for p in contract.template.parties],
+                "clause_count": len(contract.clauses)
+            }
+            
+            risks = risk_identification_service.identify_contract_risks(
+                contract_text=contract_text,
+                contract_metadata=contract_metadata,
+                correlation_id=correlation_id
+            )
+            
+            if risks:
+                total_score = sum(r["risk_score"] for r in risks)
+                overall_risk_score = min(100, total_score // len(risks))
+                
+                critical_risks = len([r for r in risks if r["risk_level"] == "critical"])
+                if critical_risks > 0:
+                    overall_risk_score = min(100, overall_risk_score + (critical_risks * 10))
+            else:
+                overall_risk_score = 0
+            
+            contract.risk_score = overall_risk_score
+            contract.workflow_history.append({
+                "action": "risk_identification_completed",
+                "by_role": "SYSTEM",
+                "timestamp": datetime.now().isoformat(),
+                "notes": f"Risk identification completed. Overall risk score: {overall_risk_score}. Total risks: {len(risks)}",
+                "risk_data": {
+                    "total_risks": len(risks),
+                    "high_risks": len([r for r in risks if r["risk_level"] == "high"]),
+                    "critical_risks": len([r for r in risks if r["risk_level"] == "critical"]),
+                    "overall_score": overall_risk_score,
+                    "risks": risks[:5]  
+                }
+            })
+            
+            self.storage.save_contract(contract)
+            
+            logger.info(
+                f"Risk identification completed for contract {contract.id}",
+                extra={
+                    "correlation_id": correlation_id,
+                    "contract_id": contract.id,
+                    "total_risks": len(risks),
+                    "overall_score": overall_risk_score
+                }
+            )
+            
+        except Exception as e:
+            logger.error(
+                f"Risk identification failed for contract {contract.id}: {e}",
+                extra={"correlation_id": correlation_id, "contract_id": contract.id}
+            )
+            raise
+    
+    async def _trigger_risk_identification_async(self, contract: ContractDraft, correlation_id: Optional[str] = None):
+        try:
+            from app.services.risk_identification import risk_identification_service
+            from pathlib import Path
+            import json
+            from datetime import datetime
+            
+            contract_text = f"Title: {contract.template.title}\n\n"
+            if contract.template.description:
+                contract_text += f"Description: {contract.template.description}\n\n"
+            
+            contract_text += "Parties:\n"
+            for party in contract.template.parties:
+                contract_text += f"- {party.role}: {party.name}\n"
+            contract_text += "\n"
+            
+            contract_text += "Clauses:\n"
+            for clause in contract.clauses:
+                contract_text += f"Pasal {clause.no}. {clause.title}\n{clause.text}\n\n"
+            
+            contract_metadata = {
+                "contract_id": contract.id,
+                "title": contract.template.title,
+                "description": contract.template.description,
+                "end_date": contract.template.end_date,
+                "jurisdiction": contract.template.jurisdiction,
+                "language": contract.template.language,
+                "status": contract.status.value,
+                "parties": [{"name": p.name, "role": p.role} for p in contract.template.parties],
+                "clause_count": len(contract.clauses),
+                "clauses": contract.clauses  
+            }
+            
+            risks = await risk_identification_service.identify_contract_risks(
+                contract_text=contract_text,
+                contract_metadata=contract_metadata,
+                correlation_id=correlation_id
+            )
+            
+            simplified_risks = []
+            for risk in risks:
+                clause_ref = self._find_clause_reference(risk, contract_metadata)
+                
+                simplified_risk = {
+                    "description": risk["description"],
+                    "clause_reference": clause_ref,
+                    "recommendation": risk["recommendation"]
+                }
+                simplified_risks.append(simplified_risk)
+            
+            if risks:
+                total_score = sum(r["risk_score"] for r in risks)
+                overall_risk_score = min(100, total_score // len(risks))
+                
+                critical_risks = len([r for r in risks if r["risk_level"] == "critical"])
+                if critical_risks > 0:
+                    overall_risk_score = min(100, overall_risk_score + (critical_risks * 10))
+            else:
+                overall_risk_score = 0
+            
+            contract.risk_score = overall_risk_score
+            
+            risk_output = {
+                "contract": {
+                    "id": contract.id,
+                    "title": contract.template.title,
+                    "file": f"contract_{contract.id}.json"
+                },
+                "risks": simplified_risks
+            }
+            
+            risks_dir = Path("out/risks")
+            risks_dir.mkdir(exist_ok=True)
+            
+            risk_file = risks_dir / f"risks_{contract.id}.json"
+            with open(risk_file, 'w', encoding='utf-8') as f:
+                json.dump(risk_output, f, indent=2, ensure_ascii=False)
+            
+            contract.workflow_history.append({
+                "action": "risk_identification_completed",
+                "by_role": "SYSTEM",
+                "timestamp": datetime.now().isoformat(),
+                "notes": f"Risk identification completed. Overall risk score: {overall_risk_score}. Total risks: {len(risks)}. Risk file: {risk_file.name}",
+                "risk_data": {
+                    "total_risks": len(risks),
+                    "high_risks": len([r for r in risks if r["risk_level"] == "high"]),
+                    "critical_risks": len([r for r in risks if r["risk_level"] == "critical"]),
+                    "overall_score": overall_risk_score,
+                    "risk_file": str(risk_file)
+                }
+            })
+            
+            self.storage.save_contract(contract)
+            
+            logger.info(
+                f"Risk identification completed for contract {contract.id}",
+                extra={
+                    "correlation_id": correlation_id,
+                    "contract_id": contract.id,
+                    "total_risks": len(risks),
+                    "overall_score": overall_risk_score,
+                    "risk_file": str(risk_file)
+                }
+            )
+            
+        except Exception as e:
+            logger.error(
+                f"Risk identification failed for contract {contract.id}: {e}",
+                extra={"correlation_id": correlation_id, "contract_id": contract.id}
+            )
+            raise
+    
+    def _find_clause_reference(self, risk, contract_metadata):
+        clause_ref = risk.get("clause_reference", "")
+        if not clause_ref:
+            return None
+        
+        clauses = contract_metadata.get("clauses", [])
+        
+        for clause in clauses:
+            clause_text = clause.get("text", "")
+            clause_title = clause.get("title", "")
+            clause_no = clause.get("no", "")
+            
+            if clause_ref.lower() in clause_text.lower() or clause_ref.lower() in clause_title.lower():
+                return f"Pasal {clause_no}. {clause_title}"
+        
+        if len(clause_ref) > 50:
+            return clause_ref[:50] + "..."
+        return clause_ref
 
 
 # Global workflow service
