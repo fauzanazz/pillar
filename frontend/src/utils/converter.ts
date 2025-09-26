@@ -55,8 +55,8 @@ export const mapGeneratedClausesToLegalClauses = (
 
   return generatedClauses.map(clause => ({
     id: parseInt(clause.id, 10), // Convert the string ID to a number.
-    clauseText: clause.clauseText,
-    clauseDescription: clause.clauseDescription,
+    clauseText: clause.clauseDescription,
+    clauseDescription: clause.clauseText,
     isEditing: false, // Set a default value for the optional isEditing property.
   }));
 };
