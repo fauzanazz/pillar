@@ -225,25 +225,7 @@ export function InternalContractTable({
                       {contract.status}
                     </span>
                   </TableCell>
-                  <TableCell className="px-4 py-4 text-sm">
-                    {contract.description ? (
-                      <button
-                        onClick={() => {
-                          console.log(
-                            'View generated contract:',
-                            contract.description
-                          );
-                        }}
-                        className="text-blue-600 hover:text-blue-800 underline text-xs"
-                      >
-                        View Generated
-                      </button>
-                    ) : (
-                      <span className="text-gray-400 text-xs">
-                        Not Generated
-                      </span>
-                    )}
-                  </TableCell>
+
                   <TableCell className="px-4 py-4 flex items-center justify-center">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
