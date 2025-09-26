@@ -1,7 +1,7 @@
 import { ContractForm } from "@/components/contracts/AddContractModal";
 
 
-const BASE_AI_URL = 'https://ai.ifest.fauzanazz.com';
+const BASE_AI_URL = 'http://localhost:5001';
 // const BASE_AI_URL = 'http://localhost:8081';
 export const generateContract = async (data: ContractForm ,  presignedUrl: string ): Promise<string> => {
     try {

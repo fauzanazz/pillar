@@ -22,7 +22,7 @@ export type CreateClientConfig<T extends ClientOptions = ClientOptions2> = (
 
 export const client = createClient(
   createConfig<ClientOptions2>({
-    baseURL: 'https://api.ifest.fauzanazz.com',
+    baseURL: 'http://localhost:5001',
     withCredentials: true,
   })
 );
