@@ -5,7 +5,8 @@ Handles initialization and management of Supabase client.
 
 import logging
 from typing import Optional
-from supabase import create_client, Client
+# Use our patched version to fix the gotrue proxy issue
+from app.supabase_patch import create_client, Client
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, Session

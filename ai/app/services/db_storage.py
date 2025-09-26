@@ -190,7 +190,9 @@ class DBStorage:
                 } for p in contract.template.parties],
                 'end_date': contract.template.end_date,
                 'value': contract.template.value,
-                'currency': contract.template.currency
+                'jurisdiction': contract.template.jurisdiction,
+                'language': contract.template.language,
+                'special_requirements': contract.template.special_requirements
             },
             'clauses': [{
                 'id': c.id,
