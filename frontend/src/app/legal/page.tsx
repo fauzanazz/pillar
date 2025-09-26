@@ -1,6 +1,5 @@
 'use client';
 
-import ProtectedRoute from '@/components/auth/ProtectedRoute';
 import Navigation from '@/components/layout/Navigation';
 import LegalDashboard from '../../components/legal/LegalDashboard';
 import { ContractWithRelations } from '@/api';
@@ -19,13 +18,11 @@ export default function LegalPage() {
   };
 
   return (
-    <ProtectedRoute allowedRoles={['legal']}>
-      <div className="min-h-screen bg-gray-50">
-        <Navigation />
-        <div className="max-w-7xl mx-auto">
-          <LegalDashboard />
-        </div>
+    <div className="min-h-screen bg-gray-50">
+      <Navigation />
+      <div className="max-w-7xl mx-auto">
+        <LegalDashboard />
       </div>
-    </ProtectedRoute>
+    </div>
   );
 }
