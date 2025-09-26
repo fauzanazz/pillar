@@ -20,40 +20,42 @@ export const contractSchema = createSelectSchema(contracts, {
   status: contractStatusEnum,
   createdAt: z.union([z.string(), z.date()]),
   updatedAt: z.union([z.string(), z.date()]),
-});
+}).openapi('Contract');
 
 // Contract with relations
-export const contractWithRelationsSchema = contractSchema.extend({
-  versions: z
-    .array(
-      z.object({
-        id: z.number(),
-        filePath: z.string(),
-        versionNo: z.number(),
-        uploadedAt: z.string().datetime(),
-      }),
-    )
-    .optional(),
-  parties: z
-    .array(
-      z.object({
-        id: z.number(),
-        partyName: z.string(),
-        partyRole: z.string(),
-      }),
-    )
-    .optional(),
-  clauses: z
-    .array(
-      z.object({
-        id: z.number(),
-        clauseText: z.string(),
-        clauseDescription: z.string().nullable(),
-        riskLevel: z.string().nullable(),
-      }),
-    )
-    .optional(),
-});
+export const contractWithRelationsSchema = contractSchema
+  .extend({
+    versions: z
+      .array(
+        z.object({
+          id: z.number(),
+          filePath: z.string(),
+          versionNo: z.number(),
+          uploadedAt: z.string().datetime(),
+        }),
+      )
+      .optional(),
+    parties: z
+      .array(
+        z.object({
+          id: z.number(),
+          partyName: z.string(),
+          partyRole: z.string(),
+        }),
+      )
+      .optional(),
+    clauses: z
+      .array(
+        z.object({
+          id: z.number(),
+          clauseText: z.string(),
+          clauseDescription: z.string().nullable(),
+          riskLevel: z.string().nullable(),
+        }),
+      )
+      .optional(),
+  })
+  .openapi('ContractWithRelations');
 
 // Request schemas
 export const getContractParamsSchema = z.object({
