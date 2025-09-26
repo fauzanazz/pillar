@@ -6,6 +6,8 @@ import { logger } from 'hono/logger';
 import { RequestIdVariables, requestId } from 'hono/request-id';
 
 import { env } from '@/configs';
+import { rabbitmqConfig } from '@/configs';
+import { rabbitMQService } from '@/lib/rabbitmq';
 
 import { apiRouter } from './controllers/api.controller';
 import { auth } from './lib';
@@ -73,9 +75,31 @@ app.use(
   }),
 );
 
-console.log(`Server is running on port ${env.PORT}`);
+// Initialize RabbitMQ
+const initializeRabbitMQ = async () => {
+  try {
+    console.log('Initializing RabbitMQ...');
+    await rabbitmqConfig.connect();
+    await rabbitMQService.initialize();
+    console.log('RabbitMQ initialized successfully');
+  } catch (error) {
+    console.error('Failed to initialize RabbitMQ:', error);
+    // Don't exit the process, just log the error
+    // The application can still run without RabbitMQ for basic functionality
+  }
+};
 
-serve({
-  fetch: app.fetch,
-  port: env.PORT || 5001,
-});
+// Start server
+const startServer = async () => {
+  // Initialize RabbitMQ in the background
+  initializeRabbitMQ();
+
+  console.log(`Server is running on port ${env.PORT}`);
+
+  serve({
+    fetch: app.fetch,
+    port: env.PORT || 5001,
+  });
+};
+
+startServer();
