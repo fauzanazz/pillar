@@ -6,13 +6,10 @@ RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
 
 # Install dependencies
 COPY package.json bun.lock ./
-RUN bun install
+RUN bun install --frozen-lockfile
 
 # Copy source code
 COPY . .
-
-# Build the app
-RUN bun run build --frozen-lockfile
 
 # Run the app
 USER bun
