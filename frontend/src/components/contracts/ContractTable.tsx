@@ -189,7 +189,7 @@ const ContractTable = ({ filteredContracts }: ContractTableProps) => {
                               <AlertDialogContent>
                                 <AlertDialogHeader>
                                   <AlertDialogTitle>
-                                    Are you sure you want to delete "{c.title}"?
+                                    Are you sure you want to delete &apos;{c.title}&apos;?
                                   </AlertDialogTitle>
                                 </AlertDialogHeader>
                                 <AlertDialogFooter>
