@@ -29,6 +29,7 @@
     "drizzle-orm": "^0.44.3",
     "drizzle-zod": "^0.8.2",
     "hono": "^4.8.5",
+    "minio": "^8.0.6",
     "openai": "^5.10.2",
     "postgres": "^3.4.5",
     "uuid": "^11.0.5",
