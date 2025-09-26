@@ -18,11 +18,41 @@ logging.basicConfig(
 
 class CorrelationIdFilter(logging.Filter):
     def filter(self, record):
+        # Always ensure correlation_id exists, even for built-in loggers or libraries
         if not hasattr(record, 'correlation_id'):
             record.correlation_id = 'unknown'
         return True
 
-logging.getLogger().addFilter(CorrelationIdFilter())
+# Apply correlation ID filter comprehensively
+filter_instance = CorrelationIdFilter()
+
+# Get the root logger and add the filter
+root_logger = logging.getLogger()
+root_logger.addFilter(filter_instance)
+
+# Add filter to all existing handlers
+for handler in root_logger.handlers:
+    handler.addFilter(filter_instance)
+
+# Create a custom logger class that automatically applies our filter
+class FilteredLogger(logging.getLoggerClass()):
+    def __init__(self, name, level=logging.NOTSET):
+        super().__init__(name, level)
+        self.addFilter(filter_instance)
+        
+# Temporarily set our custom logger class
+original_logger_class = logging.getLoggerClass()
+logging.setLoggerClass(FilteredLogger)
+
+# Apply filter to specific logger instances that might already exist
+for logger_name in ['uvicorn', 'httpx', 'uvicorn.access', 'uvicorn.error', 'openai', 'httpcore']:
+    logger_instance = logging.getLogger(logger_name)
+    logger_instance.addFilter(filter_instance)
+    for handler in logger_instance.handlers:
+        handler.addFilter(filter_instance)
+
+# Restore original logger class
+logging.setLoggerClass(original_logger_class)
 logger = logging.getLogger(__name__)
 
 
@@ -37,7 +67,7 @@ async def lifespan(app: FastAPI):
         "Service configuration loaded",
         extra={
             "model_name": settings.openai_model,
-            "cors_origins": settings.cors_origins,
+            "cors_origins": settings.cors_origins_list,
             "log_level": settings.log_level
         }
     )
@@ -58,7 +88,7 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.cors_origins,
+    allow_origins=settings.cors_origins_list,
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE"],
     allow_headers=["*"],

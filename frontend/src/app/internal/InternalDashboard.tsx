@@ -3,7 +3,7 @@
 import { useMemo, useState, useEffect } from 'react';
 import { useContractStore } from '@/stores/contractStore';
 import StatCard from '@/components/dashboard/StatCard';
-import { EnhancedContractTable } from '@/components/contracts/EnhancedContractTable';
+import { InternalContractTable } from '@/components/internal/InternalContractTable';
 import { AddContractModal } from '@/components/contracts/AddContractModal';
 import { EditContractModal } from '@/components/contracts/EditContractModal';
 import { Contract } from '@/api/types.gen';
@@ -15,6 +15,7 @@ import {
   Plus,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { generateContract } from '@/services/ai';
 
 interface InternalDashboardProps {
   onEditContract?: (contract: Contract) => void;
@@ -138,7 +139,7 @@ const InternalDashboard = ({
             <span className="ml-3 text-gray-600">Loading contracts...</span>
           </div>
         ) : (
-          <EnhancedContractTable
+          <InternalContractTable
             contracts={contracts}
             onEdit={contract => {
               setEditingContract(contract);
@@ -154,6 +155,8 @@ const InternalDashboard = ({
             onSendToNextStep={contract => {
               // Update status based on current status
               let newStatus: Contract['status'];
+
+              console.log('Curretn Status : ', contract.status);
               switch (contract.status) {
                 case 'Draft':
                   newStatus = 'Legal Review';
@@ -186,11 +189,33 @@ const InternalDashboard = ({
       <AddContractModal
         isOpen={isAddModalOpen}
         onClose={() => setIsAddModalOpen(false)}
-        onSubmit={contractData => {
-          addContract({
+        onSubmit={async contractData => {      
+          const response = await addContract({
             url: '/api/contracts',
             body: contractData,
           });
+
+          console.log("response", response);
+
+          // @ts-ignore
+          if (response.success!) {
+            // @ts-ignore
+            const presignedUrl = response.data?.presignedUrl;
+            
+            // Convert ContractFormUpload to ContractForm format
+            const contractFormData: ContractForm = {
+              title: contractData.title,
+              description: contractData.description || '',
+              endDate: contractData.endDate || '',
+              parties: contractData.party.map(p => ({
+                name: p.partyName,
+                representation: p.partyRole,
+              })),
+            };
+            
+            await generateContract(contractFormData, presignedUrl);
+            console.log('Contract generated successfully');
+          }
         }}
       />
 

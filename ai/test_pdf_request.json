@@ -1,0 +1,37 @@
+{
+  "header": {
+    "title": "Perjanjian Kerjasama Test",
+    "number": "001/PKS/2025"
+  },
+  "parties": [
+    {
+      "role": "Pihak Pertama",
+      "name": "PT Test Indonesia",
+      "address": "Jakarta, Indonesia",
+      "rep": "John Doe"
+    },
+    {
+      "role": "Pihak Kedua",
+      "name": "PT Example Corp",
+      "address": "Bandung, Indonesia",
+      "rep": "Jane Smith"
+    }
+  ],
+  "clauses": [
+    {
+      "no": 1,
+      "title": "Ruang Lingkup",
+      "text": "Para pihak sepakat untuk melaksanakan kerjasama dalam bidang pengembangan sistem informasi."
+    },
+    {
+      "no": 2,
+      "title": "Jangka Waktu",
+      "text": "Perjanjian ini berlaku selama 1 tahun sejak ditandatangani."
+    }
+  ],
+  "footer": {
+    "hash": "test123",
+    "version": "1.0"
+  },
+  "watermark": "DRAFT"
+}

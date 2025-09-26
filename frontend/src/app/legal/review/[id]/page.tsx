@@ -2,7 +2,7 @@
 
 import { useParams, useRouter } from 'next/navigation';
 import { useContractStore } from '@/stores/contractStore';
-import { AppTopbar } from '@/components/login/AppTopBar';
+import { PageTopBar } from '@/components/login/PageTopBar';
 import { toast } from 'sonner';
 import { getContractById } from '@/api';
 import { useEffect } from 'react';
@@ -21,7 +21,7 @@ export default function LegalReview() {
 
   return (
     <main className="min-h-dvh bg-background">
-      <AppTopbar />
+      <PageTopBar />
       <LegalReviewClient id={params.id} />
     </main>
   );

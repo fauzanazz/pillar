@@ -47,6 +47,26 @@ class ContractClause(BaseModel):
     created_at: datetime = Field(default_factory=datetime.now)
     updated_at: datetime = Field(default_factory=datetime.now)
     notes: Optional[str] = Field(None, description="Legal notes on this clause")
+    risk_score: Optional[int] = Field(None, description="Risk score from AI (0-100)")
+    
+    def to_api_response_format(self) -> 'ClauseResponseItem':
+        """Convert to API response format."""
+        # Convert risk score to risk level string
+        risk_level = "low"
+        if self.risk_score is not None:
+            if self.risk_score >= 70:
+                risk_level = "high"
+            elif self.risk_score >= 40:
+                risk_level = "medium"
+            else:
+                risk_level = "low"
+        
+        return ClauseResponseItem(
+            id=self.no,  # Use clause number as ID
+            clauseText=self.text,
+            clauseDescription=self.title,
+            riskLevel=risk_level
+        )
 
 
 class ContractParty(BaseModel):
@@ -157,3 +177,16 @@ class ContractResponse(BaseModel):
     """Response for single contract."""
     contract: ContractDraft = Field(..., description="Contract details")
     actions_available: List[str] = Field(..., description="Available actions for current user")
+
+
+class ClauseResponseItem(BaseModel):
+    """Individual clause in the API response."""
+    id: int = Field(..., description="Clause ID")
+    clauseText: str = Field(..., description="Clause content")
+    clauseDescription: str = Field(..., description="Clause description/title")
+    riskLevel: str = Field(..., description="Risk level as string")
+
+
+class GenerateClausesResponse(BaseModel):
+    """Response for clause generation endpoint."""
+    clauses: List[ClauseResponseItem] = Field(..., description="Generated clauses")

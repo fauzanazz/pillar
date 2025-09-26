@@ -111,7 +111,8 @@ class WorkflowService:
                 text=clause_data['text'],
                 status=ClauseStatus.PENDING,
                 added_by=UserRole.LEGAL,  # Will be reviewed by legal
-                notes=f"AI Generated - Risk: {clause_data.get('risk', 0)}/100"
+                notes=f"AI Generated - Risk: {clause_data.get('risk', 0)}/100",
+                risk_score=clause_data.get('risk', 0)
             )
             clauses.append(clause)
         
