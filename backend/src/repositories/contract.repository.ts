@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { and, eq, ilike, or, sql } from 'drizzle-orm';
 
 import { env } from '@/configs';
@@ -8,7 +9,7 @@ import {
   contractVersions,
   contracts,
 } from '@/db/schema';
-import { getPresignedUrlByUrl } from '@/lib/s3';
+import { createPutObjectPresignedUrl, getPresignedUrlByUrl } from '@/lib/s3';
 import type {
   AiDraftResponse,
   AiMetadata,
@@ -362,6 +363,65 @@ export const updateContractWithAiData = async (
 
   return {
     ...updatedContract,
+    urlContract: await getPresignedUrlByUrl(updatedContract.urlContract || ''),
+    status: updatedContract.status as ContractStatusEnum,
+    createdAt: updatedContract.createdAt.toISOString(),
+    updatedAt: updatedContract.updatedAt.toISOString(),
+  };
+};
+
+export const acceptContract = async (
+  id: number,
+  contractData: UpdateContract,
+  updatedBy: string,
+  updaterRole: string,
+) => {
+  const [contract] = await db
+    .select()
+    .from(contracts)
+    .where(eq(contracts.id, id))
+    .limit(1);
+
+  if (!contract) {
+    return null;
+  }
+
+  // Validate status
+  if (
+    !validateContractStatus(
+      contract.status,
+      contractData.status || contract.status,
+      updaterRole,
+    )
+  ) {
+    throw new Error('Invalid contract status');
+  }
+
+  const key = `${Date.now()}_${contractData.title}_v1`;
+  const presignedUrl = await createPutObjectPresignedUrl(
+    key,
+    env.S3_BUCKET_NAME,
+    60 * 60 * 24,
+  );
+
+  const [updatedContract] = await db
+    .update(contracts)
+    .set({
+      ...contractData,
+      urlContract: `https://${env.S3_ENDPOINT}/${env.S3_BUCKET_NAME}/${key}`,
+      updatedBy,
+      updatedAt: new Date(),
+    })
+    .where(eq(contracts.id, id))
+    .returning();
+
+  if (!updatedContract) {
+    return null;
+  }
+
+  return {
+    ...updatedContract,
+    presignedUrl,
     urlContract: await getPresignedUrlByUrl(updatedContract.urlContract || ''),
     status: updatedContract.status as ContractStatusEnum,
     createdAt: updatedContract.createdAt.toISOString(),

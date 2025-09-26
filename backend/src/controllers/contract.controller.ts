@@ -265,6 +265,19 @@ protectedContractRouter.openapi(acceptContractRoute, async (c) => {
       return c.json(createErrorResponse('Contract not found', 404), 404);
     }
 
+    // Call external api
+    await fetch(
+      'https://ai.ifest.fauzanazz.com/api/v1/risk/identify-risks/contract/' +
+        id,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ presignedUrl: acceptedContract.presignedUrl }),
+      },
+    );
+
     return c.json(
       createSuccessResponse(
         acceptedContract,
