@@ -1,6 +1,7 @@
 import { axiosClient, API_ENDPOINTS } from '@/lib/axios.client';
-import { Contract, User } from '@/constants/mockData';
+
 import { getApiUrl, debugApiConfig } from '@/config/api';
+import { User } from '@/stores/authStore';
 
 // Auth API
 export const authApi = {
@@ -12,7 +13,7 @@ export const authApi = {
       email,
       password,
       rememberMe: true,
-      callbackURL : "/internal"
+      callbackURL: '/internal',
     });
     return response.data;
   },
@@ -44,61 +45,8 @@ export const authApi = {
   },
 };
 
-// Contract API
-export const contractApi = {
-  getContracts: async (): Promise<Contract[]> => {
-    const apiUrl = getApiUrl(API_ENDPOINTS.contracts.list);
-    const response = await axiosClient.get(apiUrl);
-    return response.data;
-  },
-
-  getContract: async (id: string): Promise<Contract> => {
-    const apiUrl = getApiUrl(API_ENDPOINTS.contracts.get(id));
-    const response = await axiosClient.get(apiUrl);
-    return response.data;
-  },
-
-  createContract: async (contract: Omit<Contract, 'id'>): Promise<Contract> => {
-    const apiUrl = getApiUrl(API_ENDPOINTS.contracts.create);
-    const response = await axiosClient.post(apiUrl, contract);
-    return response.data;
-  },
-
-  updateContract: async (
-    id: string,
-    updates: Partial<Contract>
-  ): Promise<Contract> => {
-    const apiUrl = getApiUrl(API_ENDPOINTS.contracts.update(id));
-    const response = await axiosClient.put(apiUrl, updates);
-    return response.data;
-  },
-
-  deleteContract: async (id: string): Promise<void> => {
-    const apiUrl = getApiUrl(API_ENDPOINTS.contracts.delete(id));
-    await axiosClient.delete(apiUrl);
-  },
-
-  reviewContract: async (
-    id: string,
-    review: { status: string; comments?: string }
-  ) => {
-    const apiUrl = getApiUrl(API_ENDPOINTS.contracts.review(id));
-    const response = await axiosClient.post(apiUrl, review);
-    return response.data;
-  },
-
-  approveContract: async (id: string, comments?: string) => {
-    const apiUrl = getApiUrl(API_ENDPOINTS.contracts.approve(id));
-    const response = await axiosClient.post(apiUrl, { comments });
-    return response.data;
-  },
-
-  rejectContract: async (id: string, reason: string) => {
-    const apiUrl = getApiUrl(API_ENDPOINTS.contracts.reject(id));
-    const response = await axiosClient.post(apiUrl, { reason });
-    return response.data;
-  },
-};
+// Note: Contract API is now handled by OpenAPI client in @/services/openapi
+// This section is kept for reference but should not be used
 
 // User API
 export const userApi = {
@@ -148,10 +96,9 @@ export const dashboardApi = {
   },
 };
 
-// Export all APIs
+// Export all APIs (Note: contracts now use OpenAPI client)
 export const api = {
   auth: authApi,
-  contracts: contractApi,
   users: userApi,
   dashboard: dashboardApi,
 };

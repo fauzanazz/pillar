@@ -7,8 +7,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.exceptions import RequestValidationError
 from app.settings import settings
-from app.models.schemas import HealthResponse, ErrorResponse
-from app.routers import drafting, pdf, workflow
+from app.models.schemas import HealthResponse
+from app.routers import drafting, pdf, workflow, search
 
 logging.basicConfig(
     level=getattr(logging, settings.log_level.upper()),
@@ -189,6 +189,7 @@ async def health_check():
 app.include_router(drafting.router, prefix="/ai")
 app.include_router(pdf.router, prefix="/ai")
 app.include_router(workflow.router, prefix="/api/v1")
+app.include_router(search.router, prefix="/api/v1")
 
 
 @app.get(

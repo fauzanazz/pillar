@@ -1,62 +1,29 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { ROUTES, hasRouteAccess, getDefaultRoute, UserRole } from '@/config/routes';
 
-// Middleware to handle authentication and role-based access
+// Simplified middleware that mainly handles static assets and API routes
 export function authMiddleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Get auth data from cookies or headers
-  const authCookie = request.cookies.get('auth-storage');
-  let user = null;
-  let isAuthenticated = false;
+  // Allow access to static assets, API routes, and other system routes
+  const allowedPaths = [
+    '/api',
+    '/_next',
+    '/favicon.ico',
+    '/robots.txt',
+    '/sitemap.xml',
+    '/manifest.json',
+  ];
 
-  if (authCookie) {
-    try {
-      const authData = JSON.parse(authCookie.value);
-      user = authData.state?.user;
-      isAuthenticated = authData.state?.isAuthenticated || false;
-    } catch (error) {
-      console.error('Error parsing auth cookie:', error);
-    }
-  }
-
-  // Public routes that don't require authentication
-  const publicRoutes = ['/login', '/', '/404', '/unauthorized'];
-  const isPublicRoute = publicRoutes.some(route => pathname.startsWith(route));
-
-  // If it's a public route, allow access
-  if (isPublicRoute) {
-    // Redirect authenticated users away from login page
-    if (pathname === '/login' && isAuthenticated && user) {
-      const defaultRoute = getDefaultRoute(user.role as UserRole);
-      return NextResponse.redirect(new URL(defaultRoute, request.url));
-    }
+  if (allowedPaths.some(path => pathname.startsWith(path))) {
     return NextResponse.next();
   }
 
-  // Check if user is authenticated
-  if (!isAuthenticated || !user) {
-    return NextResponse.redirect(new URL('/login', request.url));
-  }
-
-  // Check role-based access
-  if (!hasRouteAccess(pathname, user.role as UserRole)) {
-    // If user tries to access unauthorized route, redirect to their default dashboard
-    const defaultRoute = getDefaultRoute(user.role as UserRole);
-
-    // If they're trying to access a different dashboard, redirect to theirs
-    if (pathname !== defaultRoute) {
-      return NextResponse.redirect(new URL(defaultRoute, request.url));
-    }
-
-    // Otherwise show unauthorized page
-    return NextResponse.redirect(new URL('/unauthorized', request.url));
-  }
-
+  // For all other routes, let the AuthGuard component handle authentication
+  // The middleware now primarily serves to ensure proper handling of requests
   return NextResponse.next();
 }
 
-// Route matcher configuration
+// Route matcher configuration - now more focused on system routes
 export const config = {
   matcher: [
     /*

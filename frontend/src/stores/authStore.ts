@@ -1,9 +1,21 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { MOCK_USERS, LOGIN_CREDENTIALS, User } from '@/constants/mockData';
+
 import { getDefaultRoute, hasRouteAccess } from '@/config/routes';
 import type { UserRole } from '@/config/routes';
 import { authApi } from '@/services/api';
+
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+  emailVerified: boolean;
+  role: 'internal' | 'legal' | 'management';
+  image: string | null;
+  bio: string | null;
+  createdAt: string | Date;
+  updatedAt: string | Date;
+}
 
 interface AuthState {
   user: User | null;
@@ -15,6 +27,7 @@ interface AuthState {
   logout: () => void;
   updateUser: (updates: Partial<User>) => void;
   initializeAuth: () => void;
+  getSession: () => Promise<void>;
   hasAccess: (route: string) => boolean;
   getDefaultDashboard: () => string | null;
 }
@@ -33,9 +46,6 @@ export const useAuthStore = create<AuthState>()(
           if (!response) {
             return { success: false, error: 'Invalid credentials' };
           }
-
-          console.log(response);
-
           const session = await authApi.getSession();
 
           if (!session) {
@@ -76,6 +86,33 @@ export const useAuthStore = create<AuthState>()(
       initializeAuth: () => {
         // This is called on app initialization
         // Zustand persist middleware handles restoration
+      },
+
+      getSession: async () => {
+        try {
+          const session = await authApi.getSession();
+
+          if (session && session.user) {
+            set({
+              user: session.user,
+              isAuthenticated: true,
+            });
+          } else {
+            // Clear auth state if session is invalid
+            set({
+              user: null,
+              isAuthenticated: false,
+            });
+          }
+        } catch (error) {
+          console.error('Session check failed:', error);
+          // Clear auth state on error
+          set({
+            user: null,
+            isAuthenticated: false,
+          });
+          throw error;
+        }
       },
 
       hasAccess: (route: string) => {
