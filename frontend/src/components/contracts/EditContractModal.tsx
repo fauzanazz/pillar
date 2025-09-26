@@ -9,7 +9,7 @@ import { X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Contract } from '@/constants/mockData';
+import { Contract } from '@/types/contract';
 
 interface EditContractModalProps {
   isOpen: boolean;
@@ -53,7 +53,7 @@ export function EditContractModal({ isOpen, contract, onClose, onSubmit }: EditC
         title: contract.title,
         description: contract.description,
         endDate: contract.endDate,
-        parties: contract.parties.join(', '),
+        parties: contract.parties.map(p => `${p.name} (${p.representation})`).join(', '),
         contractUrl: contract.contractUrl || '',
         startDate: contract.startDate,
         amount: contract.amount || '',
@@ -67,18 +67,12 @@ export function EditContractModal({ isOpen, contract, onClose, onSubmit }: EditC
     setIsSubmitting(true);
 
     try {
-      // Convert parties string to array
-      const partiesArray = data.parties.split(',').map(party => party.trim()).filter(party => party.length > 0);
-
       const updates: Partial<Contract> = {
         title: data.title,
         description: data.description,
         endDate: data.endDate,
-        parties: partiesArray,
-        contractUrl: data.contractUrl || undefined,
         startDate: data.startDate,
         amount: data.amount || undefined,
-        counterparty: partiesArray[0] || contract.counterparty,
       };
 
       await onSubmit(contract.id, updates);

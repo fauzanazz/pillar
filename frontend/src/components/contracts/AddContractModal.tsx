@@ -9,12 +9,29 @@ import { X, Plus, Trash2, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Contract, Party } from '@/constants/mockData';
+import { ContractWithRelations, CreateContractData } from '@/api';
 
 interface AddContractModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (contract: Omit<Contract, 'id'>) => void;
+  onSubmit: (contract: ContractFormUpload) => void;
+}
+
+interface ContractFormUpload {
+  title: string;
+  description?: string;
+  endDate?: string;
+  status?:
+    | 'Draft'
+    | 'Legal Review'
+    | 'Management Review'
+    | 'Accepted'
+    | 'Rejected'
+    | 'Canceled';
+  party: Array<{
+    partyName: string;
+    partyRole: string;
+  }>;
 }
 
 const partySchema = z.object({
@@ -109,18 +126,15 @@ export function AddContractModal({
       // Generate AI contract
       const generatedContract = await generateContract(data);
 
-      const newContract: Omit<Contract, 'id'> = {
+      const newContract: ContractFormUpload = {
         title: data.title,
         description: data.description,
         endDate: data.endDate,
-        parties: data.parties,
-        status: 'draft',
-        version: '1.0',
-        generatedContract,
-        // Backward compatibility fields
-        counterparty: data.parties[0]?.name || '',
-        startDate: new Date().toISOString().split('T')[0],
-        createdBy: 'Sarah Internal', // In real app, get from auth store
+        party: data.parties.map((party, idx) => ({
+          id: idx,
+          partyName: party.name,
+          partyRole: party.representation,
+        })),
       };
 
       await onSubmit(newContract);

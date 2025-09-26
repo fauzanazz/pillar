@@ -1,12 +1,12 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { useContractStore } from '@/stores/contractStore';
 import StatCard from '@/components/dashboard/StatCard';
 import { EnhancedContractTable } from '@/components/contracts/EnhancedContractTable';
 import { AddContractModal } from '@/components/contracts/AddContractModal';
 import { EditContractModal } from '@/components/contracts/EditContractModal';
-import { Contract } from '@/constants/mockData';
+import { Contract } from '@/api/types.gen';
 import {
   FileText,
   Clock,
@@ -30,19 +30,26 @@ const InternalDashboard = ({
   onCreateContract,
 }: InternalDashboardProps) => {
   const contracts = useContractStore(state => state.contracts);
+  const fetchContracts = useContractStore(state => state.fetchContracts);
   const addContract = useContractStore(state => state.addContract);
   const updateContract = useContractStore(state => state.updateContract);
   const deleteContract = useContractStore(state => state.deleteContract);
+  const loading = useContractStore(state => state.loading);
 
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [editingContract, setEditingContract] = useState<Contract | null>(null);
 
+  // Fetch contracts on component mount
+  useEffect(() => {
+    fetchContracts();
+  }, [fetchContracts]);
+
   // Internal team sees all contracts but focuses on their workflow
   const stats = useMemo(() => {
     const totalContracts = contracts.length;
-    const draftContracts = contracts.filter(c => c.status === 'draft').length;
+    const draftContracts = contracts.filter(c => c.status === 'Draft').length;
     const activeContracts = contracts.filter(
-      c => c.status === 'accepted'
+      c => c.status === 'Accepted'
     ).length;
     // const nearExpireContracts = contracts.filter(
     //   c => c.status === 'near_expire'
@@ -125,37 +132,54 @@ const InternalDashboard = ({
           </p>
         </div>
 
-        <EnhancedContractTable
-          contracts={contracts}
-          onEdit={contract => {
-            setEditingContract(contract);
-          }}
-          onDelete={contract => {
-            deleteContract(contract.id);
-          }}
-          onSendToNextStep={contract => {
-            // Update status based on current status
-            let newStatus: Contract['status'];
-            switch (contract.status) {
-              case 'draft':
-                newStatus = 'legal_review';
-                break;
-              case 'legal_review':
-                newStatus = 'management_review';
-                break;
-              case 'management_review':
-                newStatus = 'accepted';
-                break;
-              default:
-                return;
-            }
-            updateContract(contract.id, { status: newStatus });
-          }}
-          onView={contract => {
-            console.log('View contract:', contract);
-            // TODO: Implement view modal or navigate to detail page
-          }}
-        />
+        {loading ? (
+          <div className="flex justify-center items-center py-12">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+            <span className="ml-3 text-gray-600">Loading contracts...</span>
+          </div>
+        ) : (
+          <EnhancedContractTable
+            contracts={contracts}
+            onEdit={contract => {
+              setEditingContract(contract);
+            }}
+            onDelete={contract => {
+              deleteContract({
+                url: '/api/contracts/{id}',
+                path: {
+                  id: contract.id.toString(),
+                },
+              });
+            }}
+            onSendToNextStep={contract => {
+              // Update status based on current status
+              let newStatus: Contract['status'];
+              switch (contract.status) {
+                case 'Draft':
+                  newStatus = 'Legal Review';
+                  break;
+                case 'Legal Review':
+                  newStatus = 'Management Review';
+                  break;
+                case 'Management Review':
+                  newStatus = 'Accepted';
+                  break;
+                default:
+                  return;
+              }
+
+              updateContract({
+                url: '/api/contracts/{id}',
+                path: { id: contract.id.toString() },
+                body: { status: newStatus },
+              });
+            }}
+            onView={contract => {
+              console.log('View contract:', contract);
+              // TODO: Implement view modal or navigate to detail page
+            }}
+          />
+        )}
       </div>
 
       {/* Add Contract Modal */}
@@ -163,7 +187,10 @@ const InternalDashboard = ({
         isOpen={isAddModalOpen}
         onClose={() => setIsAddModalOpen(false)}
         onSubmit={contractData => {
-          addContract(contractData);
+          addContract({
+            url: '/api/contracts',
+            body: contractData,
+          });
         }}
       />
 
@@ -173,7 +200,11 @@ const InternalDashboard = ({
         contract={editingContract}
         onClose={() => setEditingContract(null)}
         onSubmit={(id, updates) => {
-          updateContract(id, updates);
+          updateContract({
+            url: '/api/contracts/{id}',
+            path: { id: id },
+            body: updates,
+          });
         }}
       />
     </div>

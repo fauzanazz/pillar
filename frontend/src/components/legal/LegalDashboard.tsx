@@ -4,7 +4,6 @@ import { useMemo } from 'react';
 import { useContractStore } from '@/stores/contractStore';
 
 import ContractTable from '../contracts/ContractTable';
-import { Contract } from '@/constants/mockData';
 import { FileText, Clock, CheckCircle, AlertTriangle } from 'lucide-react';
 import StatCard from '../dashboard/StatCard';
 
@@ -15,23 +14,23 @@ const LegalDashboard = () => {
   const legalContracts = useMemo(() => {
     return contracts.filter(
       c =>
-        c.status === 'legal_review' ||
-        c.status === 'management_review' ||
-        c.status === 'accepted' ||
-        c.status === 'rejected'
+        c.status === 'Legal Review' ||
+        c.status === 'Management Review' ||
+        c.status === 'Accepted' ||
+        c.status === 'Canceled'
     );
   }, [contracts]);
 
   const stats = useMemo(() => {
     const totalContracts = legalContracts.length;
     const pendingReview = contracts.filter(
-      c => c.status === 'legal_review'
+      c => c.status === 'Legal Review'
     ).length;
     const reviewedContracts = contracts.filter(
-      c => c.status === 'management_review' || c.status === 'accepted'
+      c => c.status === 'Management Review' || c.status === 'Accepted'
     ).length;
     const rejectedContracts = contracts.filter(
-      c => c.status === 'rejected'
+      c => c.status === 'Canceled'
     ).length;
 
     return {

@@ -4,7 +4,7 @@ import { useEffect, memo } from 'react';
 import Link from 'next/link';
 import { useContractStore } from '@/stores/contractStore';
 import { useAuthStore } from '@/stores/authStore'; // Assuming auth store provides the role
-import { Contract } from '@/constants/mockData';
+
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import {
@@ -33,23 +33,28 @@ import {
 } from '@/components/ui/alert-dialog';
 import { MoreHorizontal, FileText } from 'lucide-react';
 import { toast } from 'sonner';
+import { ContractWithRelations } from '@/api';
 
 // A reusable component for displaying the contract status pill
-const StatusPill = ({ status }: { status: Contract['status'] }) => {
+const StatusPill = ({
+  status,
+}: {
+  status: ContractWithRelations['status'];
+}) => {
   const getStatusInfo = () => {
     switch (status) {
-      case 'draft':
+      case 'Draft':
         return { label: 'Draft', className: 'bg-draft text-draft' };
-      case 'legal_review':
+      case 'Legal Review':
         return { label: 'Legal Review', className: 'bg-review text-review' };
-      case 'management_review':
+      case 'Management Review':
         return {
           label: 'Management Review',
           className: 'bg-review text-review',
         };
-      case 'accepted':
+      case 'Accepted':
         return { label: 'Accepted', className: 'bg-accepted text-accepted' };
-      case 'rejected':
+      case 'Rejected':
         return { label: 'Rejected', className: 'bg-rejected text-rejected' };
       // case 'near_expire':
       //   return { label: 'Near Expire', className: 'bg-warning text-warning' };
@@ -70,7 +75,7 @@ const StatusPill = ({ status }: { status: Contract['status'] }) => {
 };
 
 interface ContractTableProps {
-  filteredContracts?: Contract[];
+  filteredContracts?: ContractWithRelations[];
 }
 
 const ContractTable = ({ filteredContracts }: ContractTableProps) => {
@@ -159,9 +164,12 @@ const ContractTable = ({ filteredContracts }: ContractTableProps) => {
                             </DropdownMenuItem>
                             <DropdownMenuItem
                               onClick={() => {
-                                // Replicated 'sendToLegal' logic using 'updateContract'
-                                updateContract(c.id, {
-                                  status: 'legal_review',
+                                updateContract({
+                                  url: '/api/contracts/{id}',
+                                  path: { id: c.id.toString() },
+                                  body: {
+                                    status: 'Legal Review',
+                                  },
                                 });
 
                                 toast.info('Sent to Legal Review');
@@ -189,7 +197,10 @@ const ContractTable = ({ filteredContracts }: ContractTableProps) => {
                                   <AlertDialogAction
                                     className="bg-destructive hover:bg-destructive/90"
                                     onClick={() => {
-                                      deleteContract(c.id);
+                                      deleteContract({
+                                        url: '/api/contracts/{id}',
+                                        path: { id: c.id.toString() },
+                                      });
                                       toast.info(`Contract ${c.title} deleted`);
                                     }}
                                   >

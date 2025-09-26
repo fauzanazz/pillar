@@ -6,7 +6,8 @@
     "dev": "next dev --turbopack",
     "build": "next build --turbopack",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "openapi-ts": "openapi-ts"
   },
   "dependencies": {
     "@fontsource/montserrat": "^5.2.8",
@@ -33,11 +34,13 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
+    "@hey-api/openapi-ts": "^0.84.3",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "autoprefixer": "^10.4.21",
+    "dotenv": "^17.2.2",
     "eslint": "^9",
     "eslint-config-next": "15.5.4",
     "postcss": "^8.5.6",

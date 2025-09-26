@@ -3,15 +3,16 @@
 import { useState } from 'react';
 import { Edit, Trash2, Send, Eye, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Contract } from '@/constants/mockData';
+
 import { toast } from 'sonner';
+import { ContractWithRelations } from '@/api';
 
 interface ContractTableProps {
-  contracts: Contract[];
-  onEdit: (contract: Contract) => void;
-  onDelete: (contract: Contract) => void;
-  onSendToNextStep: (contract: Contract) => void;
-  onView?: (contract: Contract) => void;
+  contracts: ContractWithRelations[];
+  onEdit: (contract: ContractWithRelations) => void;
+  onDelete: (contract: ContractWithRelations) => void;
+  onSendToNextStep: (contract: ContractWithRelations) => void;
+  onView?: (contract: ContractWithRelations) => void;
 }
 
 interface ConfirmationModalProps {
@@ -48,10 +49,7 @@ function ConfirmationModal({
             <Button variant="outline" onClick={onCancel}>
               Cancel
             </Button>
-            <Button
-              variant={confirmVariant}
-              onClick={onConfirm}
-            >
+            <Button variant={confirmVariant} onClick={onConfirm}>
               {confirmText}
             </Button>
           </div>
@@ -89,14 +87,14 @@ export function EnhancedContractTable({
   const [confirmModal, setConfirmModal] = useState<{
     isOpen: boolean;
     type: 'delete' | 'send' | null;
-    contract: Contract | null;
+    contract: ContractWithRelations | null;
   }>({
     isOpen: false,
     type: null,
     contract: null,
   });
 
-  const handleDeleteClick = (contract: Contract) => {
+  const handleDeleteClick = (contract: ContractWithRelations) => {
     setConfirmModal({
       isOpen: true,
       type: 'delete',
@@ -104,7 +102,7 @@ export function EnhancedContractTable({
     });
   };
 
-  const handleSendClick = (contract: Contract) => {
+  const handleSendClick = (contract: ContractWithRelations) => {
     setConfirmModal({
       isOpen: true,
       type: 'send',
@@ -131,28 +129,28 @@ export function EnhancedContractTable({
     setConfirmModal({ isOpen: false, type: null, contract: null });
   };
 
-  const getNextStepLabel = (status: Contract['status']) => {
-    switch (status) {
-      case 'draft':
-        return 'Send to Legal Review';
-      case 'legal_review':
-        return 'Send to Management';
-      case 'management_review':
-        return 'Accept Contract';
-      default:
-        return 'Send to Next Step';
-    }
+  const getNextStepLabel = (status: ContractWithRelations['status']) => {
+    // switch (status) {
+    //   case 'draft':
+    //     return 'Send to Legal Review';
+    //   case 'legal_review':
+    //     return 'Send to Management';
+    //   case 'management_review':
+    //     return 'Accept Contract';
+    //   default:
+    //     return 'Send to Next Step';
+    // }
   };
 
-  const canSendToNextStep = (status: Contract['status']) => {
+  const canSendToNextStep = (status: ContractWithRelations['status']) => {
     return ['draft', 'legal_review', 'management_review'].includes(status);
   };
 
-  const canEdit = (status: Contract['status']) => {
+  const canEdit = (status: ContractWithRelations['status']) => {
     return ['draft'].includes(status);
   };
 
-  const canDelete = (status: Contract['status']) => {
+  const canDelete = (status: ContractWithRelations['status']) => {
     return ['draft', 'rejected'].includes(status);
   };
 
@@ -174,12 +172,7 @@ export function EnhancedContractTable({
               <th className="px-4 py-3 text-left text-sm font-medium text-gray-900 border-b">
                 Status
               </th>
-              <th className="px-4 py-3 text-left text-sm font-medium text-gray-900 border-b">
-                Pihak
-              </th>
-              <th className="px-4 py-3 text-left text-sm font-medium text-gray-900 border-b">
-                Version
-              </th>
+
               <th className="px-4 py-3 text-left text-sm font-medium text-gray-900 border-b">
                 URL Contract
               </th>
@@ -189,12 +182,14 @@ export function EnhancedContractTable({
             </tr>
           </thead>
           <tbody>
-            {contracts.map((contract) => (
+            {contracts.map(contract => (
               <tr key={contract.id} className="border-b hover:bg-gray-50">
                 <td className="px-4 py-4 text-sm text-gray-900">
                   <div className="font-medium">{contract.title}</div>
-                  {contract.amount && (
-                    <div className="text-xs text-gray-500">{contract.amount}</div>
+                  {contract.riskScore && (
+                    <div className="text-xs text-gray-500">
+                      {contract.riskScore}
+                    </div>
                   )}
                 </td>
                 <td className="px-4 py-4 text-sm text-gray-600 max-w-xs">
@@ -207,37 +202,28 @@ export function EnhancedContractTable({
                 </td>
                 <td className="px-4 py-4">
                   <span
-                    className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${
-                      statusColors[contract.status]
-                    }`}
+                    className={`inline-flex px-2 py-1 text-xs font-medium rounded-full `}
                   >
-                    {statusLabels[contract.status]}
+                    {contract.status}
                   </span>
                 </td>
-                <td className="px-4 py-4 text-sm text-gray-600">
-                  <div className="max-w-xs">
-                    {contract.parties.map((party, index) => (
-                      <div key={index} className="text-xs">
-                        {party}
-                      </div>
-                    ))}
-                  </div>
-                </td>
-                <td className="px-4 py-4 text-sm text-gray-900">
-                  {contract.version}
-                </td>
+
                 <td className="px-4 py-4 text-sm">
-                  {contract.contractUrl ? (
-                    <a
-                      href={contract.contractUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
+                  {contract.description ? (
+                    <button
+                      onClick={() => {
+                        // Open generated contract in new window or modal
+                        console.log(
+                          'View generated contract:',
+                          contract.description
+                        );
+                      }}
                       className="text-blue-600 hover:text-blue-800 underline text-xs"
                     >
-                      View Contract
-                    </a>
+                      View Generated
+                    </button>
                   ) : (
-                    <span className="text-gray-400 text-xs">No URL</span>
+                    <span className="text-gray-400 text-xs">Not Generated</span>
                   )}
                 </td>
                 <td className="px-4 py-4">
@@ -262,7 +248,11 @@ export function EnhancedContractTable({
                       onClick={() => onEdit(contract)}
                       disabled={!canEdit(contract.status)}
                       className="h-8 w-8 p-0"
-                      title={canEdit(contract.status) ? 'Edit Contract' : 'Cannot edit this status'}
+                      title={
+                        canEdit(contract.status)
+                          ? 'Edit Contract'
+                          : 'Cannot edit this status'
+                      }
                     >
                       <Edit className="h-4 w-4" />
                     </Button>
@@ -274,7 +264,11 @@ export function EnhancedContractTable({
                       onClick={() => handleDeleteClick(contract)}
                       disabled={!canDelete(contract.status)}
                       className="h-8 w-8 p-0 text-red-600 hover:text-red-800"
-                      title={canDelete(contract.status) ? 'Delete Contract' : 'Cannot delete this status'}
+                      title={
+                        canDelete(contract.status)
+                          ? 'Delete Contract'
+                          : 'Cannot delete this status'
+                      }
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
@@ -286,7 +280,7 @@ export function EnhancedContractTable({
                         size="sm"
                         onClick={() => handleSendClick(contract)}
                         className="h-8 px-2"
-                        title={getNextStepLabel(contract.status)}
+                        // title={getNextStepLabel(contract.status)}
                       >
                         <Send className="h-4 w-4 mr-1" />
                         Next
@@ -313,24 +307,26 @@ export function EnhancedContractTable({
           confirmModal.type === 'delete'
             ? 'Confirm Delete'
             : confirmModal.type === 'send'
-            ? 'Confirm Send to Next Step'
-            : ''
+              ? 'Confirm Send to Next Step'
+              : ''
         }
         message={
           confirmModal.type === 'delete'
             ? `Are you sure you want to delete the contract "${confirmModal.contract?.title}"? This action cannot be undone.`
             : confirmModal.type === 'send'
-            ? `Are you sure you want to send the contract "${confirmModal.contract?.title}" to the next step?`
-            : ''
+              ? `Are you sure you want to send the contract "${confirmModal.contract?.title}" to the next step?`
+              : ''
         }
         confirmText={
           confirmModal.type === 'delete'
             ? 'Delete'
             : confirmModal.type === 'send'
-            ? 'Send'
-            : 'Confirm'
+              ? 'Send'
+              : 'Confirm'
         }
-        confirmVariant={confirmModal.type === 'delete' ? 'destructive' : 'default'}
+        confirmVariant={
+          confirmModal.type === 'delete' ? 'destructive' : 'default'
+        }
         onConfirm={handleConfirmAction}
         onCancel={handleCancelAction}
       />
