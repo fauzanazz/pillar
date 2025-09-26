@@ -9,10 +9,10 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
-import { ContractWithRelations } from '@/api';
-import { useContractStore } from '@/stores/contractStore';
-import { LegalClause } from '@/types/clauses';
-import { ConvertToLegalClauses } from '@/utils/converter';
+import { acceptContract, ContractWithRelations, rejectContract } from '@/api';
+import { useContractStore } from '../../../../stores/contractStore';
+import { LegalClause } from '../../../../types/clauses';
+import { ConvertToLegalClauses } from '../../../../utils/converter';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -24,7 +24,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
-import { Check, X } from 'lucide-react';
+import { Check, X, ArrowLeft, Send } from 'lucide-react';
 
 interface ManagementReviewClientProps {
   id: string;
@@ -36,6 +36,7 @@ export default function ManagementReviewClient({
   const [contract, setContract] = useState<ContractWithRelations>();
   const [acceptedClauses, setAcceptedClauses] = useState<LegalClause[]>([]);
   const [rejectionReason, setRejectionReason] = useState('');
+  const [acceptanceReason, setAcceptanceReason] = useState('');
   const [isRejecting, setIsRejecting] = useState(false);
 
   const { getContractById, updateContract } = useContractStore();
@@ -60,10 +61,13 @@ export default function ManagementReviewClient({
   const handleAccept = async () => {
     if (!contract) return;
     try {
-      await updateContract({
-        url: '/api/contracts/{id}',
-        path: { id: contract.id.toString() },
-        body: { status: 'Accepted' },
+      await acceptContract({
+        path: {
+          id: contract.id.toString(),
+        },
+        body: {
+          reason: acceptanceReason.trim() ?? '',
+        },
       });
       toast.success('Contract Approved!', {
         description: `Contract "${contract.title}" has been successfully approved.`,
@@ -74,19 +78,31 @@ export default function ManagementReviewClient({
     }
   };
 
-  const handleReject = async () => {
+  const handleReject = async (target: 'legal' | 'all') => {
     if (!contract || !rejectionReason.trim()) {
       toast.error('Rejection reason cannot be empty.');
       return;
     }
+
+    const newStatus = target === 'legal' ? 'Legal Review' : 'Rejected';
+    const successMessage =
+      target === 'legal'
+        ? `Contract sent back to Legal team for review.`
+        : `Contract has been rejected and sent back to the internal team.`;
+
     try {
-      await updateContract({
-        url: '/api/contracts/{id}',
-        path: { id: contract.id.toString() },
-        body: { status: 'Rejected', rejectionReason: rejectionReason.trim() },
+      await rejectContract({
+        body: {
+          rejectType: target,
+          reason: rejectionReason.trim() ?? '',
+        },
+        path: {
+          id: contract.id.toString(),
+        },
       });
+
       toast.warning('Contract Rejected', {
-        description: `Contract "${contract.title}" has been rejected.`,
+        description: successMessage,
       });
       window.location.href = '/management';
     } catch (error) {
@@ -109,13 +125,17 @@ export default function ManagementReviewClient({
           {contract.urlContract ? (
             <iframe
               src={contract.urlContract}
-              className="w-full h-full"
+              className="w-full h-full border rounded-md"
               title={contract.title}
             />
           ) : (
-            <p className="text-gray-500">
-              No PDF available for: {contract?.title}
-            </p>
+            <div className="text-center text-gray-500">
+              <p>No PDF available for: {contract?.title}</p>
+              <p className="text-sm">
+                The contract document might still be processing or was not
+                uploaded.
+              </p>
+            </div>
           )}
         </div>
       </div>
@@ -163,55 +183,84 @@ export default function ManagementReviewClient({
                   value={rejectionReason}
                   onChange={e => setRejectionReason(e.target.value)}
                   placeholder="Provide a clear reason for rejecting this contract..."
-                  className="mb-2"
+                  className="mb-2 min-h-[120px]"
                 />
-                <div className="flex gap-2">
-                  <Button
-                    variant="outline"
-                    onClick={() => setIsRejecting(false)}
-                    className="w-full"
-                  >
-                    Cancel
-                  </Button>
+                <div className="grid grid-cols-2 gap-2 mb-2">
+                  {/* Reject to Legal */}
                   <AlertDialog>
                     <AlertDialogTrigger asChild>
-                      <Button variant="destructive" className="w-full">
-                        Confirm Rejection
+                      <Button variant="destructive">
+                        <ArrowLeft className="h-4 w-4 mr-2" />
+                        Reject to Legal
                       </Button>
                     </AlertDialogTrigger>
                     <AlertDialogContent>
                       <AlertDialogHeader>
                         <AlertDialogTitle>
-                          Are you sure you want to reject this contract?
+                          Reject and send to Legal Team?
                         </AlertDialogTitle>
                         <AlertDialogDescription>
-                          This action will mark the contract as rejected and
-                          notify the relevant parties. This cannot be undone.
+                          This will send the contract back to the 'Legal Review'
+                          stage. The legal team will be notified.
                         </AlertDialogDescription>
                       </AlertDialogHeader>
                       <AlertDialogFooter>
                         <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={handleReject}>
+                        <AlertDialogAction
+                          onClick={() => handleReject('legal')}
+                        >
+                          Confirm
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                  {/* Reject to Internal */}
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button variant="destructive">
+                        <Send className="h-4 w-4 mr-2" />
+                        Reject to Internal
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>
+                          Reject and send to Internal Team?
+                        </AlertDialogTitle>
+                        <AlertDialogDescription>
+                          This will mark the contract as 'Rejected' and send it
+                          back to the original requester.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={() => handleReject('all')}>
                           Confirm
                         </AlertDialogAction>
                       </AlertDialogFooter>
                     </AlertDialogContent>
                   </AlertDialog>
                 </div>
+                <Button
+                  variant="outline"
+                  onClick={() => setIsRejecting(false)}
+                  className="w-full"
+                >
+                  Cancel Rejection
+                </Button>
               </div>
             ) : (
-              <div className="flex gap-2">
+              <div className="grid grid-cols-2 gap-2">
                 <Button
                   variant="destructive"
                   onClick={() => setIsRejecting(true)}
-                  className="w-full"
                 >
                   <X className="h-4 w-4 mr-2" />
                   Reject
                 </Button>
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
-                    <Button className="w-full">
+                    <Button>
                       <Check className="h-4 w-4 mr-2" />
                       Accept
                     </Button>
@@ -226,6 +275,12 @@ export default function ManagementReviewClient({
                         the 'Accepted' status. This cannot be undone.
                       </AlertDialogDescription>
                     </AlertDialogHeader>
+                    <Textarea
+                      placeholder="Optional acceptance note..."
+                      value={acceptanceReason}
+                      onChange={e => setAcceptanceReason(e.target.value)}
+                      className="my-4"
+                    />
                     <AlertDialogFooter>
                       <AlertDialogCancel>Cancel</AlertDialogCancel>
                       <AlertDialogAction onClick={handleAccept}>

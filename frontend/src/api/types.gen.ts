@@ -15,10 +15,13 @@ export type Contract = {
     | 'Management Review'
     | 'Accepted'
     | 'Rejected'
+    | 'Rejected Legal'
     | 'Canceled';
   riskScore: number;
+  reason: string;
   createdBy: string;
   updatedBy: string;
+  deleted: boolean;
   urlContract: string;
   createdAt: string;
   updatedAt: string;
@@ -42,6 +45,24 @@ export type ContractWithRelations = Contract & {
     clauseDescription: string;
     riskLevel: string;
   }>;
+};
+
+export type Alert = {
+  id: number;
+  contractId: number;
+  message: string;
+  priority: 'low' | 'medium' | 'high' | 'critical';
+  isRead: boolean;
+  createdBy: string;
+  createdAt: string;
+};
+
+export type AlertWithContract = Alert & {
+  contract?: {
+    id: number;
+    title: string;
+    status: string;
+  };
 };
 
 export type HealthData = {
@@ -125,6 +146,7 @@ export type GetContractsData = {
       | 'Management Review'
       | 'Accepted'
       | 'Rejected'
+      | 'Rejected Legal'
       | 'Canceled';
     search?: string;
   };
@@ -165,6 +187,7 @@ export type CreateContractData = {
       | 'Management Review'
       | 'Accepted'
       | 'Rejected'
+      | 'Rejected Legal'
       | 'Canceled';
     party: Array<{
       partyName: string;
@@ -394,6 +417,7 @@ export type UpdateContractData = {
       | 'Management Review'
       | 'Accepted'
       | 'Rejected'
+      | 'Rejected Legal'
       | 'Canceled';
   };
   path: {
@@ -546,3 +570,396 @@ export type CreateClauseResponses = {
 
 export type CreateClauseResponse =
   CreateClauseResponses[keyof CreateClauseResponses];
+
+export type RejectContractData = {
+  body?: {
+    rejectType: 'legal' | 'all';
+    reason: string;
+  };
+  path: {
+    id: string;
+  };
+  query?: never;
+  url: '/api/contracts/{id}/reject';
+};
+
+export type RejectContractErrors = {
+  /**
+   * Bad Request
+   */
+  400: {
+    success: boolean;
+    message: string;
+    code?: number;
+  };
+  /**
+   * Unauthorized
+   */
+  401: {
+    success: boolean;
+    message: string;
+    code?: number;
+  };
+  /**
+   * Forbidden
+   */
+  403: {
+    success: boolean;
+    message: string;
+    code?: number;
+  };
+  /**
+   * Not Found
+   */
+  404: {
+    success: boolean;
+    message: string;
+    code?: number;
+  };
+  /**
+   * Internal Server Error
+   */
+  500: {
+    success: boolean;
+    message: string;
+    code?: number;
+  };
+};
+
+export type RejectContractError =
+  RejectContractErrors[keyof RejectContractErrors];
+
+export type RejectContractResponses = {
+  /**
+   * Contract rejected successfully
+   */
+  200: {
+    success: boolean;
+    message: string;
+    code?: number;
+    data?: Contract & {
+      presignedUrl: string;
+    };
+  };
+};
+
+export type RejectContractResponse =
+  RejectContractResponses[keyof RejectContractResponses];
+
+export type AcceptContractData = {
+  body?: {
+    reason: string;
+  };
+  path: {
+    id: string;
+  };
+  query?: never;
+  url: '/api/contracts/{id}/accept';
+};
+
+export type AcceptContractErrors = {
+  /**
+   * Bad Request
+   */
+  400: {
+    success: boolean;
+    message: string;
+    code?: number;
+  };
+  /**
+   * Unauthorized
+   */
+  401: {
+    success: boolean;
+    message: string;
+    code?: number;
+  };
+  /**
+   * Forbidden
+   */
+  403: {
+    success: boolean;
+    message: string;
+    code?: number;
+  };
+  /**
+   * Not Found
+   */
+  404: {
+    success: boolean;
+    message: string;
+    code?: number;
+  };
+  /**
+   * Internal Server Error
+   */
+  500: {
+    success: boolean;
+    message: string;
+    code?: number;
+  };
+};
+
+export type AcceptContractError =
+  AcceptContractErrors[keyof AcceptContractErrors];
+
+export type AcceptContractResponses = {
+  /**
+   * Contract accepted successfully
+   */
+  200: {
+    success: boolean;
+    message: string;
+    code?: number;
+    data?: Contract & {
+      presignedUrl: string;
+    };
+  };
+};
+
+export type AcceptContractResponse =
+  AcceptContractResponses[keyof AcceptContractResponses];
+
+export type GetAlertsData = {
+  body?: never;
+  path?: never;
+  query?: {
+    page?: string;
+    limit?: string;
+    priority?: 'low' | 'medium' | 'high' | 'critical';
+    isRead?: string;
+    contractId?: string;
+  };
+  url: '/api/alerts';
+};
+
+export type GetAlertsResponses = {
+  /**
+   * List of alerts retrieved successfully
+   */
+  200: {
+    success: boolean;
+    message: string;
+    code?: number;
+    data?: {
+      alerts: Array<AlertWithContract>;
+      pagination: {
+        page: number;
+        limit: number;
+        total: number;
+        totalPages: number;
+      };
+    };
+  };
+};
+
+export type GetAlertsResponse = GetAlertsResponses[keyof GetAlertsResponses];
+
+export type GetAlertByIdData = {
+  body?: never;
+  path: {
+    id: string;
+  };
+  query?: never;
+  url: '/api/alerts/{id}';
+};
+
+export type GetAlertByIdErrors = {
+  /**
+   * Bad Request
+   */
+  400: {
+    success: boolean;
+    message: string;
+    code?: number;
+  };
+  /**
+   * Unauthorized
+   */
+  401: {
+    success: boolean;
+    message: string;
+    code?: number;
+  };
+  /**
+   * Forbidden
+   */
+  403: {
+    success: boolean;
+    message: string;
+    code?: number;
+  };
+  /**
+   * Not Found
+   */
+  404: {
+    success: boolean;
+    message: string;
+    code?: number;
+  };
+  /**
+   * Internal Server Error
+   */
+  500: {
+    success: boolean;
+    message: string;
+    code?: number;
+  };
+};
+
+export type GetAlertByIdError = GetAlertByIdErrors[keyof GetAlertByIdErrors];
+
+export type GetAlertByIdResponses = {
+  /**
+   * Alert retrieved successfully
+   */
+  200: {
+    success: boolean;
+    message: string;
+    code?: number;
+    data?: AlertWithContract;
+  };
+};
+
+export type GetAlertByIdResponse =
+  GetAlertByIdResponses[keyof GetAlertByIdResponses];
+
+export type MarkAlertAsReadData = {
+  body?: {
+    isRead: boolean;
+  };
+  path: {
+    id: string;
+  };
+  query?: never;
+  url: '/api/alerts/{id}/read';
+};
+
+export type MarkAlertAsReadErrors = {
+  /**
+   * Bad Request
+   */
+  400: {
+    success: boolean;
+    message: string;
+    code?: number;
+  };
+  /**
+   * Unauthorized
+   */
+  401: {
+    success: boolean;
+    message: string;
+    code?: number;
+  };
+  /**
+   * Forbidden
+   */
+  403: {
+    success: boolean;
+    message: string;
+    code?: number;
+  };
+  /**
+   * Not Found
+   */
+  404: {
+    success: boolean;
+    message: string;
+    code?: number;
+  };
+  /**
+   * Internal Server Error
+   */
+  500: {
+    success: boolean;
+    message: string;
+    code?: number;
+  };
+};
+
+export type MarkAlertAsReadError =
+  MarkAlertAsReadErrors[keyof MarkAlertAsReadErrors];
+
+export type MarkAlertAsReadResponses = {
+  /**
+   * Alert marked as read successfully
+   */
+  200: {
+    success: boolean;
+    message: string;
+    code?: number;
+    data?: AlertWithContract;
+  };
+};
+
+export type MarkAlertAsReadResponse =
+  MarkAlertAsReadResponses[keyof MarkAlertAsReadResponses];
+
+export type GetUnreadAlertsCountData = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: '/api/alerts/unread/count';
+};
+
+export type GetUnreadAlertsCountErrors = {
+  /**
+   * Bad Request
+   */
+  400: {
+    success: boolean;
+    message: string;
+    code?: number;
+  };
+  /**
+   * Unauthorized
+   */
+  401: {
+    success: boolean;
+    message: string;
+    code?: number;
+  };
+  /**
+   * Forbidden
+   */
+  403: {
+    success: boolean;
+    message: string;
+    code?: number;
+  };
+  /**
+   * Not Found
+   */
+  404: {
+    success: boolean;
+    message: string;
+    code?: number;
+  };
+  /**
+   * Internal Server Error
+   */
+  500: {
+    success: boolean;
+    message: string;
+    code?: number;
+  };
+};
+
+export type GetUnreadAlertsCountError =
+  GetUnreadAlertsCountErrors[keyof GetUnreadAlertsCountErrors];
+
+export type GetUnreadAlertsCountResponses = {
+  /**
+   * Unread alerts count retrieved successfully
+   */
+  200: {
+    success: boolean;
+    data: number;
+    message: string;
+    code?: number;
+  };
+};
+
+export type GetUnreadAlertsCountResponse =
+  GetUnreadAlertsCountResponses[keyof GetUnreadAlertsCountResponses];

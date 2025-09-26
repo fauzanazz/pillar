@@ -2,6 +2,8 @@ import { create } from 'zustand';
 
 import { toast } from 'sonner';
 import {
+  acceptContract,
+  AcceptContractData,
   Contract,
   ContractWithRelations,
   createContract,
@@ -13,6 +15,8 @@ import {
   getContracts,
   GetContractsData,
   GetContractsResponse,
+  rejectContract,
+  RejectContractData,
   updateContract,
   UpdateContractData,
 } from '@/api';
@@ -28,6 +32,8 @@ interface ContractState {
   addContract: (params: CreateContractData) => Promise<unknown>;
   updateContract: (params: UpdateContractData) => Promise<void>;
   deleteContract: (params: DeleteContractData) => Promise<void>;
+  rejectContract: (params: RejectContractData) => Promise<void>;
+  acceptContract: (params: AcceptContractData) => Promise<void>;
   getContractById: (
     params: GetContractByIdData
   ) => Promise<ContractWithRelations | undefined>;
@@ -68,6 +74,58 @@ export const useContractStore = create<ContractState>((set, get) => ({
       });
 
       toast.error(`Failed to fetch contracts: ${errorMessage}`);
+    }
+  },
+
+  rejectContract: async params => {
+    set({ loading: true, error: null });
+
+    try {
+      const response = await rejectContract(params);
+      const updatedContract = response.data?.data;
+
+      if (updatedContract) {
+        set(state => ({
+          contracts: state.contracts.map(contract =>
+            contract.id === updatedContract.id ? updatedContract : contract
+          ),
+          loading: false,
+        }));
+        toast.success('Contract updated successfully!');
+      }
+    } catch (error) {
+      console.error('Error updating contract:', error);
+      const errorMessage =
+        error instanceof Error ? error.message : 'Failed to update contract';
+      set({ error: errorMessage, loading: false });
+      toast.error(`Failed to update contract: ${errorMessage}`);
+      throw error;
+    }
+  },
+
+  acceptContract: async params => {
+    set({ loading: true, error: null });
+
+    try {
+      const response = await acceptContract(params);
+      const updatedContract = response.data?.data;
+
+      if (updatedContract) {
+        set(state => ({
+          contracts: state.contracts.map(contract =>
+            contract.id === updatedContract.id ? updatedContract : contract
+          ),
+          loading: false,
+        }));
+        toast.success('Contract updated successfully!');
+      }
+    } catch (error) {
+      console.error('Error updating contract:', error);
+      const errorMessage =
+        error instanceof Error ? error.message : 'Failed to update contract';
+      set({ error: errorMessage, loading: false });
+      toast.error(`Failed to update contract: ${errorMessage}`);
+      throw error;
     }
   },
 

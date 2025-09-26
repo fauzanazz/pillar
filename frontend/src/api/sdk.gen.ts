@@ -8,6 +8,9 @@ import {
   protectedhealthResponseTransformer,
 } from './transformers.gen';
 import type {
+  AcceptContractData,
+  AcceptContractErrors,
+  AcceptContractResponses,
   CreateClauseData,
   CreateClauseErrors,
   CreateClauseResponses,
@@ -17,15 +20,29 @@ import type {
   DeleteContractData,
   DeleteContractErrors,
   DeleteContractResponses,
+  GetAlertByIdData,
+  GetAlertByIdErrors,
+  GetAlertByIdResponses,
+  GetAlertsData,
+  GetAlertsResponses,
   GetContractByIdData,
   GetContractByIdErrors,
   GetContractByIdResponses,
   GetContractsData,
   GetContractsResponses,
+  GetUnreadAlertsCountData,
+  GetUnreadAlertsCountErrors,
+  GetUnreadAlertsCountResponses,
   HealthData,
   HealthResponses,
+  MarkAlertAsReadData,
+  MarkAlertAsReadErrors,
+  MarkAlertAsReadResponses,
   ProtectedhealthData,
   ProtectedhealthResponses,
+  RejectContractData,
+  RejectContractErrors,
+  RejectContractResponses,
   UpdateContractData,
   UpdateContractErrors,
   UpdateContractResponses,
@@ -172,5 +189,101 @@ export const createClause = <ThrowOnError extends boolean = false>(
       'Content-Type': 'application/json',
       ...options.headers,
     },
+  });
+};
+
+export const rejectContract = <ThrowOnError extends boolean = false>(
+  options: Options<RejectContractData, ThrowOnError>
+) => {
+  return (options.client ?? client).post<
+    RejectContractResponses,
+    RejectContractErrors,
+    ThrowOnError
+  >({
+    responseType: 'json',
+    url: '/api/contracts/{id}/reject',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+};
+
+export const acceptContract = <ThrowOnError extends boolean = false>(
+  options: Options<AcceptContractData, ThrowOnError>
+) => {
+  return (options.client ?? client).post<
+    AcceptContractResponses,
+    AcceptContractErrors,
+    ThrowOnError
+  >({
+    responseType: 'json',
+    url: '/api/contracts/{id}/accept',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+};
+
+export const getAlerts = <ThrowOnError extends boolean = false>(
+  options?: Options<GetAlertsData, ThrowOnError>
+) => {
+  return (options?.client ?? client).get<
+    GetAlertsResponses,
+    unknown,
+    ThrowOnError
+  >({
+    responseType: 'json',
+    url: '/api/alerts',
+    ...options,
+  });
+};
+
+export const getAlertById = <ThrowOnError extends boolean = false>(
+  options: Options<GetAlertByIdData, ThrowOnError>
+) => {
+  return (options.client ?? client).get<
+    GetAlertByIdResponses,
+    GetAlertByIdErrors,
+    ThrowOnError
+  >({
+    responseType: 'json',
+    url: '/api/alerts/{id}',
+    ...options,
+  });
+};
+
+export const markAlertAsRead = <ThrowOnError extends boolean = false>(
+  options: Options<MarkAlertAsReadData, ThrowOnError>
+) => {
+  return (options.client ?? client).patch<
+    MarkAlertAsReadResponses,
+    MarkAlertAsReadErrors,
+    ThrowOnError
+  >({
+    responseType: 'json',
+    url: '/api/alerts/{id}/read',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+};
+
+export const getUnreadAlertsCount = <ThrowOnError extends boolean = false>(
+  options?: Options<GetUnreadAlertsCountData, ThrowOnError>
+) => {
+  return (options?.client ?? client).get<
+    GetUnreadAlertsCountResponses,
+    GetUnreadAlertsCountErrors,
+    ThrowOnError
+  >({
+    responseType: 'json',
+    url: '/api/alerts/unread/count',
+    ...options,
   });
 };
