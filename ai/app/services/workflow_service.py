@@ -227,7 +227,7 @@ class WorkflowService:
         return contract
     
     async def submit_to_management(self, contract_id: str, submitted_by: UserRole = UserRole.LEGAL,
-                           notes: Optional[str] = None) -> ContractDraft:
+                           notes: Optional[str] = None, presigned_url: Optional[str] = None) -> ContractDraft:
         """Submit contract to management for approval."""
         contract = await self.storage.load_contract(contract_id)
         if not contract:
@@ -259,7 +259,7 @@ class WorkflowService:
         })
         
         # Regenerate PDF with final reviewed clauses
-        pdf_path = self._generate_contract_pdf(contract)
+        pdf_path = self._generate_contract_pdf(contract, presigned_url=presigned_url)
         if pdf_path:
             contract.pdf_file_path = pdf_path
         
@@ -269,7 +269,7 @@ class WorkflowService:
         return contract
     
     def management_decision(self, contract_id: str, decision: str, notes: Optional[str] = None,
-                          decided_by: UserRole = UserRole.MANAGEMENT) -> ContractDraft:
+                          decided_by: UserRole = UserRole.MANAGEMENT, presigned_url: Optional[str] = None) -> ContractDraft:
         """Management decision on contract."""
         contract = self.storage.load_contract(contract_id)
         if not contract:
@@ -327,7 +327,7 @@ class WorkflowService:
         
         # Generate final PDF for approved contracts
         if decision == "approve":
-            pdf_path = self._generate_contract_pdf(contract)
+            pdf_path = self._generate_contract_pdf(contract, presigned_url=presigned_url)
             if pdf_path:
                 contract.pdf_file_path = pdf_path
         
@@ -378,8 +378,17 @@ class WorkflowService:
         
         return actions
     
-    def _generate_contract_pdf(self, contract: ContractDraft, correlation_id: Optional[str] = None) -> str:
-        """Generate PDF for contract and return file path."""
+    def _generate_contract_pdf(self, contract: ContractDraft, correlation_id: Optional[str] = None, presigned_url: Optional[str] = None) -> str:
+        """Generate PDF for contract and return file path or URL.
+        
+        Args:
+            contract: Contract draft to generate PDF for
+            correlation_id: Request correlation ID
+            presigned_url: Optional presigned URL to upload PDF to
+            
+        Returns:
+            File path if saving locally, or URL if uploaded to presigned URL
+        """
         try:
             from app.models.schemas import PdfBuildRequest, PdfHeader, PdfFooter, Party, PdfClause
             
@@ -453,18 +462,75 @@ class WorkflowService:
                 finally:
                     loop.close()
             
-            # Save PDF file locally for now (could be moved to cloud storage later)
-            from pathlib import Path
-            pdf_filename = f"contract_{contract.id}.pdf"
-            pdf_dir = Path("out") / "pdfs"
-            pdf_dir.mkdir(parents=True, exist_ok=True)
-            pdf_path = pdf_dir / pdf_filename
-            
-            with open(pdf_path, "wb") as f:
-                f.write(pdf_bytes)
+            # Upload to presigned URL if provided, otherwise save locally
+            if presigned_url:
+                from app.services.upload_service import upload_service
                 
-            logger.info(f"PDF generated: {pdf_path}")
-            return str(pdf_path)
+                # Run async upload in sync context
+                try:
+                    # Try to get current event loop
+                    loop = asyncio.get_event_loop()
+                    if loop.is_running():
+                        # If loop is running, create a task in thread
+                        import concurrent.futures
+                        import threading
+                        
+                        def upload_in_thread():
+                            new_loop = asyncio.new_event_loop()
+                            asyncio.set_event_loop(new_loop)
+                            try:
+                                return new_loop.run_until_complete(
+                                    upload_service.upload_pdf_to_presigned_url(
+                                        pdf_bytes=pdf_bytes,
+                                        presigned_url=presigned_url,
+                                        correlation_id=correlation_id
+                                    )
+                                )
+                            finally:
+                                new_loop.close()
+                        
+                        with concurrent.futures.ThreadPoolExecutor() as executor:
+                            future = executor.submit(upload_in_thread)
+                            pdf_url = future.result()
+                    else:
+                        # Loop exists but not running
+                        pdf_url = loop.run_until_complete(
+                            upload_service.upload_pdf_to_presigned_url(
+                                pdf_bytes=pdf_bytes,
+                                presigned_url=presigned_url,
+                                correlation_id=correlation_id
+                            )
+                        )
+                except RuntimeError:
+                    # No event loop
+                    loop = asyncio.new_event_loop()
+                    asyncio.set_event_loop(loop)
+                    try:
+                        pdf_url = loop.run_until_complete(
+                            upload_service.upload_pdf_to_presigned_url(
+                                pdf_bytes=pdf_bytes,
+                                presigned_url=presigned_url,
+                                correlation_id=correlation_id
+                            )
+                        )
+                    finally:
+                        loop.close()
+                
+                logger.info(f"PDF uploaded to presigned URL: {pdf_url}")
+                return pdf_url
+            else:
+                # Save locally as fallback
+                from pathlib import Path
+                pdf_filename = f"contract_{contract.id}.pdf"
+                pdf_dir = Path("out") / "pdfs"
+                pdf_dir.mkdir(parents=True, exist_ok=True)
+                pdf_path = pdf_dir / pdf_filename
+                
+                with open(pdf_path, "wb") as f:
+                    f.write(pdf_bytes)
+                    
+                logger.info(f"PDF saved locally: {pdf_path}")
+                return str(pdf_path)
             
         except Exception as e:
             logger.error(f"Failed to generate PDF for contract {contract.id}: {e}")

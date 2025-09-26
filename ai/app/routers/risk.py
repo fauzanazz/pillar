@@ -1,5 +1,5 @@
 import logging
-from typing import Dict, Any, List
+from typing import Dict, Any, List, Optional
 from datetime import datetime
 from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
@@ -98,9 +98,14 @@ async def identify_contract_risks(
         raise HTTPException(status_code=500, detail=f"Risk identification failed: {str(e)}")
 
 
+class RiskIdentificationForContractRequest(BaseModel):
+    presignedUrl: Optional[str] = None
+
+
 @router.post("/identify-risks/contract/{contract_id}")
 async def identify_risks_for_contract(
     contract_id: str,
+    request: Optional[RiskIdentificationForContractRequest] = None,
     correlation_id: str = Depends(get_correlation_id),
     _: None = Depends(rate_limit)
 ) -> RiskIdentificationResponse:
@@ -182,6 +187,104 @@ async def identify_risks_for_contract(
         # Update contract risk score and store risk scan data in ai_metadata
         contract.risk_score = overall_risk_score
         await contract_db_adapter.save_contract_with_risk_data(contract, risk_scan_data)
+        
+        # Upload PDF to presigned URL if provided
+        pdf_url = None
+        if request and request.presignedUrl:
+            try:
+                # Generate PDF report for risks
+                from app.services.pdf_service import pdf_service
+                from app.services.upload_service import upload_service
+                from app.models.schemas import PdfBuildRequest, PdfHeader, PdfFooter, Party, PdfClause
+                
+                # Create PDF with risk report
+                pdf_request = PdfBuildRequest(
+                    header=PdfHeader(
+                        title=f"Risk Analysis Report - {contract.template.title}",
+                        number=contract_id[:8]
+                    ),
+                    parties=[
+                        Party(
+                            role=party.role,
+                            name=party.name,
+                            rep=party.rep if hasattr(party, 'rep') else "",
+                            address=party.address if hasattr(party, 'address') else ""
+                        )
+                        for party in contract.template.parties
+                    ],
+                    clauses=[
+                        PdfClause(
+                            no=i+1,
+                            title=f"Risk {i+1}: {risk['risk_type'].replace('_', ' ').title()}",
+                            text=f"Level: {risk['risk_level'].upper()}\n\n"
+                                f"Description: {risk['description']}\n\n"
+                                f"Recommendation: {risk['recommendation']}\n\n"
+                                f"Risk Score: {risk['risk_score']}/100"
+                                + (f"\n\nClause Reference: {risk.get('clause_reference', 'N/A')}" if risk.get('clause_reference') else "")
+                        )
+                        for i, risk in enumerate(risks[:20])  # Limit to top 20 risks for PDF
+                    ] if risks else [
+                        PdfClause(
+                            no=1,
+                            title="No Risks Identified",
+                            text="No significant risks were identified in this contract."
+                        )
+                    ],
+                    footer=PdfFooter(
+                        hash=contract_id[:16],
+                        version="Risk Analysis v1.0"
+                    ),
+                    watermark="RISK REPORT"
+                )
+                
+                # Add summary clause at the beginning
+                summary_clause = PdfClause(
+                    no=0,
+                    title="Risk Summary",
+                    text=f"Total Risks Identified: {total_risks}\n"
+                         f"Critical Risks: {critical_risk_count}\n"
+                         f"High Risks: {high_risk_count}\n"
+                         f"Overall Risk Score: {overall_risk_score}/100\n\n"
+                         f"Analysis Date: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
+                )
+                pdf_request.clauses.insert(0, summary_clause)
+                
+                # Renumber clauses
+                for i, clause in enumerate(pdf_request.clauses):
+                    clause.no = i + 1
+                
+                # Generate PDF
+                pdf_bytes = await pdf_service.generate_contract_pdf(
+                    request=pdf_request,
+                    correlation_id=correlation_id
+                )
+                
+                # Upload to presigned URL
+                pdf_url = await upload_service.upload_pdf_to_presigned_url(
+                    pdf_bytes=pdf_bytes,
+                    presigned_url=request.presignedUrl,
+                    correlation_id=correlation_id
+                )
+                
+                logger.info(
+                    "Risk report PDF uploaded to presigned URL",
+                    extra={
+                        "correlation_id": correlation_id,
+                        "contract_id": contract_id,
+                        "pdf_url": pdf_url
+                    }
+                )
+                
+            except Exception as pdf_error:
+                logger.warning(
+                    "Failed to generate/upload risk report PDF",
+                    extra={
+                        "correlation_id": correlation_id,
+                        "contract_id": contract_id,
+                        "error": str(pdf_error)
+                    }
+                )
+                # Continue without PDF - don't fail the entire request
         
         # Create alerts for each risk
         from app.services.alert_service import alert_service

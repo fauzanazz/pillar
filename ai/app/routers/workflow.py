@@ -150,8 +150,8 @@ async def submit_to_management(
 ) -> ContractResponse:
     """Submit contract to management."""
     try:
-        contract = workflow_service.submit_to_management(
-            contract_id, notes=request.notes
+        contract = await workflow_service.submit_to_management(
+            contract_id, notes=request.notes, presigned_url=request.presignedUrl
         )
         actions = workflow_service._get_available_actions(contract, UserRole.MANAGEMENT)
         
@@ -179,7 +179,7 @@ async def management_decision(
     """Management decision on contract."""
     try:
         contract = workflow_service.management_decision(
-            contract_id, request.decision, request.notes
+            contract_id, request.decision, request.notes, presigned_url=request.presignedUrl
         )
         actions = workflow_service._get_available_actions(contract, UserRole.MANAGEMENT)
         

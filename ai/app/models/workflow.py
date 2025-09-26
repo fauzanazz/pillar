@@ -157,6 +157,7 @@ class SubmitDraftRequest(BaseModel):
     """Request to submit draft to next stage."""
     contract_id: str = Field(..., description="Contract ID")
     notes: Optional[str] = Field(None, description="Submission notes")
+    presignedUrl: Optional[str] = Field(None, description="Presigned URL for PDF upload")
 
 
 class ManagementDecisionRequest(BaseModel):
@@ -164,6 +165,7 @@ class ManagementDecisionRequest(BaseModel):
     contract_id: str = Field(..., description="Contract ID")
     decision: str = Field(..., description="approve, reject_to_legal, reject_to_internal, reject_to_both")
     notes: Optional[str] = Field(None, description="Management notes")
+    presignedUrl: Optional[str] = Field(None, description="Presigned URL for PDF upload")
 
 
 class ContractListResponse(BaseModel):
