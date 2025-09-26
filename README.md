@@ -1,2 +1,5 @@
 # Final-IFest2025
 Finalist Ifest 2025
+
+
+BANG BESOK TU HARI MINGGU BUKAN HARI SENIN WOI. 
