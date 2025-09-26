@@ -200,8 +200,8 @@ export default function ManagementReviewClient({
                           Reject and send to Legal Team?
                         </AlertDialogTitle>
                         <AlertDialogDescription>
-                          This will send the contract back to the 'Legal Review'
-                          stage. The legal team will be notified.
+                          This will send the contract back to the &apos;Legal
+                          Review&apos; stage. The legal team will be notified.
                         </AlertDialogDescription>
                       </AlertDialogHeader>
                       <AlertDialogFooter>
@@ -228,8 +228,8 @@ export default function ManagementReviewClient({
                           Reject and send to Internal Team?
                         </AlertDialogTitle>
                         <AlertDialogDescription>
-                          This will mark the contract as 'Rejected' and send it
-                          back to the original requester.
+                          This will mark the contract as &apos;Rejected&apos;
+                          and send it back to the original requester.
                         </AlertDialogDescription>
                       </AlertDialogHeader>
                       <AlertDialogFooter>
@@ -272,7 +272,7 @@ export default function ManagementReviewClient({
                       </AlertDialogTitle>
                       <AlertDialogDescription>
                         This action will finalize the contract and move it to
-                        the 'Accepted' status. This cannot be undone.
+                        the &apos;Accepted&apos; status. This cannot be undone.
                       </AlertDialogDescription>
                     </AlertDialogHeader>
                     <Textarea
