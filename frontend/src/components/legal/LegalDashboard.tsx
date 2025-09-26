@@ -13,7 +13,7 @@ const LegalDashboard = () => {
   // Fetch contracts when component mounts
   useEffect(() => {
     fetchContracts();
-  }, [fetchContracts]);
+  }, []); // Remove fetchContracts from dependency array to prevent infinite loop
 
   // Filter contracts relevant to legal team
   const legalContracts = useMemo(() => {
@@ -45,8 +45,6 @@ const LegalDashboard = () => {
       rejectedContracts,
     };
   }, [contracts, legalContracts]);
-
-  function reviewContracts() {}
 
   const legalStats = [
     {
