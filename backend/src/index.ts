@@ -42,7 +42,7 @@ app.doc('/openapi.json', {
   openapi: '3.1.0',
   info: {
     version: '1.0.0',
-    title: 'AInstein API',
+    title: 'MODYV API',
   },
   tags: [
     { name: 'health', description: 'Health Check API' },
