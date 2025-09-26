@@ -1,5 +1,6 @@
 import logging
 from typing import Dict, Any, List
+from datetime import datetime
 from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
 
@@ -161,8 +162,34 @@ async def identify_risks_for_contract(
         else:
             overall_risk_score = 0
         
+        # Store risk scan results directly in database
+        risk_scan_data = {
+            "contract": {
+                "id": contract_id,
+                "title": contract.template.title,
+                "file": f"contract_{contract_id}.json"
+            },
+            "risks": risks,
+            "scan_metadata": {
+                "scanned_at": datetime.now().isoformat(),
+                "total_risks": total_risks,
+                "high_risk_count": high_risk_count,
+                "critical_risk_count": critical_risk_count,
+                "overall_risk_score": overall_risk_score
+            }
+        }
+        
+        # Update contract risk score and store risk scan data in ai_metadata
         contract.risk_score = overall_risk_score
-        await contract_db_adapter.save_contract(contract)
+        await contract_db_adapter.save_contract_with_risk_data(contract, risk_scan_data)
+        
+        # Create alerts for each risk
+        from app.services.alert_service import alert_service
+        created_alerts = await alert_service.create_alerts_from_risks(
+            contract_id=contract_id,
+            risks=risks,
+            created_by="risk_scanner"
+        )
         
         response = RiskIdentificationResponse(
             risks=risks,
@@ -178,7 +205,8 @@ async def identify_risks_for_contract(
                 "correlation_id": correlation_id,
                 "contract_id": contract_id,
                 "total_risks": total_risks,
-                "overall_score": overall_risk_score
+                "overall_score": overall_risk_score,
+                "alerts_created": len(created_alerts)
             }
         )
         
