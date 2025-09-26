@@ -9,14 +9,12 @@ import uuid
 
 class ContractStatus(str, Enum):
     """Contract status in the workflow."""
-    DRAFT_INTERNAL = "Draft"           # Internal created, waiting for legal
-    DRAFT_LEGAL_REVIEW = "Legal Review"   # Legal reviewing clauses
-    DRAFT_LEGAL_REJECTED = "draft_legal_rejected"  # Legal rejected, back to internal
-    DRAFT_MANAGEMENT = "draft_management"       # Sent to management for approval
-    APPROVED = "approved"                       # Management approved
-    REJECTED_TO_LEGAL = "rejected_to_legal"     # Management rejected, back to legal
-    REJECTED_TO_INTERNAL = "rejected_to_internal"  # Management rejected, back to internal
-    REJECTED_TO_BOTH = "rejected_to_both"       # Management rejected, back to both
+    DRAFT = "Draft"
+    LEGAL_REVIEW = "Legal Review"
+    MANAGEMENT_REVIEW = "Management Review"
+    ACCEPTED = "Accepted"
+    REJECTED = "Rejected"
+    CANCELED = "Canceled"
 
 
 class UserRole(str, Enum):
@@ -94,7 +92,7 @@ class ContractDraft(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     template: ContractTemplate = Field(..., description="Contract template")
     clauses: List[ContractClause] = Field(default_factory=list, description="Contract clauses")
-    status: ContractStatus = Field(default=ContractStatus.DRAFT_INTERNAL)
+    status: ContractStatus = Field(default=ContractStatus.DRAFT)
     
     # Workflow tracking
     created_by: UserRole = Field(..., description="Who created this draft")

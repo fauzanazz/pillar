@@ -8,7 +8,7 @@ from app.models.workflow import (
     ContractDraft, ContractTemplate, ContractClause, ContractStatus, 
     UserRole, ClauseStatus, WorkflowAction
 )
-from app.services.db_storage import db_contract_storage
+from app.services.db_adapter import contract_db_adapter
 from app.services.openai_client import openai_client
 from app.services.rag import rag_service
 from app.services.prompts import get_system_prompt, get_user_prompt_template
@@ -22,7 +22,7 @@ class WorkflowService:
     """Service for managing contract workflow."""
     
     def __init__(self):
-        self.storage = db_contract_storage
+        self.storage = contract_db_adapter
     
     async def create_contract(self, template: ContractTemplate, created_by: UserRole = UserRole.INTERNAL) -> ContractDraft:
         """Create new contract from template."""
@@ -30,7 +30,7 @@ class WorkflowService:
             template=template,
             created_by=created_by,
             current_assignee=UserRole.LEGAL,  # Next step is legal review
-            status=ContractStatus.DRAFT_INTERNAL
+            status=ContractStatus.DRAFT
         )
         
         # Add workflow history
@@ -58,7 +58,7 @@ class WorkflowService:
         if not contract:
             raise ValueError(f"Contract {contract_id} not found")
         
-        if contract.status != ContractStatus.DRAFT_INTERNAL:
+        if contract.status != ContractStatus.DRAFT:
             raise ValueError(f"Cannot generate clauses for contract in status {contract.status}")
         
         logger.info(f"Generating clauses for contract {contract_id}")
@@ -118,7 +118,7 @@ class WorkflowService:
         
         # Update contract
         contract.clauses = clauses
-        contract.status = ContractStatus.DRAFT_LEGAL_REVIEW
+        contract.status = ContractStatus.LEGAL_REVIEW
         contract.current_assignee = UserRole.LEGAL
         contract.updated_at = datetime.now()
         
@@ -128,8 +128,8 @@ class WorkflowService:
             "by_role": UserRole.INTERNAL.value,
             "timestamp": datetime.now().isoformat(),
             "notes": f"Generated {len(clauses)} clauses using AI",
-            "old_status": ContractStatus.DRAFT_INTERNAL.value,
-            "new_status": ContractStatus.DRAFT_LEGAL_REVIEW.value
+            "old_status": ContractStatus.DRAFT.value,
+            "new_status": ContractStatus.LEGAL_REVIEW.value
         })
         
         # Regenerate PDF with clauses
@@ -233,7 +233,7 @@ class WorkflowService:
         if not contract:
             raise ValueError(f"Contract {contract_id} not found")
         
-        if contract.status not in [ContractStatus.DRAFT_LEGAL_REVIEW, ContractStatus.REJECTED_TO_LEGAL]:
+        if contract.status not in [ContractStatus.LEGAL_REVIEW, ContractStatus.REJECTED]:
             raise ValueError(f"Cannot submit contract in status {contract.status}")
         
         # Check that all clauses are reviewed
@@ -243,7 +243,7 @@ class WorkflowService:
         
         # Update status
         old_status = contract.status
-        contract.status = ContractStatus.DRAFT_MANAGEMENT
+        contract.status = ContractStatus.MANAGEMENT_REVIEW
         contract.current_assignee = UserRole.MANAGEMENT
         contract.legal_notes = notes
         contract.updated_at = datetime.now()
@@ -255,7 +255,7 @@ class WorkflowService:
             "timestamp": datetime.now().isoformat(),
             "notes": notes or "Draft submitted to management for approval",
             "old_status": old_status.value,
-            "new_status": ContractStatus.DRAFT_MANAGEMENT.value
+            "new_status": ContractStatus.MANAGEMENT_REVIEW.value
         })
         
         # Regenerate PDF with final reviewed clauses
@@ -275,14 +275,14 @@ class WorkflowService:
         if not contract:
             raise ValueError(f"Contract {contract_id} not found")
         
-        if contract.status != ContractStatus.DRAFT_MANAGEMENT:
+        if contract.status != ContractStatus.MANAGEMENT_REVIEW:
             raise ValueError(f"Cannot make decision on contract in status {contract.status}")
         
         old_status = contract.status
         
         # Update status based on decision
         if decision == "approve":
-            contract.status = ContractStatus.APPROVED
+            contract.status = ContractStatus.ACCEPTED
             contract.current_assignee = UserRole.MANAGEMENT  # Process complete
             
             # Trigger risk identification for approved contracts (background task)
@@ -306,15 +306,9 @@ class WorkflowService:
                 logger.info(f"Risk identification task started in background for contract {contract_id}")
             except Exception as e:
                 logger.warning(f"Failed to start background risk identification for contract {contract_id}: {e}")
-        elif decision == "reject_to_legal":
-            contract.status = ContractStatus.REJECTED_TO_LEGAL
-            contract.current_assignee = UserRole.LEGAL
-        elif decision == "reject_to_internal":
-            contract.status = ContractStatus.REJECTED_TO_INTERNAL
+        elif decision == "reject":
+            contract.status = ContractStatus.REJECTED
             contract.current_assignee = UserRole.INTERNAL
-        elif decision == "reject_to_both":
-            contract.status = ContractStatus.REJECTED_TO_BOTH
-            contract.current_assignee = UserRole.INTERNAL  # Internal handles coordination
         else:
             raise ValueError(f"Invalid decision: {decision}")
         
@@ -364,20 +358,20 @@ class WorkflowService:
         actions = []
         
         if role == UserRole.INTERNAL:
-            if contract.status in [ContractStatus.REJECTED_TO_INTERNAL, ContractStatus.REJECTED_TO_BOTH]:
+            if contract.status in [ContractStatus.REJECTED]:
                 actions.extend(["edit_template"])
         
         elif role == UserRole.LEGAL:
-            if contract.status == ContractStatus.DRAFT_INTERNAL:
+            if contract.status == ContractStatus.DRAFT:
                 actions.extend(["generate_clauses"])
-            elif contract.status == ContractStatus.DRAFT_LEGAL_REVIEW:
+            elif contract.status == ContractStatus.LEGAL_REVIEW:
                 actions.extend(["review_clauses", "add_clause", "submit_to_management"])
-            elif contract.status in [ContractStatus.REJECTED_TO_LEGAL, ContractStatus.REJECTED_TO_BOTH]:
+            elif contract.status in [ContractStatus.REJECTED]:
                 actions.extend(["review_clauses", "add_clause", "edit_clauses", "regenerate_clauses", "submit_to_management"])
         
         elif role == UserRole.MANAGEMENT:
-            if contract.status == ContractStatus.DRAFT_MANAGEMENT:
-                actions.extend(["approve", "reject_to_legal", "reject_to_internal", "reject_to_both"])
+            if contract.status == ContractStatus.MANAGEMENT_REVIEW:
+                actions.extend(["approve", "reject"])
         
         # Common actions
         actions.extend(["view_details", "view_history", "export_pdf"])
@@ -416,7 +410,7 @@ class WorkflowService:
                     hash=contract.id[:16],
                     version="1.0"
                 ),
-                watermark="DRAFT" if contract.status != ContractStatus.APPROVED else None
+                watermark="DRAFT" if contract.status != ContractStatus.ACCEPTED else None
             )
             
             # Generate PDF (need to run async method in sync context)
