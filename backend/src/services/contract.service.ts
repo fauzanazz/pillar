@@ -1,6 +1,7 @@
 import { env } from '@/configs';
 import { createPutObjectPresignedUrl } from '@/lib/s3';
 import {
+  acceptContract,
   createClause as createClauseRepo,
   createContract as createContractRepo,
   deleteContract as deleteContractRepo,
@@ -137,5 +138,5 @@ export const acceptContractService = async (
     reason: acceptData.reason,
   };
 
-  return await updateContractRepo(id, updateData, acceptedBy, 'management');
+  return await acceptContract(id, updateData, acceptedBy, 'management');
 };
