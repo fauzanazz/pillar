@@ -73,6 +73,41 @@ class ContractDBAdapter:
             logger.error(f"Failed to save contract {contract.id}: {e}")
             raise
     
+    async def save_contract_with_risk_data(self, contract: ContractDraft, risk_scan_data: Dict[str, Any]) -> None:
+        """Save contract and include risk scan data in ai_metadata."""
+        try:
+            # Convert contract to database format
+            db_data = self._contract_to_db(contract)
+            
+            # Add risk scan data to ai_metadata
+            ai_metadata = db_data.get('ai_metadata', {})
+            ai_metadata['risk_scan'] = risk_scan_data
+            db_data['ai_metadata'] = ai_metadata
+            
+            # Check if contract exists and save
+            try:
+                numeric_id = int(contract.id)
+                existing = self.client.table('contracts').select('id').eq('id', numeric_id).execute()
+                
+                if existing.data:
+                    # Update existing contract - remove id from update data
+                    update_data = {k: v for k, v in db_data.items() if k != 'id'}
+                    response = self.client.table('contracts').update(update_data).eq('id', numeric_id).execute()
+                    logger.info(f"Updated contract {contract.id} with risk scan data")
+                else:
+                    # Insert new contract
+                    response = self.client.table('contracts').insert(db_data).execute()
+                    logger.info(f"Inserted new contract {contract.id} with risk scan data")
+                    
+            except ValueError:
+                # Non-numeric ID, treat as new
+                response = self.client.table('contracts').insert(db_data).execute()
+                logger.info(f"Inserted new contract {contract.id} with risk scan data")
+                
+        except Exception as e:
+            logger.error(f"Failed to save contract {contract.id} with risk data: {e}")
+            raise
+    
     def _db_to_contract(self, data: Dict[str, Any]) -> ContractDraft:
         """Convert database record to ContractDraft."""
         # Parse AI draft data if available
@@ -196,11 +231,12 @@ class ContractDBAdapter:
             'special_requirements': contract.template.special_requirements
         }
         
-        # Prepare AI metadata
+        # Prepare AI metadata (including risk data)
         ai_metadata = {
             'workflow_history': contract.workflow_history,
             'correlation_id': str(uuid.uuid4()),
-            'timestamp': datetime.now().isoformat()
+            'timestamp': datetime.now().isoformat(),
+            'risk_scan': getattr(contract, 'risk_scan_data', None)
         }
         
         # Reverse status mapping
