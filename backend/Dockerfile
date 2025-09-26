@@ -12,7 +12,7 @@ RUN bun install
 COPY . .
 
 # Build the app
-RUN bun run build
+RUN bun run build --frozen-lockfile
 
 # Run the app
 USER bun
