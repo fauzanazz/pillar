@@ -227,6 +227,7 @@ export const updateContract = async (
   const prevStatus = contract.status;
   const nextStatus = contractData.status || contract.status;
   if (!validateContractStatus(prevStatus, nextStatus, updaterRole)) {
+    console.error('Error: ', prevStatus, ' To: ', nextStatus);
     throw new Error('Invalid contract status');
   }
 

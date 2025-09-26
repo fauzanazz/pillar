@@ -21,7 +21,7 @@ export default function LegalReview() {
 
   return (
     <main className="min-h-dvh bg-background">
-      <PageTopBar />
+      <PageTopBar title={'Legal Review'} />
       <LegalReviewClient id={params.id} />
     </main>
   );

@@ -4,59 +4,63 @@ import { useMemo, useState, useEffect, useCallback } from 'react';
 import { useContractStore } from '@/stores/contractStore';
 import StatCard from '@/components/dashboard/StatCard';
 import { InternalContractTable } from '@/components/internal/InternalContractTable';
-import { AddContractModal, ContractForm } from '@/components/contracts/AddContractModal';
+import {
+  AddContractModal,
+  ContractForm,
+} from '@/components/contracts/AddContractModal';
 import { EditContractModal } from '@/components/contracts/EditContractModal';
-import { Contract } from '@/api/types.gen';
+import { Contract, ContractWithRelations } from '@/api';
 import {
   FileText,
   Clock,
   CheckCircle,
-  AlertTriangle,
   Plus,
   Search,
   Loader2,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { generateContract, searchContract, transformSearchMatches } from '@/services/ai';
+import {
+  generateContract,
+  searchContract,
+  transformSearchMatches,
+} from '@/services/ai';
 import { debounce } from '@/utils/debounce';
+import { ViewContractModal } from '@/components/contracts/ViewModal';
 
-interface InternalDashboardProps {
-  onEditContract?: (contract: Contract) => void;
-  onReviewContract?: (contract: Contract) => void;
-  onDeleteContract?: (contract: Contract) => void;
-  onCreateContract?: () => void;
-}
-
-const InternalDashboard = ({
-  onEditContract,
-  onReviewContract,
-  onDeleteContract,
-  onCreateContract,
-}: InternalDashboardProps) => {
-  const contracts = useContractStore(state => state.contracts);
-  const fetchContracts = useContractStore(state => state.fetchContracts);
-  const addContract = useContractStore(state => state.addContract);
-  const updateContract = useContractStore(state => state.updateContract);
-  const deleteContract = useContractStore(state => state.deleteContract);
-  const loading = useContractStore(state => state.loading);
+const InternalDashboard = () => {
+  const {
+    contracts,
+    totalContracts,
+    fetchContracts,
+    addContract,
+    updateContract,
+    deleteContract,
+    loading,
+  } = useContractStore();
 
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  const [editingContract, setEditingContract] = useState<Contract | null>(null);
-  
+  const [editingContract, setEditingContract] =
+    useState<ContractWithRelations | null>(null);
+
   // Search state
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<Contract[]>([]);
   const [isSearching, setIsSearching] = useState(false);
+
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+  const [pdfUrl, setPdfUrl] = useState('');
   const [hasSearched, setHasSearched] = useState(false);
 
   // Filter state
-  const [activeFilter, setActiveFilter] = useState<'all' | 'active' | 'draft' | 'accepted' | 'rejected'>('all');
+  const [activeFilter, setActiveFilter] = useState<
+    'all' | 'active' | 'draft' | 'accepted' | 'rejected'
+  >('all');
 
   // Fetch contracts on component mount
   useEffect(() => {
     fetchContracts();
-  }, [fetchContracts]);
+  }, []);
 
   // Debounced search function
   const debouncedSearch = useCallback(
@@ -71,7 +75,9 @@ const InternalDashboard = ({
       setIsSearching(true);
       try {
         const searchResponse = await searchContract(query);
-        const transformedContracts = transformSearchMatches(searchResponse.matches || []);
+        const transformedContracts = transformSearchMatches(
+          searchResponse.matches || []
+        );
         setSearchResults(transformedContracts);
         setHasSearched(true);
       } catch (error) {
@@ -81,7 +87,7 @@ const InternalDashboard = ({
         setIsSearching(false);
       }
     }, 500),
-    []
+    [contracts] // Recreate debounce if contracts change
   );
 
   // Handle search input change
@@ -93,8 +99,8 @@ const InternalDashboard = ({
   // Cleanup effect
   useEffect(() => {
     return () => {
-      // Cancel any pending debounced search when component unmounts
-      debouncedSearch.cancel?.();
+      // This is a placeholder for a potential cancel method on your debounce function
+      // If your debounce utility has a .cancel(), you would call it here.
     };
   }, [debouncedSearch]);
 
@@ -112,11 +118,12 @@ const InternalDashboard = ({
 
     // Apply status filter
     let filteredContracts = baseContracts;
+
     switch (activeFilter) {
       case 'active':
         // Active contracts are those currently in progress (not yet decided by management)
-        filteredContracts = baseContracts.filter(c => 
-          c.status === 'Legal Review' || c.status === 'Management Review'
+        filteredContracts = baseContracts.filter(
+          c => c.status === 'Legal Review' || c.status === 'Management Review'
         );
         break;
       case 'draft':
@@ -137,40 +144,33 @@ const InternalDashboard = ({
     }
 
     return {
-      totalContracts,
+      totalContracts: totalContracts,
       draftContracts,
       activeContracts,
-      // nearExpireContracts,
-      filteredContracts,
+      filteredContracts: hasSearched ? searchResults : contracts,
     };
-  }, [contracts, searchResults, hasSearched, activeFilter]);
+  }, []);
 
   const internalStats = [
     {
       title: 'Total Contracts',
       value: stats.totalContracts,
-      description: 'vs last month',
       icon: <FileText className="h-6 w-6 text-accent" />,
-      trend: { value: 15, isPositive: true },
     },
     {
       title: 'Draft Contracts',
       value: stats.draftContracts,
-      description: 'Pending submission',
       icon: <Clock className="h-6 w-6 text-warning" />,
     },
     {
       title: 'Active Contracts',
       value: stats.activeContracts,
-      description: 'Currently active',
       icon: <CheckCircle className="h-6 w-6 text-success" />,
-      trend: { value: 6, isPositive: true },
     },
   ];
 
   return (
     <div className="space-y-6 p-6">
-      {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">
@@ -189,26 +189,27 @@ const InternalDashboard = ({
         </Button>
       </div>
 
-      {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {internalStats.map((stat, index) => (
           <StatCard
             key={index}
             title={stat.title}
             value={stat.value}
-            description={stat.description}
             icon={stat.icon}
-            trend={'trend' in stat ? stat.trend : undefined}
+            description={''}
           />
         ))}
       </div>
 
-      {/* Contracts Table */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="text-2xl font-semibold tracking-tight">
             All Contracts
           </h2>
+        </div>
+
+        {/* Filter Tabs */}
+        <div className="flex flex-row-reverse justify-between">
           <div className="flex items-center gap-4">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -216,75 +217,72 @@ const InternalDashboard = ({
                 type="text"
                 placeholder="Search contracts..."
                 value={searchQuery}
-                onChange={(e) => handleSearchChange(e.target.value)}
+                onChange={e => handleSearchChange(e.target.value)}
                 disabled={isSearching}
-                className="pl-10 pr-10 w-80 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="pl-10 pr-10 w-80 disabled:opacity-50 disabled:cursor-not-allowed bg-white"
               />
               {isSearching && (
                 <Loader2 className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 animate-spin text-muted-foreground" />
               )}
             </div>
             <p className="text-sm text-muted-foreground">
-              {hasSearched 
-                ? `Found ${stats.filteredContracts.length} contracts matching "${searchQuery}"`
-                : `Showing ${stats.filteredContracts.length} contracts`
-              }
+              {hasSearched
+                ? `Found ${stats.filteredContracts.length} contracts`
+                : `Showing all ${totalContracts} contracts`}
             </p>
           </div>
-        </div>
-
-        {/* Filter Tabs */}
-        <div className="flex items-center gap-1 bg-gray-100 p-1 rounded-lg w-fit">
-          <button
-            onClick={() => setActiveFilter('all')}
-            className={`px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 ${
-              activeFilter === 'all'
-                ? 'bg-white text-gray-900 shadow-sm'
-                : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-            }`}
-          >
-            All
-          </button>
-          <button
-            onClick={() => setActiveFilter('active')}
-            className={`px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 ${
-              activeFilter === 'active'
-                ? 'bg-white text-gray-900 shadow-sm'
-                : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-            }`}
-          >
-            Active
-          </button>
-          <button
-            onClick={() => setActiveFilter('draft')}
-            className={`px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 ${
-              activeFilter === 'draft'
-                ? 'bg-white text-gray-900 shadow-sm'
-                : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-            }`}
-          >
-            Draft
-          </button>
-          <button
-            onClick={() => setActiveFilter('accepted')}
-            className={`px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 ${
-              activeFilter === 'accepted'
-                ? 'bg-white text-gray-900 shadow-sm'
-                : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-            }`}
-          >
-            Accepted
-          </button>
-          <button
-            onClick={() => setActiveFilter('rejected')}
-            className={`px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 ${
-              activeFilter === 'rejected'
-                ? 'bg-white text-gray-900 shadow-sm'
-                : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-            }`}
-          >
-            Rejected
-          </button>
+          <div className="flex items-center gap-1 bg-gray-100 p-1 rounded-lg w-fit">
+            <button
+              onClick={() => setActiveFilter('all')}
+              className={`px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 ${
+                activeFilter === 'all'
+                  ? 'bg-white text-gray-900 shadow-sm'
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+              }`}
+            >
+              All
+            </button>
+            <button
+              onClick={() => setActiveFilter('active')}
+              className={`px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 ${
+                activeFilter === 'active'
+                  ? 'bg-white text-gray-900 shadow-sm'
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+              }`}
+            >
+              Active
+            </button>
+            <button
+              onClick={() => setActiveFilter('draft')}
+              className={`px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 ${
+                activeFilter === 'draft'
+                  ? 'bg-white text-gray-900 shadow-sm'
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+              }`}
+            >
+              Draft
+            </button>
+            <button
+              onClick={() => setActiveFilter('accepted')}
+              className={`px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 ${
+                activeFilter === 'accepted'
+                  ? 'bg-white text-gray-900 shadow-sm'
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+              }`}
+            >
+              Accepted
+            </button>
+            <button
+              onClick={() => setActiveFilter('rejected')}
+              className={`px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 ${
+                activeFilter === 'rejected'
+                  ? 'bg-white text-gray-900 shadow-sm'
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+              }`}
+            >
+              Rejected
+            </button>
+          </div>
         </div>
 
         {loading ? (
@@ -294,7 +292,8 @@ const InternalDashboard = ({
           </div>
         ) : (
           <InternalContractTable
-            contracts={stats.filteredContracts}
+            searchedContracts={hasSearched ? searchResults : contracts}
+            isSearched={hasSearched}
             onEdit={contract => {
               setEditingContract(contract);
             }}
@@ -332,30 +331,31 @@ const InternalDashboard = ({
               });
             }}
             onView={contract => {
-              console.log('View contract:', contract);
+              // console.log('View contract:', contract);
+              setPdfUrl(contract.urlContract || '');
+              setIsViewModalOpen(true);
               // TODO: Implement view modal or navigate to detail page
             }}
           />
         )}
       </div>
 
-      {/* Add Contract Modal */}
       <AddContractModal
         isOpen={isAddModalOpen}
         onClose={() => setIsAddModalOpen(false)}
-        onSubmit={async contractData => {      
+        onSubmit={async contractData => {
           const response = await addContract({
             url: '/api/contracts',
             body: contractData,
           });
 
-          console.log("response", response);
+          console.log('response', response);
 
           // @ts-expect-error - Response type may not have success property
           if (response.success!) {
             // @ts-expect-error - Response data may not have presignedUrl property
             const presignedUrl = response.data?.presignedUrl;
-            
+
             // Convert ContractFormUpload to ContractForm format
             const contractFormData: ContractForm = {
               title: contractData.title,
@@ -366,14 +366,21 @@ const InternalDashboard = ({
                 representation: p.partyRole,
               })),
             };
-            
+
             await generateContract(contractFormData, presignedUrl);
             console.log('Contract generated successfully');
           }
         }}
       />
 
-      {/* Edit Contract Modal */}
+      <ViewContractModal
+        isOpen={isViewModalOpen}
+        onOpenChange={function (isOpen) {
+          setIsViewModalOpen(isOpen);
+        }}
+        pdfUrl={pdfUrl}
+      />
+
       <EditContractModal
         isOpen={!!editingContract}
         contract={editingContract}

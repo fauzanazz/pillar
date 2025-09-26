@@ -27,6 +27,7 @@ export const ContractSchema = {
         'Management Review',
         'Accepted',
         'Rejected',
+        'Rejected Legal',
         'Canceled',
       ],
     },
@@ -36,6 +37,10 @@ export const ContractSchema = {
       minimum: -2147483648,
       maximum: 2147483647,
     },
+    reason: {
+      type: 'string',
+      nullable: true,
+    },
     createdBy: {
       type: 'string',
       nullable: true,
@@ -44,7 +49,80 @@ export const ContractSchema = {
       type: 'string',
       nullable: true,
     },
+    deleted: {
+      type: 'boolean',
+    },
     urlContract: {
+      type: 'string',
+      nullable: true,
+    },
+    aiDraftData: {
+      type: 'object',
+      nullable: true,
+      properties: {
+        summary: {
+          type: 'string',
+        },
+        clauses: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              title: {
+                type: 'string',
+              },
+              category: {
+                type: 'string',
+              },
+              text: {
+                type: 'string',
+              },
+              risk: {
+                type: 'integer',
+                minimum: 0,
+                maximum: 100,
+              },
+              rationale: {
+                type: 'string',
+              },
+              refs: {
+                type: 'string',
+              },
+              suggested: {
+                type: 'boolean',
+              },
+            },
+            required: ['title', 'text', 'risk'],
+          },
+        },
+        pdf_url: {
+          type: 'string',
+        },
+      },
+      required: ['clauses'],
+    },
+    aiMetadata: {
+      type: 'object',
+      nullable: true,
+      properties: {
+        correlation_id: {
+          type: 'string',
+        },
+        model_name: {
+          type: 'string',
+        },
+        timestamp: {
+          type: 'string',
+        },
+        processing_time_ms: {
+          type: 'number',
+        },
+        error: {
+          type: 'string',
+        },
+      },
+    },
+    draftSummary: {
       type: 'string',
       nullable: true,
     },
@@ -78,9 +156,12 @@ export const ContractSchema = {
     'endDate',
     'status',
     'riskScore',
+    'reason',
     'createdBy',
     'updatedBy',
+    'deleted',
     'urlContract',
+    'draftSummary',
     'createdAt',
     'updatedAt',
   ],
@@ -156,6 +237,84 @@ export const ContractWithRelationsSchema = {
             },
             required: ['id', 'clauseText', 'clauseDescription', 'riskLevel'],
           },
+        },
+      },
+    },
+  ],
+} as const;
+
+export const AlertSchema = {
+  type: 'object',
+  properties: {
+    id: {
+      type: 'integer',
+      minimum: -2147483648,
+      maximum: 2147483647,
+    },
+    contractId: {
+      type: 'integer',
+      minimum: -2147483648,
+      maximum: 2147483647,
+    },
+    message: {
+      type: 'string',
+    },
+    priority: {
+      type: 'string',
+      enum: ['low', 'medium', 'high', 'critical'],
+    },
+    isRead: {
+      type: 'boolean',
+    },
+    createdBy: {
+      type: 'string',
+      nullable: true,
+    },
+    createdAt: {
+      anyOf: [
+        {
+          type: 'string',
+        },
+        {
+          type: 'string',
+          format: 'date',
+        },
+      ],
+    },
+  },
+  required: [
+    'id',
+    'contractId',
+    'message',
+    'priority',
+    'isRead',
+    'createdBy',
+    'createdAt',
+  ],
+} as const;
+
+export const AlertWithContractSchema = {
+  allOf: [
+    {
+      $ref: '#/components/schemas/Alert',
+    },
+    {
+      type: 'object',
+      properties: {
+        contract: {
+          type: 'object',
+          properties: {
+            id: {
+              type: 'number',
+            },
+            title: {
+              type: 'string',
+            },
+            status: {
+              type: 'string',
+            },
+          },
+          required: ['id', 'title', 'status'],
         },
       },
     },

@@ -2,8 +2,12 @@ import { create } from 'zustand';
 
 import { toast } from 'sonner';
 import {
+  acceptContract,
+  AcceptContractData,
   Contract,
   ContractWithRelations,
+  createClause,
+  CreateClauseData,
   createContract,
   CreateContractData,
   deleteContract,
@@ -12,18 +16,27 @@ import {
   GetContractByIdData,
   getContracts,
   GetContractsData,
+  GetContractsResponse,
+  rejectContract,
+  RejectContractData,
   updateContract,
   UpdateContractData,
 } from '@/api';
 
 interface ContractState {
   contracts: Contract[];
+  totalContracts: number; // To hold the total count for pagination
   loading: boolean;
   error: string | null;
-  fetchContracts: (params?: GetContractsData) => Promise<void>;
+  fetchContracts: (
+    params?: GetContractsData
+  ) => Promise<GetContractsResponse | undefined>;
   addContract: (params: CreateContractData) => Promise<unknown>;
   updateContract: (params: UpdateContractData) => Promise<void>;
   deleteContract: (params: DeleteContractData) => Promise<void>;
+  rejectContract: (params: RejectContractData) => Promise<void>;
+  acceptContract: (params: AcceptContractData) => Promise<void>;
+  createClauseContract: (param: CreateClauseData) => Promise<void>;
   getContractById: (
     params: GetContractByIdData
   ) => Promise<ContractWithRelations | undefined>;
@@ -31,6 +44,7 @@ interface ContractState {
 
 export const useContractStore = create<ContractState>((set, get) => ({
   contracts: [],
+  totalContracts: 0,
   loading: false,
   error: null,
 
@@ -40,11 +54,16 @@ export const useContractStore = create<ContractState>((set, get) => ({
     try {
       const response = await getContracts(params);
       const contracts = response.data?.data?.contracts || [];
+      // Assuming the API returns totalContracts in pagination object
+      const totalContracts = response.data?.data?.pagination.total || 0;
 
       set({
         contracts,
+        totalContracts,
         loading: false,
       });
+
+      return response.data;
     } catch (error) {
       console.error('Error fetching contracts:', error);
       const errorMessage =
@@ -53,10 +72,82 @@ export const useContractStore = create<ContractState>((set, get) => ({
       set({
         error: errorMessage,
         loading: false,
-        contracts: [], // Clear contracts on error
+        contracts: [],
+        totalContracts: 0, // Reset on error
       });
 
       toast.error(`Failed to fetch contracts: ${errorMessage}`);
+    }
+  },
+
+  createClauseContract: async param => {
+    set({ loading: true, error: null });
+    try {
+      const response = await createClause(param);
+      const updatedContract = response.data?.data;
+      if (updatedContract) {
+        await get().fetchContracts();
+        toast.success('Clause created successfully!');
+      }
+    } catch (error) {
+      console.error('Error creating clause:', error);
+      const errorMessage =
+        error instanceof Error ? error.message : 'Failed to create clause';
+      set({ error: errorMessage, loading: false });
+      toast.error(`Failed to create clause: ${errorMessage}`);
+      throw error;
+    }
+  },
+
+  rejectContract: async params => {
+    set({ loading: true, error: null });
+
+    try {
+      const response = await rejectContract(params);
+      const updatedContract = response.data?.data;
+
+      if (updatedContract) {
+        set(state => ({
+          contracts: state.contracts.map(contract =>
+            contract.id === updatedContract.id ? updatedContract : contract
+          ),
+          loading: false,
+        }));
+        toast.success('Contract updated successfully!');
+      }
+    } catch (error) {
+      console.error('Error updating contract:', error);
+      const errorMessage =
+        error instanceof Error ? error.message : 'Failed to update contract';
+      set({ error: errorMessage, loading: false });
+      toast.error(`Failed to update contract: ${errorMessage}`);
+      throw error;
+    }
+  },
+
+  acceptContract: async params => {
+    set({ loading: true, error: null });
+
+    try {
+      const response = await acceptContract(params);
+      const updatedContract = response.data?.data;
+
+      if (updatedContract) {
+        set(state => ({
+          contracts: state.contracts.map(contract =>
+            contract.id === updatedContract.id ? updatedContract : contract
+          ),
+          loading: false,
+        }));
+        toast.success('Contract updated successfully!');
+      }
+    } catch (error) {
+      console.error('Error updating contract:', error);
+      const errorMessage =
+        error instanceof Error ? error.message : 'Failed to update contract';
+      set({ error: errorMessage, loading: false });
+      toast.error(`Failed to update contract: ${errorMessage}`);
+      throw error;
     }
   },
 
@@ -65,31 +156,25 @@ export const useContractStore = create<ContractState>((set, get) => ({
 
     try {
       const response = await createContract(contractData);
-      // const response = await openApi.contracts.createContract(apiContractData);
       const createdContract = response.data?.data;
 
       if (createdContract) {
-        set(state => ({
-          contracts: [...state.contracts, createdContract],
-          loading: false,
-        }));
-
+        // After adding, refetch the first page to ensure data consistency
+        get().fetchContracts({
+          url: '/api/contracts',
+          query: { page: '1', limit: '10' },
+        });
         toast.success('Contract created successfully!');
       }
-      
-      return response.data; // Return the response so it can be used in the UI
+
+      return response.data;
     } catch (error) {
       console.error('Error creating contract:', error);
       const errorMessage =
         error instanceof Error ? error.message : 'Failed to create contract';
-
-      set({
-        error: errorMessage,
-        loading: false,
-      });
-
+      set({ error: errorMessage, loading: false });
       toast.error(`Failed to create contract: ${errorMessage}`);
-      throw error; // Re-throw to let the UI handle it
+      throw error;
     }
   },
 
@@ -107,19 +192,13 @@ export const useContractStore = create<ContractState>((set, get) => ({
           ),
           loading: false,
         }));
-
         toast.success('Contract updated successfully!');
       }
     } catch (error) {
       console.error('Error updating contract:', error);
       const errorMessage =
         error instanceof Error ? error.message : 'Failed to update contract';
-
-      set({
-        error: errorMessage,
-        loading: false,
-      });
-
+      set({ error: errorMessage, loading: false });
       toast.error(`Failed to update contract: ${errorMessage}`);
       throw error;
     }
@@ -127,30 +206,17 @@ export const useContractStore = create<ContractState>((set, get) => ({
 
   deleteContract: async id => {
     set({ loading: true, error: null });
-
     try {
-      const response = await deleteContract(id);
-
-      const deleted = response.data?.data;
-
-      set(state => ({
-        contracts: state.contracts.filter(
-          contract => contract.id !== deleted?.id
-        ),
-        loading: false,
-      }));
-
+      await deleteContract(id);
+      // Refetch the current page of contracts after deletion
+      // This is simpler than trying to manage the state manually if pagination is affected
+      get().fetchContracts();
       toast.success('Contract deleted successfully!');
     } catch (error) {
       console.error('Error deleting contract:', error);
       const errorMessage =
         error instanceof Error ? error.message : 'Failed to delete contract';
-
-      set({
-        error: errorMessage,
-        loading: false,
-      });
-
+      set({ error: errorMessage, loading: false });
       toast.error(`Failed to delete contract: ${errorMessage}`);
       throw error;
     }
@@ -159,19 +225,13 @@ export const useContractStore = create<ContractState>((set, get) => ({
   getContractById: async id => {
     try {
       const res = await getContractById(id);
-      const conrtract = res.data?.data;
-      return conrtract;
+      return res.data?.data;
     } catch (error) {
-      console.error('Error deleting contract:', error);
+      console.error('Error fetching contract by ID:', error);
       const errorMessage =
-        error instanceof Error ? error.message : 'Failed to delete contract';
-
-      set({
-        error: errorMessage,
-        loading: false,
-      });
-
-      toast.error(`Failed to delete contract: ${errorMessage}`);
+        error instanceof Error ? error.message : 'Failed to fetch contract';
+      set({ error: errorMessage, loading: false });
+      toast.error(`Failed to fetch contract: ${errorMessage}`);
     }
   },
 }));
