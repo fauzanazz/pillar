@@ -45,6 +45,14 @@ export const GenericErrorResponses = {
       },
     },
   },
+  401: {
+    description: 'Unauthorized',
+    content: {
+      'application/json': {
+        schema: createResponseSchema(),
+      },
+    },
+  },
   403: {
     description: 'Forbidden',
     content: {
@@ -61,6 +69,61 @@ export const GenericErrorResponses = {
       },
     },
   },
+  500: {
+    description: 'Internal Server Error',
+    content: {
+      'application/json': {
+        schema: createResponseSchema(),
+      },
+    },
+  },
+};
+
+export const Error400Response = {
+  400: {
+    description: 'Bad Request',
+    content: {
+      'application/json': {
+        schema: createResponseSchema(),
+      },
+    },
+  },
+};
+
+export const Error401Response = {
+  401: {
+    description: 'Unauthorized',
+    content: {
+      'application/json': {
+        schema: createResponseSchema(),
+      },
+    },
+  },
+};
+
+export const Error403Response = {
+  403: {
+    description: 'Forbidden',
+    content: {
+      'application/json': {
+        schema: createResponseSchema(),
+      },
+    },
+  },
+};
+
+export const Error404Response = {
+  404: {
+    description: 'Not Found',
+    content: {
+      'application/json': {
+        schema: createResponseSchema(),
+      },
+    },
+  },
+};
+
+export const Error500Response = {
   500: {
     description: 'Internal Server Error',
     content: {

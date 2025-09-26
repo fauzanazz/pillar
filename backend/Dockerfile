@@ -11,9 +11,6 @@ RUN bun install --frozen-lockfile
 # Copy source code
 COPY . .
 
-# Build the app
-RUN bun run build
-
 # Run the app
 USER bun
 EXPOSE 5000/tcp
