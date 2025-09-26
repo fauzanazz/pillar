@@ -1,0 +1,195 @@
+{
+  "id": "28f81554-4d27-4d28-a026-460334c21fe8",
+  "template": {
+    "title": "Billing",
+    "description": "billing about basketballs",
+    "parties": [
+      {
+        "role": "pihak pertama",
+        "name": "legion",
+        "rep": "davis",
+        "address": "jalan cisitu"
+      },
+      {
+        "role": "pihak kedua",
+        "name": "acer",
+        "rep": "maha",
+        "address": "kanayakan"
+      }
+    ],
+    "end_date": "2029-09-10",
+    "jurisdiction": "indonesia",
+    "language": "indonesian",
+    "value": null,
+    "special_requirements": null
+  },
+  "clauses": [
+    {
+      "id": "f145a3c6-5df7-4524-bdc7-4b4c726105a7",
+      "no": 1,
+      "title": "Definisi dan Interpretasi",
+      "text": "Dalam Kontrak ini, kecuali konteksnya menentukan lain: (a) 'Hari Kerja' berarti hari Senin sampai dengan Jumat, kecuali hari libur nasional; (b) 'Force Majeure' berarti keadaan kahar yang berada di luar kendali para pihak; (c) rujukan kepada undang-undang termasuk peraturan pelaksanaannya.",
+      "status": "accepted",
+      "original_text": null,
+      "added_by": "legal",
+      "created_at": "2025-09-26 13:05:17.945168",
+      "updated_at": "2025-09-26 13:05:34.052967",
+      "notes": "AI Generated - Risk: 20/100"
+    },
+    {
+      "id": "39675f01-f575-4230-bea5-534e470b7efa",
+      "no": 2,
+      "title": "Kepatuhan Hukum",
+      "text": "Para Pihak wajib mematuhi seluruh peraturan perundang-undangan yang berlaku di Indonesia, termasuk namun tidak terbatas pada: (a) UU No. 8 Tahun 1999 tentang Perlindungan Konsumen; (b) UU No. 21 Tahun 2008 tentang Perbankan Syariah; (c) peraturan sektor logistik yang ditetapkan oleh Kementerian Perhubungan.",
+      "status": "accepted",
+      "original_text": null,
+      "added_by": "legal",
+      "created_at": "2025-09-26 13:05:17.945168",
+      "updated_at": "2025-09-26 13:05:34.845412",
+      "notes": "AI Generated - Risk: 25/100"
+    },
+    {
+      "id": "2c7e9e81-a9ef-48c1-b54c-2f5be551eaa4",
+      "no": 3,
+      "title": "Penyelesaian Sengketa",
+      "text": "Setiap perselisihan yang timbul dari atau berkaitan dengan Kontrak ini akan diselesaikan melalui: (1) Musyawarah mufakat dalam jangka waktu 30 hari; (2) Mediasi melalui lembaga mediasi terakreditasi; (3) Arbitrase BANI sesuai prosedur yang berlaku; (4) Pengadilan Negeri Jakarta Pusat sebagai pilihan terakhir.",
+      "status": "accepted",
+      "original_text": null,
+      "added_by": "legal",
+      "created_at": "2025-09-26 13:05:17.945168",
+      "updated_at": "2025-09-26 13:05:35.477548",
+      "notes": "AI Generated - Risk: 30/100"
+    },
+    {
+      "id": "0a886369-915c-4d23-8a2e-85238fa451fa",
+      "no": 4,
+      "title": "Jangka Waktu dan Perpanjangan",
+      "text": "Kontrak ini berlaku selama periode yang ditetapkan dan dapat diperpanjang atas kesepakatan tertulis para pihak. Perpanjangan harus diajukan paling lambat 60 hari sebelum berakhirnya masa berlaku kontrak. Jika tidak ada pemberitahuan perpanjangan, kontrak akan berakhir secara otomatis.",
+      "status": "accepted",
+      "original_text": null,
+      "added_by": "legal",
+      "created_at": "2025-09-26 13:05:17.945168",
+      "updated_at": "2025-09-26 13:05:36.130232",
+      "notes": "AI Generated - Risk: 20/100"
+    },
+    {
+      "id": "eebbab87-ed9f-4b4a-96fe-96fc7e70cf67",
+      "no": 5,
+      "title": "Pembayaran dan Denda",
+      "text": "Pembayaran dilakukan dalam mata uang Rupiah melalui transfer bank. Keterlambatan pembayaran dikenakan denda 0,1% per hari dari jumlah yang terhutang. Pihak yang melanggar kewajiban kontraktual dapat dikenakan penalti maksimal 10% dari nilai kontrak, kecuali disepakati lain.",
+      "status": "accepted",
+      "original_text": null,
+      "added_by": "legal",
+      "created_at": "2025-09-26 13:05:17.945168",
+      "updated_at": "2025-09-26 13:05:36.816971",
+      "notes": "AI Generated - Risk: 25/100"
+    },
+    {
+      "id": "bbb3f0b2-658f-4dd8-8cd0-5f04e30ee9ce",
+      "no": 6,
+      "title": "Kerja Sama dan Tanggung Jawab",
+      "text": "Para Pihak sepakat untuk saling bertanggung jawab atas pelaksanaan kontrak ini sesuai dengan ketentuan yang telah disepakati. Setiap pihak wajib memiliki asuransi yang berlaku untuk menanggung risiko yang mungkin timbul dari pelaksanaan kontrak ini.",
+      "status": "accepted",
+      "original_text": null,
+      "added_by": "legal",
+      "created_at": "2025-09-26 13:05:17.945168",
+      "updated_at": "2025-09-26 13:05:37.934906",
+      "notes": "AI Generated - Risk: 35/100"
+    },
+    {
+      "id": "bd42d769-53c8-4703-ad63-3f0006c437f4",
+      "no": 7,
+      "title": "Kerahasiaan",
+      "text": "Setiap Pihak sepakat untuk menjaga kerahasiaan informasi yang diperoleh dalam pelaksanaan kontrak ini dan tidak akan mengungkapkan informasi tersebut kepada pihak ketiga tanpa persetujuan tertulis dari pihak lainnya.",
+      "status": "accepted",
+      "original_text": null,
+      "added_by": "legal",
+      "created_at": "2025-09-26 13:05:17.945168",
+      "updated_at": "2025-09-26 13:05:39.387313",
+      "notes": "AI Generated - Risk: 30/100"
+    }
+  ],
+  "status": "draft_management",
+  "created_by": "internal",
+  "current_assignee": "management",
+  "created_at": "2025-09-26 13:03:50.709249",
+  "updated_at": "2025-09-26 13:05:59.695313",
+  "workflow_history": [
+    {
+      "action": "contract_created",
+      "by_role": "internal",
+      "timestamp": "2025-09-26T13:03:50.709249",
+      "notes": "Contract created: Billing"
+    },
+    {
+      "action": "clauses_generated",
+      "by_role": "internal",
+      "timestamp": "2025-09-26T13:05:17.945168",
+      "notes": "Generated 7 clauses using AI",
+      "old_status": "draft_internal",
+      "new_status": "draft_legal_review"
+    },
+    {
+      "action": "clause_accepted",
+      "by_role": "legal",
+      "timestamp": "2025-09-26T13:05:34.053303",
+      "notes": "Clause 1: Definisi dan Interpretasi - accepted",
+      "clause_id": "f145a3c6-5df7-4524-bdc7-4b4c726105a7"
+    },
+    {
+      "action": "clause_accepted",
+      "by_role": "legal",
+      "timestamp": "2025-09-26T13:05:34.845412",
+      "notes": "Clause 2: Kepatuhan Hukum - accepted",
+      "clause_id": "39675f01-f575-4230-bea5-534e470b7efa"
+    },
+    {
+      "action": "clause_accepted",
+      "by_role": "legal",
+      "timestamp": "2025-09-26T13:05:35.477548",
+      "notes": "Clause 3: Penyelesaian Sengketa - accepted",
+      "clause_id": "2c7e9e81-a9ef-48c1-b54c-2f5be551eaa4"
+    },
+    {
+      "action": "clause_accepted",
+      "by_role": "legal",
+      "timestamp": "2025-09-26T13:05:36.130232",
+      "notes": "Clause 4: Jangka Waktu dan Perpanjangan - accepted",
+      "clause_id": "0a886369-915c-4d23-8a2e-85238fa451fa"
+    },
+    {
+      "action": "clause_accepted",
+      "by_role": "legal",
+      "timestamp": "2025-09-26T13:05:36.816971",
+      "notes": "Clause 5: Pembayaran dan Denda - accepted",
+      "clause_id": "eebbab87-ed9f-4b4a-96fe-96fc7e70cf67"
+    },
+    {
+      "action": "clause_accepted",
+      "by_role": "legal",
+      "timestamp": "2025-09-26T13:05:37.934906",
+      "notes": "Clause 6: Kerja Sama dan Tanggung Jawab - accepted",
+      "clause_id": "bbb3f0b2-658f-4dd8-8cd0-5f04e30ee9ce"
+    },
+    {
+      "action": "clause_accepted",
+      "by_role": "legal",
+      "timestamp": "2025-09-26T13:05:39.387313",
+      "notes": "Clause 7: Kerahasiaan - accepted",
+      "clause_id": "bd42d769-53c8-4703-ad63-3f0006c437f4"
+    },
+    {
+      "action": "submitted_to_management",
+      "by_role": "legal",
+      "timestamp": "2025-09-26T13:05:59.694268",
+      "notes": "Draft submitted to management for approval",
+      "old_status": "draft_legal_review",
+      "new_status": "draft_management"
+    }
+  ],
+  "management_notes": null,
+  "legal_notes": "",
+  "internal_notes": null,
+  "json_file_path": "C:\\Users\\tech\\jasmine\\ifest\\Final-IFest2025\\ai\\out\\contracts\\contract_28f81554-4d27-4d28-a026-460334c21fe8.json",
+  "pdf_file_path": null
+}
