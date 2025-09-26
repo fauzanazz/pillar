@@ -1,12 +1,15 @@
 import { env } from '@/configs';
 import { createPutObjectPresignedUrl } from '@/lib/s3';
 import {
+  createClause as createClauseRepo,
   createContract as createContractRepo,
+  deleteContract as deleteContractRepo,
   getContractById as getContractByIdRepo,
   getContracts as getContractsRepo,
   updateContract as updateContractRepo,
 } from '@/repositories/contract.repository';
 import type {
+  CreateClause,
   CreateContract,
   GetContractsQuery,
   UpdateContract,
@@ -41,6 +44,19 @@ export const updateContractService = async (
   id: number,
   contractData: UpdateContract,
   updatedBy: string,
+  updaterRole: string,
 ) => {
-  return await updateContractRepo(id, contractData, updatedBy);
+  return await updateContractRepo(id, contractData, updatedBy, updaterRole);
+};
+
+export const deleteContractService = async (id: number) => {
+  return await deleteContractRepo(id);
+};
+
+export const createClauseService = async (
+  contractId: number,
+  clauseData: CreateClause,
+  createdBy: string,
+) => {
+  return await createClauseRepo(contractId, clauseData, createdBy);
 };

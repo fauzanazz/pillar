@@ -10,11 +10,14 @@ import {
 } from '@/db/schema';
 import { getPresignedUrlByUrl } from '@/lib/s3';
 import type {
+  ContractStatusEnum,
   ContractWithRelations,
+  CreateClause,
   CreateContract,
   GetContractsQuery,
   UpdateContract,
 } from '@/types/contract.type';
+import { validateContractStatus } from '@/utils/validateContractStatus';
 
 export const getContracts = async (query: GetContractsQuery) => {
   const { page, limit, status, search } = query;
@@ -58,13 +61,7 @@ export const getContracts = async (query: GetContractsQuery) => {
     contractsList.map(async (contract) => ({
       ...contract,
       urlContract: await getPresignedUrlByUrl(contract.urlContract || ''),
-      status: contract.status as
-        | 'Draft'
-        | 'Legal Review'
-        | 'Management Review'
-        | 'Accepted'
-        | 'Rejected'
-        | 'Canceled',
+      status: contract.status as ContractStatusEnum,
       createdAt: contract.createdAt.toISOString(),
       updatedAt: contract.updatedAt.toISOString(),
     })),
@@ -98,13 +95,7 @@ export const getContractById = async (
   const baseContract = {
     ...contract[0],
     urlContract: await getPresignedUrlByUrl(contract[0].urlContract || ''),
-    status: contract[0].status as
-      | 'Draft'
-      | 'Legal Review'
-      | 'Management Review'
-      | 'Accepted'
-      | 'Rejected'
-      | 'Canceled',
+    status: contract[0].status as ContractStatusEnum,
     createdAt: contract[0].createdAt.toISOString(),
     updatedAt: contract[0].updatedAt.toISOString(),
   };
@@ -138,10 +129,8 @@ export const getContractById = async (
       .select({
         id: clauses.id,
         clauseText: clauses.clauseText,
-        clauseType: clauses.clauseType,
+        clauseDescription: clauses.clauseDescription,
         riskLevel: clauses.riskLevel,
-        aiGenerated: clauses.aiGenerated,
-        approved: clauses.approved,
       })
       .from(clauses)
       .where(eq(clauses.contractId, id)),
@@ -165,28 +154,40 @@ export const createContract = async (
   url: string,
   key: string,
 ) => {
-  const [newContract] = await db
-    .insert(contracts)
-    .values({
-      ...contractData,
-      urlContract: `https://${env.S3_ENDPOINT}/${env.S3_BUCKET_NAME}/${key}`,
-      createdBy,
-      updatedBy: createdBy,
-    })
-    .returning();
+  const { party, ...restContractData } = contractData;
+  const result = await db.transaction(async (tx) => {
+    const [newContract] = await tx
+      .insert(contracts)
+      .values({
+        ...restContractData,
+        urlContract: `https://${env.S3_ENDPOINT}/${env.S3_BUCKET_NAME}/${key}`,
+        createdBy,
+        updatedBy: createdBy,
+      })
+      .returning();
+
+    // Insert parties
+    if (party && party.length > 0) {
+      const partyValues = party.map((p) => ({
+        contractId: newContract.id,
+        partyName: p.partyName,
+        partyRole: p.partyRole,
+        createdBy,
+        updatedBy: createdBy,
+      }));
+
+      await tx.insert(contractParties).values(partyValues);
+    }
+
+    return newContract;
+  });
 
   return {
-    ...newContract,
-    status: newContract.status as
-      | 'Draft'
-      | 'Legal Review'
-      | 'Management Review'
-      | 'Accepted'
-      | 'Rejected'
-      | 'Canceled',
+    ...result,
+    status: result.status as ContractStatusEnum,
     presignedUrl: url,
-    createdAt: newContract.createdAt.toISOString(),
-    updatedAt: newContract.updatedAt.toISOString(),
+    createdAt: result.createdAt.toISOString(),
+    updatedAt: result.updatedAt.toISOString(),
   };
 };
 
@@ -194,7 +195,29 @@ export const updateContract = async (
   id: number,
   contractData: UpdateContract,
   updatedBy: string,
+  updaterRole: string,
 ) => {
+  const [contract] = await db
+    .select()
+    .from(contracts)
+    .where(eq(contracts.id, id))
+    .limit(1);
+
+  if (!contract) {
+    return null;
+  }
+
+  // Validate status
+  if (
+    !validateContractStatus(
+      contract.status,
+      contractData.status || contract.status,
+      updaterRole,
+    )
+  ) {
+    throw new Error('Invalid contract status');
+  }
+
   const [updatedContract] = await db
     .update(contracts)
     .set({
@@ -212,14 +235,69 @@ export const updateContract = async (
   return {
     ...updatedContract,
     urlContract: await getPresignedUrlByUrl(updatedContract.urlContract || ''),
-    status: updatedContract.status as
-      | 'Draft'
-      | 'Legal Review'
-      | 'Management Review'
-      | 'Accepted'
-      | 'Rejected'
-      | 'Canceled',
+    status: updatedContract.status as ContractStatusEnum,
     createdAt: updatedContract.createdAt.toISOString(),
     updatedAt: updatedContract.updatedAt.toISOString(),
   };
+};
+
+export const deleteContract = async (id: number) => {
+  // First, check if the contract exists
+  const existingContract = await db
+    .select()
+    .from(contracts)
+    .where(eq(contracts.id, id))
+    .limit(1);
+
+  if (existingContract.length === 0) {
+    return null;
+  }
+
+  // Delete related records first (due to foreign key constraints)
+  // Delete contract versions
+  await db.delete(contractVersions).where(eq(contractVersions.contractId, id));
+
+  // Delete contract parties
+  await db.delete(contractParties).where(eq(contractParties.contractId, id));
+
+  // Delete clauses
+  await db.delete(clauses).where(eq(clauses.contractId, id));
+
+  // Finally, delete the contract
+  const [deletedContract] = await db
+    .delete(contracts)
+    .where(eq(contracts.id, id))
+    .returning();
+
+  return deletedContract;
+};
+
+export const createClause = async (
+  contractId: number,
+  clauseData: CreateClause,
+  createdBy: string,
+) => {
+  // First check if contract exists
+  const existingContract = await db
+    .select()
+    .from(contracts)
+    .where(eq(contracts.id, contractId))
+    .limit(1);
+
+  if (existingContract.length === 0) {
+    throw new Error('Contract not found');
+  }
+
+  const [newClause] = await db
+    .insert(clauses)
+    .values({
+      contractId,
+      clauseText: clauseData.clauseText,
+      clauseDescription: clauseData.clauseDescription || null,
+      createdBy,
+      updatedBy: createdBy,
+    })
+    .returning();
+
+  return newClause;
 };

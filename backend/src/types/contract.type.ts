@@ -13,6 +13,7 @@ export const contractStatusEnum = z.enum([
   'Rejected',
   'Canceled',
 ]);
+export type ContractStatusEnum = z.infer<typeof contractStatusEnum>;
 
 // Base contract schema
 export const contractSchema = createSelectSchema(contracts, {
@@ -47,10 +48,8 @@ export const contractWithRelationsSchema = contractSchema.extend({
       z.object({
         id: z.number(),
         clauseText: z.string(),
-        clauseType: z.string().nullable(),
+        clauseDescription: z.string().nullable(),
         riskLevel: z.string().nullable(),
-        aiGenerated: z.boolean(),
-        approved: z.boolean(),
       }),
     )
     .optional(),
@@ -79,6 +78,14 @@ export const createContractSchema = z.object({
   description: z.string().optional(),
   endDate: z.string().optional(),
   status: contractStatusEnum.default('Draft'),
+  party: z
+    .array(
+      z.object({
+        partyName: z.string().min(1, 'Party name is required'),
+        partyRole: z.string().min(1, 'Party role is required'),
+      }),
+    )
+    .min(1, 'At least one party is required'),
 });
 
 export const updateContractSchema = z.object({
@@ -87,6 +94,26 @@ export const updateContractSchema = z.object({
   endDate: z.string().optional(),
   status: contractStatusEnum.optional(),
 });
+
+export const createClauseSchema = z.array(
+  z.object({
+    clauseText: z.string().min(1, 'Clause text is required'),
+    clauseDescription: z.string().optional(),
+  }),
+);
+
+export const clauseResponseSchema = z.array(
+  z.object({
+    id: z.number(),
+    contractId: z.number(),
+    clauseText: z.string(),
+    clauseDescription: z.string(),
+    createdBy: z.string().nullable(),
+    updatedBy: z.string().nullable(),
+    createdAt: z.union([z.string(), z.date()]),
+    updatedAt: z.union([z.string(), z.date()]),
+  }),
+);
 
 // Response schemas
 export const contractResponseSchema = createResponseSchema(
@@ -107,6 +134,10 @@ export const contractsListResponseSchema = createResponseSchema(
   }),
 );
 
+// Clause response schema
+export const clauseCreatedResponseSchema =
+  createResponseSchema(clauseResponseSchema);
+
 // Types
 export type Contract = z.infer<typeof contractSchema>;
 export type ContractWithRelations = z.infer<typeof contractWithRelationsSchema>;
@@ -114,3 +145,5 @@ export type GetContractParams = z.infer<typeof getContractParamsSchema>;
 export type GetContractsQuery = z.infer<typeof getContractsQuerySchema>;
 export type CreateContract = z.infer<typeof createContractSchema>;
 export type UpdateContract = z.infer<typeof updateContractSchema>;
+export type CreateClause = z.infer<typeof createClauseSchema>;
+export type ClauseResponse = z.infer<typeof clauseResponseSchema>;

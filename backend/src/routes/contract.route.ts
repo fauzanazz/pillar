@@ -3,9 +3,11 @@ import z from 'zod';
 
 import { GenericErrorResponses } from '@/lib';
 import {
+  clauseCreatedResponseSchema,
   contractResponseSchema,
   contractWithRelationsResponseSchema,
   contractsListResponseSchema,
+  createClauseSchema,
   createContractSchema,
   getContractParamsSchema,
   getContractsQuerySchema,
@@ -108,6 +110,58 @@ export const updateContractRoute = createRoute({
       content: {
         'application/json': {
           schema: contractResponseSchema,
+        },
+      },
+    },
+    ...GenericErrorResponses,
+  },
+});
+
+export const deleteContractRoute = createRoute({
+  operationId: 'deleteContract',
+  tags: ['contracts'],
+  method: 'delete',
+  path: '/contracts/{id}',
+  request: {
+    params: getContractParamsSchema,
+  },
+  responses: {
+    200: {
+      description: 'Contract deleted successfully',
+      content: {
+        'application/json': {
+          schema: z.object({
+            success: z.boolean(),
+            message: z.string(),
+          }),
+        },
+      },
+    },
+    ...GenericErrorResponses,
+  },
+});
+
+export const createClauseRoute = createRoute({
+  operationId: 'createClause',
+  tags: ['contracts'],
+  method: 'post',
+  path: '/contracts/{id}/clause',
+  request: {
+    params: getContractParamsSchema,
+    body: {
+      content: {
+        'application/json': {
+          schema: createClauseSchema,
+        },
+      },
+    },
+  },
+  responses: {
+    201: {
+      description: 'Clause created successfully',
+      content: {
+        'application/json': {
+          schema: clauseCreatedResponseSchema,
         },
       },
     },
