@@ -17,8 +17,7 @@ export const contracts = pgTable('contracts', {
   description: text('description'),
   endDate: date('end_date'),
   status: varchar('status').notNull(), // Draft, Legal Review, Management Review, Accepted, Rejected, Canceled
-  riskScore: integer('risk_score'),
-  uploadedBy: varchar('uploaded_by').references(() => user.id),
+  riskScore: integer('risk_score').default(0),
   createdBy: varchar('created_by').references(() => user.id),
   updatedBy: varchar('updated_by').references(() => user.id),
   urlContract: text('url_contract'), // lokasi PDF / file

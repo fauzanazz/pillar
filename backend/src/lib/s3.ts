@@ -1,42 +1,40 @@
-import {
-  GetObjectCommand,
-  PutObjectCommand,
-  S3Client,
-} from '@aws-sdk/client-s3';
-import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+import * as Minio from 'minio';
 
 import { env } from '@/configs';
 
-const s3 = new S3Client({
-  region: 'auto',
-  endpoint: env.S3_ENDPOINT,
-  credentials: {
-    accessKeyId: env.S3_ACCESS_KEY_ID,
-    secretAccessKey: env.S3_SECRET_ACCESS_KEY,
-  },
-  forcePathStyle: false,
+const client = new Minio.Client({
+  endPoint: env.S3_ENDPOINT,
+  // port: 9000,
+  useSSL: true,
+  accessKey: env.S3_ACCESS_KEY_ID,
+  secretKey: env.S3_SECRET_ACCESS_KEY,
 });
 
-export const getPutObjectSignedUrl = async (
+export const createPutObjectPresignedUrl = async (
   key: string,
-  contentType: string,
-): Promise<string> => {
-  const command = new PutObjectCommand({
-    Bucket: env.S3_BUCKET_NAME || 'nusa',
-    Key: key,
-    ContentType: contentType,
-  });
-
-  const signedUrl = await getSignedUrl(s3, command, { expiresIn: 3600 });
-  return signedUrl;
+  bucketName: string,
+  expiresIn: number,
+) => {
+  return await client.presignedPutObject(bucketName, key, expiresIn);
 };
 
-export const getGetObjectSignedUrl = async (key: string): Promise<string> => {
-  const command = new GetObjectCommand({
-    Bucket: env.S3_BUCKET_NAME || 'nusa',
-    Key: key,
-  });
+export const createGetObjectPresignedUrl = async (
+  key: string,
+  bucketName: string,
+  expiresIn: number,
+) => {
+  return await client.presignedGetObject(bucketName, key, expiresIn);
+};
 
-  const signedUrl = await getSignedUrl(s3, command, { expiresIn: 3600 });
-  return signedUrl;
+export const getPresignedUrlByUrl = async (url: string) => {
+  try {
+    const urlObj = new URL(url);
+    const bucketName = urlObj.pathname.split('/')[1];
+    const objectKey = urlObj.pathname.split('/').slice(2).join('/');
+
+    return await createGetObjectPresignedUrl(objectKey, bucketName, 60 * 60);
+  } catch (error) {
+    console.error('Error generating presigned URL from url:', error);
+    return '';
+  }
 };
