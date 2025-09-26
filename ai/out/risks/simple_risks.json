@@ -1,0 +1,99 @@
+[
+  {
+    "contract": {
+      "id": "0584cdf7-629d-4b03-a754-cb980c41652a",
+      "title": "Pembelian Mobil Bekas",
+      "file": "contract_0584cdf7-629d-4b03-a754-cb980c41652a.json"
+    },
+    "risks": [
+      {
+        "description": "Potentially irrelevant clause: References to potentially outdated 1990s legislation",
+        "clause_reference": "peraturan perundang-undangan yang berlaku di Indon...",
+        "recommendation": "Verify if referenced legislation is still current"
+      }
+    ]
+  },
+  {
+    "contract": {
+      "id": "28f81554-4d27-4d28-a026-460334c21fe8",
+      "title": "Billing",
+      "file": "contract_28f81554-4d27-4d28-a026-460334c21fe8.json"
+    },
+    "risks": [
+      {
+        "description": "Potentially irrelevant clause: References to potentially outdated 1990s legislation",
+        "clause_reference": "peraturan perundang-undangan yang berlaku di Indon...",
+        "recommendation": "Verify if referenced legislation is still current"
+      }
+    ]
+  },
+  {
+    "contract": {
+      "id": "43439bbf-dce1-43ed-a7bb-2613cc6ae8ba",
+      "title": "API Key Usage",
+      "file": "contract_43439bbf-dce1-43ed-a7bb-2613cc6ae8ba.json"
+    },
+    "risks": [
+      {
+        "description": "Potentially irrelevant clause: References to potentially outdated 1990s legislation",
+        "clause_reference": "peraturan perundang-undangan yang berlaku di Indon...",
+        "recommendation": "Verify if referenced legislation is still current"
+      }
+    ]
+  },
+  {
+    "contract": {
+      "id": "53eb4e79-fb0a-4435-ba1b-6f06806da4b1",
+      "title": "Drink Water",
+      "file": "contract_53eb4e79-fb0a-4435-ba1b-6f06806da4b1.json"
+    },
+    "risks": [
+      {
+        "description": "Contract has already expired",
+        "clause_reference": null,
+        "recommendation": "Urgent action required to renew or extend contract"
+      },
+      {
+        "description": "Potentially irrelevant clause: References to potentially outdated 1990s legislation",
+        "clause_reference": "peraturan perundang-undangan yang berlaku di Indon...",
+        "recommendation": "Verify if referenced legislation is still current"
+      }
+    ]
+  },
+  {
+    "contract": {
+      "id": "78ce6c6a-1327-403f-807d-a3b1d900cf6b",
+      "title": "Sharing is Caring",
+      "file": "contract_78ce6c6a-1327-403f-807d-a3b1d900cf6b.json"
+    },
+    "risks": [
+      {
+        "description": "Potentially irrelevant clause: References to potentially outdated 1990s legislation",
+        "clause_reference": "peraturan perundang-undangan yang berlaku di Indon...",
+        "recommendation": "Verify if referenced legislation is still current"
+      }
+    ]
+  },
+  {
+    "contract": {
+      "id": "7ffc612c-a643-4688-aaa5-7482b1d9a1b8",
+      "title": "Kontrak Perdagangan Mouse",
+      "file": "contract_7ffc612c-a643-4688-aaa5-7482b1d9a1b8.json"
+    },
+    "risks": []
+  },
+  {
+    "contract": {
+      "id": "cc2b9ab4-0769-4435-b881-9f7dd5e3f22c",
+      "title": "Kontrak Pembangunan Jembatan",
+      "file": "contract_cc2b9ab4-0769-4435-b881-9f7dd5e3f22c.json"
+    },
+    "risks": [
+      {
+        "description": "Contract expires in 1 days",
+        "clause_reference": null,
+        "recommendation": "Urgent action required to renew or extend contract"
+      }
+    ]
+  }
+]

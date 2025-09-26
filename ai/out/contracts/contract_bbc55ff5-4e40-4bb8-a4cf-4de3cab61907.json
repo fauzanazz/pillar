@@ -1,0 +1,264 @@
+{
+  "id": "bbc55ff5-4e40-4bb8-a4cf-4de3cab61907",
+  "template": {
+    "title": "Kontrak Pembersihan Lapangan Sepak Bola",
+    "description": "Kontrak ini mengatur kerja sama antara pihak pemberi kerja dan pihak penyedia jasa untuk melaksanakan kegiatan pembersihan lapangan sepak bola secara rutin dan menyeluruh. Ruang lingkup pekerjaan mencakup penyapuan, pemotongan rumput, pengumpulan sampah, pembuangan limbah, serta perawatan dasar agar lapangan tetap bersih, rapi, dan aman digunakan. Pihak penyedia jasa wajib menyediakan tenaga kerja, peralatan, serta bahan pendukung sesuai standar kebersihan dan keselamatan kerja. Kontrak ini berlaku untuk jangka waktu yang telah disepakati dan dapat diperpanjang berdasarkan kebutuhan serta kesepakatan kedua belah pihak.",
+    "parties": [
+      {
+        "role": "PIHAK PERTAMA",
+        "name": "ILCS",
+        "rep": "Dave",
+        "address": "Unpad"
+      },
+      {
+        "role": "PIHAK KEDUA",
+        "name": "ITB",
+        "rep": "SYif",
+        "address": "Ganesha"
+      }
+    ],
+    "end_date": "2026-09-28",
+    "jurisdiction": "Indonesia",
+    "language": "Indonesian",
+    "value": null,
+    "special_requirements": null
+  },
+  "clauses": [
+    {
+      "id": "5a6c7005-1f72-4b34-81e1-11c7912e431e",
+      "no": 1,
+      "title": "Definisi dan Interpretasi",
+      "text": "Dalam kontrak ini, kecuali konteksnya menentukan lain: (a) 'Pihak Pertama' berarti PT Integrasi Logistik Cipta Solusi; (b) 'Pihak Kedua' berarti ITB; (c) 'Pekerjaan' berarti kegiatan pembersihan dan perawatan lapangan sepak bola; (d) 'Hari Kerja' berarti hari Senin sampai dengan Jumat, kecuali hari libur nasional; (e) 'Force Majeure' berarti keadaan kahar yang berada di luar kendali para pihak.",
+      "status": "accepted",
+      "original_text": null,
+      "added_by": "legal",
+      "created_at": "2025-09-26 22:48:40.334611",
+      "updated_at": "2025-09-26 22:49:19.378375",
+      "notes": "AI Generated - Risk: 20/100",
+      "risk_score": 20
+    },
+    {
+      "id": "37db6f45-fb90-4b10-9642-3497a7ec07b3",
+      "no": 2,
+      "title": "Ruang Lingkup Pekerjaan",
+      "text": "Pihak Kedua bertanggung jawab untuk melaksanakan Pekerjaan dengan meliputi kegiatan penyapuan, pemotongan rumput, pengumpulan dan pembuangan sampah, serta perawatan lainnya agar lapangan tetap bersih, rapi, dan aman digunakan sesuai dengan standar kebersihan yang berlaku.",
+      "status": "accepted",
+      "original_text": null,
+      "added_by": "legal",
+      "created_at": "2025-09-26 22:48:40.334611",
+      "updated_at": "2025-09-26 22:49:20.077402",
+      "notes": "AI Generated - Risk: 25/100",
+      "risk_score": 25
+    },
+    {
+      "id": "3474f37f-e2e6-43f1-bd73-4b4b7950f058",
+      "no": 3,
+      "title": "Kepatuhan terhadap Standar dan Regulasi",
+      "text": "Pihak Kedua wajib memenuhi semua peraturan perundang-undangan yang berlaku terkait kebersihan, kesehatan kerja, dan keselamatan serta menjaga kualitas layanan sesuai dengan ketentuan yang ditetapkan oleh pihak Pertama.",
+      "status": "accepted",
+      "original_text": null,
+      "added_by": "legal",
+      "created_at": "2025-09-26 22:48:40.334611",
+      "updated_at": "2025-09-26 22:49:20.133551",
+      "notes": "AI Generated - Risk: 30/100",
+      "risk_score": 30
+    },
+    {
+      "id": "1c003fff-e259-48f4-af35-0b94d44536fd",
+      "no": 4,
+      "title": "Pembayaran dan Denda",
+      "text": "Pembayaran dilakukan dalam mata uang Rupiah dengan metode transfer bank. Pihak Pertama wajib membayar dalam waktu 30 hari setelah menerima faktur. Keterlambatan pembayaran akan dikenakan denda 0,1% per hari dari jumlah terhutang. Penalti maksimal 10% dari nilai kontrak akan diterapkan jika Pihak Kedua gagal memenuhi kewajibannya.",
+      "status": "accepted",
+      "original_text": null,
+      "added_by": "legal",
+      "created_at": "2025-09-26 22:48:40.334611",
+      "updated_at": "2025-09-26 22:49:20.189206",
+      "notes": "AI Generated - Risk: 35/100",
+      "risk_score": 35
+    },
+    {
+      "id": "a4cbc42b-e1ed-4e8d-a36c-47f027935f1d",
+      "no": 5,
+      "title": "Jangka Waktu dan Perpanjangan",
+      "text": "Kontrak ini berlaku selama 24 bulan terhitung sejak tanggal tanda tangan dan dapat diperpanjang atas kesepakatan tertulis para pihak. Permohonan perpanjangan harus dilakukan paling lambat 60 hari sebelum berakhirnya masa berlaku kontrak.",
+      "status": "accepted",
+      "original_text": null,
+      "added_by": "legal",
+      "created_at": "2025-09-26 22:48:40.334611",
+      "updated_at": "2025-09-26 22:49:20.249371",
+      "notes": "AI Generated - Risk: 20/100",
+      "risk_score": 20
+    },
+    {
+      "id": "0bd5d44f-aaad-4838-ac11-e83bd69d0d18",
+      "no": 6,
+      "title": "Kerahasiaan dan Perlindungan Data",
+      "text": "Kedua belah pihak wajib untuk menjaga kerahasiaan informasi yang diperoleh selama pelaksanaan kontrak dan mematuhi UU No. 27 Tahun 2022 tentang Perlindungan Data Pribadi. Pelanggaran kerahasiaan dapat mengakibatkan ganti rugi dan pemutusan kontrak.",
+      "status": "accepted",
+      "original_text": null,
+      "added_by": "legal",
+      "created_at": "2025-09-26 22:48:40.334611",
+      "updated_at": "2025-09-26 22:49:20.393708",
+      "notes": "AI Generated - Risk: 30/100",
+      "risk_score": 30
+    },
+    {
+      "id": "f21d29e6-5be3-4be3-9955-6f7802eeaea1",
+      "no": 7,
+      "title": "Tanggung Jawab dan Asuransi",
+      "text": "Pihak Kedua bertanggung jawab atas kerugian dan kerusakan yang timbul akibat kelalaian atau pelanggaran kontrak. Pihak Kedua wajib memiliki asuransi dengan nilai pertanggungan minimal 200% dari nilai kontrak untuk menanggung risiko yang mungkin terjadi.",
+      "status": "accepted",
+      "original_text": null,
+      "added_by": "legal",
+      "created_at": "2025-09-26 22:48:40.335114",
+      "updated_at": "2025-09-26 22:49:21.341886",
+      "notes": "AI Generated - Risk: 40/100",
+      "risk_score": 40
+    },
+    {
+      "id": "b7c96652-828c-410e-9bcf-bbfdd8d3f439",
+      "no": 8,
+      "title": "Penyelesaian Sengketa",
+      "text": "Setiap sengketa yang timbul dari kontrak ini akan diselesaikan secara musyawarah oleh kedua belah pihak. Apabila penyelesaian secara musyawarah tidak berhasil, maka sengketa akan diselesaikan melalui jalur hukum di Pengadilan Negeri Jakarta.",
+      "status": "accepted",
+      "original_text": null,
+      "added_by": "legal",
+      "created_at": "2025-09-26 22:48:40.335114",
+      "updated_at": "2025-09-26 22:49:22.876422",
+      "notes": "AI Generated - Risk: 25/100",
+      "risk_score": 25
+    },
+    {
+      "id": "1c2ec0cb-bb73-43f9-a16c-98e64da7ffc3",
+      "no": 9,
+      "title": "Pemutusan Kontrak",
+      "text": "Kontrak dapat diputus oleh salah satu pihak dengan pemberitahuan tertulis 30 hari sebelumnya apabila salah satu pihak melakukan pelanggaran yang tidak dapat diperbaiki. Pemutusan kontrak karena force majeure tidak akan dianggap sebagai pelanggaran.",
+      "status": "accepted",
+      "original_text": null,
+      "added_by": "legal",
+      "created_at": "2025-09-26 22:48:40.335114",
+      "updated_at": "2025-09-26 22:49:23.971747",
+      "notes": "AI Generated - Risk: 30/100",
+      "risk_score": 30
+    }
+  ],
+  "status": "approved",
+  "created_by": "internal",
+  "current_assignee": "management",
+  "created_at": "2025-09-26 22:47:52.585580",
+  "updated_at": "2025-09-26 22:50:16.242679",
+  "workflow_history": [
+    {
+      "action": "contract_created",
+      "by_role": "internal",
+      "timestamp": "2025-09-26T22:47:52.585580",
+      "notes": "Contract created: Kontrak Pembersihan Lapangan Sepak Bola"
+    },
+    {
+      "action": "clauses_generated",
+      "by_role": "internal",
+      "timestamp": "2025-09-26T22:48:40.335114",
+      "notes": "Generated 9 clauses using AI",
+      "old_status": "draft_internal",
+      "new_status": "draft_legal_review"
+    },
+    {
+      "action": "clause_accepted",
+      "by_role": "legal",
+      "timestamp": "2025-09-26T22:49:19.378375",
+      "notes": "Clause 1: Definisi dan Interpretasi - accepted",
+      "clause_id": "5a6c7005-1f72-4b34-81e1-11c7912e431e"
+    },
+    {
+      "action": "clause_accepted",
+      "by_role": "legal",
+      "timestamp": "2025-09-26T22:49:20.077402",
+      "notes": "Clause 2: Ruang Lingkup Pekerjaan - accepted",
+      "clause_id": "37db6f45-fb90-4b10-9642-3497a7ec07b3"
+    },
+    {
+      "action": "clause_accepted",
+      "by_role": "legal",
+      "timestamp": "2025-09-26T22:49:20.133551",
+      "notes": "Clause 3: Kepatuhan terhadap Standar dan Regulasi - accepted",
+      "clause_id": "3474f37f-e2e6-43f1-bd73-4b4b7950f058"
+    },
+    {
+      "action": "clause_accepted",
+      "by_role": "legal",
+      "timestamp": "2025-09-26T22:49:20.189206",
+      "notes": "Clause 4: Pembayaran dan Denda - accepted",
+      "clause_id": "1c003fff-e259-48f4-af35-0b94d44536fd"
+    },
+    {
+      "action": "clause_accepted",
+      "by_role": "legal",
+      "timestamp": "2025-09-26T22:49:20.249371",
+      "notes": "Clause 5: Jangka Waktu dan Perpanjangan - accepted",
+      "clause_id": "a4cbc42b-e1ed-4e8d-a36c-47f027935f1d"
+    },
+    {
+      "action": "clause_accepted",
+      "by_role": "legal",
+      "timestamp": "2025-09-26T22:49:20.393708",
+      "notes": "Clause 6: Kerahasiaan dan Perlindungan Data - accepted",
+      "clause_id": "0bd5d44f-aaad-4838-ac11-e83bd69d0d18"
+    },
+    {
+      "action": "clause_accepted",
+      "by_role": "legal",
+      "timestamp": "2025-09-26T22:49:21.341886",
+      "notes": "Clause 7: Tanggung Jawab dan Asuransi - accepted",
+      "clause_id": "f21d29e6-5be3-4be3-9955-6f7802eeaea1"
+    },
+    {
+      "action": "clause_accepted",
+      "by_role": "legal",
+      "timestamp": "2025-09-26T22:49:22.876422",
+      "notes": "Clause 8: Penyelesaian Sengketa - accepted",
+      "clause_id": "b7c96652-828c-410e-9bcf-bbfdd8d3f439"
+    },
+    {
+      "action": "clause_accepted",
+      "by_role": "legal",
+      "timestamp": "2025-09-26T22:49:23.971747",
+      "notes": "Clause 9: Pemutusan Kontrak - accepted",
+      "clause_id": "1c2ec0cb-bb73-43f9-a16c-98e64da7ffc3"
+    },
+    {
+      "action": "submitted_to_management",
+      "by_role": "legal",
+      "timestamp": "2025-09-26T22:49:55.881062",
+      "notes": "Draft submitted to management for approval",
+      "old_status": "draft_legal_review",
+      "new_status": "draft_management"
+    },
+    {
+      "action": "risk_identification_completed",
+      "by_role": "SYSTEM",
+      "timestamp": "2025-09-26T22:50:16.225218",
+      "notes": "Risk identification completed. Overall risk score: 0. Total risks: 0. Risk file: risks_bbc55ff5-4e40-4bb8-a4cf-4de3cab61907.json",
+      "risk_data": {
+        "total_risks": 0,
+        "high_risks": 0,
+        "critical_risks": 0,
+        "overall_score": 0,
+        "risk_file": "out\\risks\\risks_bbc55ff5-4e40-4bb8-a4cf-4de3cab61907.json"
+      }
+    },
+    {
+      "action": "management_approve",
+      "by_role": "management",
+      "timestamp": "2025-09-26T22:50:16.228223",
+      "notes": "Management approve",
+      "old_status": "draft_management",
+      "new_status": "approved"
+    }
+  ],
+  "management_notes": "",
+  "legal_notes": "",
+  "internal_notes": null,
+  "json_file_path": "C:\\Users\\tech\\jasmine\\ifest\\Final-IFest2025\\ai\\out\\contracts\\contract_bbc55ff5-4e40-4bb8-a4cf-4de3cab61907.json",
+  "pdf_file_path": "C:\\Users\\tech\\jasmine\\ifest\\Final-IFest2025\\ai\\out\\pdfs\\contract_bbc55ff5-4e40-4bb8-a4cf-4de3cab61907.pdf",
+  "risk_score": 0
+}

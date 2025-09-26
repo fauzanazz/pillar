@@ -8,7 +8,7 @@ from fastapi.responses import JSONResponse
 from fastapi.exceptions import RequestValidationError
 from app.settings import settings
 from app.models.schemas import HealthResponse
-from app.routers import drafting, pdf, workflow, search
+from app.routers import drafting, pdf, workflow, search, risk
 
 logging.basicConfig(
     level=getattr(logging, settings.log_level.upper()),
@@ -220,6 +220,7 @@ app.include_router(drafting.router, prefix="/ai")
 app.include_router(pdf.router, prefix="/ai")
 app.include_router(workflow.router, prefix="/api/v1")
 app.include_router(search.router, prefix="/api/v1")
+app.include_router(risk.router, prefix="/api/v1/risk")
 
 
 @app.get(
@@ -236,6 +237,7 @@ async def root():
             "draft": "/ai/draft",
             "pdf": "/ai/pdf",
             "workflow": "/api/v1",
+            "risk_identification": "/api/v1/risk",
             "health": "/healthz",
             "docs": "/docs"
         },

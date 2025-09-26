@@ -113,6 +113,7 @@ class ContractDraft(BaseModel):
     # File tracking
     json_file_path: Optional[str] = Field(None, description="Path to saved JSON file")
     pdf_file_path: Optional[str] = Field(None, description="Path to saved PDF file")
+    risk_score: Optional[int] = Field(None, description="Overall contract risk score (0-100)")
 
 
 class WorkflowAction(BaseModel):

@@ -49,6 +49,7 @@ app.doc('/openapi.json', {
   tags: [
     { name: 'health', description: 'Health Check API' },
     { name: 'contracts', description: 'Contract Management APIs' },
+    { name: 'alerts', description: 'Alert Management APIs' },
   ],
 });
 app.get(

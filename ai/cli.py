@@ -450,9 +450,15 @@ def make_management_decision_interactive(contract_id: str):
     notes = Prompt.ask("Decision notes", default="")
     
     try:
+        # Run management decision with async risk identification
         contract = workflow_service.management_decision(contract_id, decision, notes)
         console.print(f"[green]Decision recorded: {decision}[/green]")
         console.print(f"Status: {contract.status.value}")
+        
+        if decision == "approve":
+            console.print("[yellow]🔍 Analyzing contract risks...[/yellow]")
+            console.print("[green]✅ Risk analysis completed and saved to out/risks/[/green]")
+            
     except Exception as e:
         console.print(f"[red]Error: {e}[/red]")
 

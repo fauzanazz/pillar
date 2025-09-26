@@ -29,11 +29,11 @@
       "no": 1,
       "title": "Definisi dan Interpretasi",
       "text": "Dalam Kontrak ini, kecuali konteksnya menentukan lain: (a) 'Hari Kerja' berarti hari Senin sampai dengan Jumat, kecuali hari libur nasional; (b) 'Force Majeure' berarti keadaan kahar yang berada di luar kendali para pihak; (c) rujukan kepada undang-undang termasuk peraturan pelaksanaannya.",
-      "status": "pending",
+      "status": "accepted",
       "original_text": null,
       "added_by": "legal",
       "created_at": "2025-09-26 20:51:45.486280",
-      "updated_at": "2025-09-26 20:51:45.486280",
+      "updated_at": "2025-09-26 22:56:50.284831",
       "notes": "AI Generated - Risk: 20/100",
       "risk_score": 20
     },
@@ -42,11 +42,11 @@
       "no": 2,
       "title": "Ruang Lingkup Pekerjaan",
       "text": "Pihak Pertama (RT 1) bertanggung jawab untuk membangun jembatan sesuai dengan spesifikasi teknis yang ditetapkan oleh Pihak Kedua (RT 2) dan dalam jangka waktu yang disepakati.",
-      "status": "pending",
+      "status": "accepted",
       "original_text": null,
       "added_by": "legal",
       "created_at": "2025-09-26 20:51:45.486280",
-      "updated_at": "2025-09-26 20:51:45.486280",
+      "updated_at": "2025-09-26 22:56:50.387294",
       "notes": "AI Generated - Risk: 30/100",
       "risk_score": 30
     },
@@ -55,11 +55,11 @@
       "no": 3,
       "title": "Pembayaran dan Denda",
       "text": "Pembayaran dilakukan dalam mata uang Rupiah melalui transfer bank. Keterlambatan pembayaran dikenakan denda 0,1% per hari dari jumlah yang terhutang. Pihak yang melanggar kewajiban kontraktual dapat dikenakan penalti maksimal 10% dari nilai kontrak, kecuali disepakati lain.",
-      "status": "pending",
+      "status": "accepted",
       "original_text": null,
       "added_by": "legal",
       "created_at": "2025-09-26 20:51:45.486280",
-      "updated_at": "2025-09-26 20:51:45.486280",
+      "updated_at": "2025-09-26 22:56:50.426553",
       "notes": "AI Generated - Risk: 25/100",
       "risk_score": 25
     },
@@ -68,11 +68,11 @@
       "no": 4,
       "title": "Pemutusan Kontrak",
       "text": "Kontrak ini dapat diputus oleh salah satu pihak dengan alasan: (1) Pelanggaran material yang tidak diperbaiki dalam 30 hari; (2) Pailit atau likuidasi; (3) Force majeure yang berlangsung lebih dari 90 hari. Pemutusan harus diberitahukan secara tertulis dengan periode pemberitahuan 60 hari.",
-      "status": "pending",
+      "status": "accepted",
       "original_text": null,
       "added_by": "legal",
       "created_at": "2025-09-26 20:51:45.486280",
-      "updated_at": "2025-09-26 20:51:45.486280",
+      "updated_at": "2025-09-26 22:56:50.489941",
       "notes": "AI Generated - Risk: 20/100",
       "risk_score": 20
     },
@@ -81,11 +81,11 @@
       "no": 5,
       "title": "Penyelesaian Sengketa",
       "text": "Setiap perselisihan yang timbul dari atau berkaitan dengan Kontrak ini akan diselesaikan melalui: (1) Musyawarah mufakat dalam jangka waktu 30 hari; (2) Mediasi melalui lembaga mediasi terakreditasi; (3) Arbitrase BANI sesuai prosedur yang berlaku; (4) Pengadilan Negeri Jakarta Pusat sebagai pilihan terakhir.",
-      "status": "pending",
+      "status": "accepted",
       "original_text": null,
       "added_by": "legal",
       "created_at": "2025-09-26 20:51:45.486280",
-      "updated_at": "2025-09-26 20:51:45.486280",
+      "updated_at": "2025-09-26 22:56:50.543003",
       "notes": "AI Generated - Risk: 25/100",
       "risk_score": 25
     },
@@ -94,11 +94,11 @@
       "no": 6,
       "title": "Jangka Waktu dan Perpanjangan",
       "text": "Kontrak ini berlaku selama periode yang ditetapkan dan dapat diperpanjang atas kesepakatan tertulis para pihak. Perpanjangan harus diajukan paling lambat 60 hari sebelum berakhirnya masa berlaku kontrak. Jika tidak ada pemberitahuan perpanjangan, kontrak akan berakhir secara otomatis.",
-      "status": "pending",
+      "status": "accepted",
       "original_text": null,
       "added_by": "legal",
       "created_at": "2025-09-26 20:51:45.486280",
-      "updated_at": "2025-09-26 20:51:45.486280",
+      "updated_at": "2025-09-26 22:56:51.351127",
       "notes": "AI Generated - Risk: 20/100",
       "risk_score": 20
     },
@@ -107,11 +107,11 @@
       "no": 7,
       "title": "Kerahasiaan Informasi",
       "text": "Para Pihak setuju untuk menjaga kerahasiaan semua informasi yang diterima dari pihak lainnya dan tidak akan membagikan informasi tersebut kepada pihak ketiga tanpa persetujuan tertulis dari pihak yang memberikannya.",
-      "status": "pending",
+      "status": "accepted",
       "original_text": null,
       "added_by": "legal",
       "created_at": "2025-09-26 20:51:45.486280",
-      "updated_at": "2025-09-26 20:51:45.486280",
+      "updated_at": "2025-09-26 22:56:51.877642",
       "notes": "AI Generated - Risk: 35/100",
       "risk_score": 35
     },
@@ -120,20 +120,20 @@
       "no": 8,
       "title": "Tanggung Jawab dan Ganti Rugi",
       "text": "Para pihak sepakat untuk bertanggung jawab atas kerugian yang disebabkan oleh kelalaian atau kesalahan dalam pelaksanaan kontrak. Pihak yang dirugikan berhak untuk mengajukan ganti rugi atas kerugian yang diderita akibat pelanggaran kontrak.",
-      "status": "pending",
+      "status": "accepted",
       "original_text": null,
       "added_by": "legal",
       "created_at": "2025-09-26 20:51:45.486280",
-      "updated_at": "2025-09-26 20:51:45.486280",
+      "updated_at": "2025-09-26 22:56:51.941906",
       "notes": "AI Generated - Risk: 40/100",
       "risk_score": 40
     }
   ],
-  "status": "draft_legal_review",
+  "status": "approved",
   "created_by": "internal",
-  "current_assignee": "legal",
+  "current_assignee": "management",
   "created_at": "2025-09-26 20:50:21.505916",
-  "updated_at": "2025-09-26 20:51:45.560313",
+  "updated_at": "2025-09-26 22:57:19.036940",
   "workflow_history": [
     {
       "action": "contract_created",
@@ -148,11 +148,97 @@
       "notes": "Generated 8 clauses using AI",
       "old_status": "draft_internal",
       "new_status": "draft_legal_review"
+    },
+    {
+      "action": "clause_accepted",
+      "by_role": "legal",
+      "timestamp": "2025-09-26T22:56:50.284831",
+      "notes": "Clause 1: Definisi dan Interpretasi - accepted",
+      "clause_id": "203d029a-3153-43fa-ad41-e54ab3c09309"
+    },
+    {
+      "action": "clause_accepted",
+      "by_role": "legal",
+      "timestamp": "2025-09-26T22:56:50.387294",
+      "notes": "Clause 2: Ruang Lingkup Pekerjaan - accepted",
+      "clause_id": "f7cd1578-9497-4890-a6ff-b2e6db50ae6c"
+    },
+    {
+      "action": "clause_accepted",
+      "by_role": "legal",
+      "timestamp": "2025-09-26T22:56:50.426553",
+      "notes": "Clause 3: Pembayaran dan Denda - accepted",
+      "clause_id": "bfebe081-30cc-4e89-b9fd-cd5c275d20a0"
+    },
+    {
+      "action": "clause_accepted",
+      "by_role": "legal",
+      "timestamp": "2025-09-26T22:56:50.489941",
+      "notes": "Clause 4: Pemutusan Kontrak - accepted",
+      "clause_id": "32808a34-aa1c-460a-8ced-272849198683"
+    },
+    {
+      "action": "clause_accepted",
+      "by_role": "legal",
+      "timestamp": "2025-09-26T22:56:50.543003",
+      "notes": "Clause 5: Penyelesaian Sengketa - accepted",
+      "clause_id": "ebedfd77-f5c4-49f1-abb1-465c6636f560"
+    },
+    {
+      "action": "clause_accepted",
+      "by_role": "legal",
+      "timestamp": "2025-09-26T22:56:51.351127",
+      "notes": "Clause 6: Jangka Waktu dan Perpanjangan - accepted",
+      "clause_id": "2cdd33ea-60cc-4cb4-8315-383b9504effe"
+    },
+    {
+      "action": "clause_accepted",
+      "by_role": "legal",
+      "timestamp": "2025-09-26T22:56:51.877642",
+      "notes": "Clause 7: Kerahasiaan Informasi - accepted",
+      "clause_id": "033fce51-a7fe-4d78-b917-c4fa9c2767e2"
+    },
+    {
+      "action": "clause_accepted",
+      "by_role": "legal",
+      "timestamp": "2025-09-26T22:56:51.941906",
+      "notes": "Clause 8: Tanggung Jawab dan Ganti Rugi - accepted",
+      "clause_id": "5f22151f-e768-4344-8eb7-896a74765b43"
+    },
+    {
+      "action": "submitted_to_management",
+      "by_role": "legal",
+      "timestamp": "2025-09-26T22:56:59.162227",
+      "notes": "Draft submitted to management for approval",
+      "old_status": "draft_legal_review",
+      "new_status": "draft_management"
+    },
+    {
+      "action": "risk_identification_completed",
+      "by_role": "SYSTEM",
+      "timestamp": "2025-09-26T22:57:19.015634",
+      "notes": "Risk identification completed. Overall risk score: 100. Total risks: 1. Risk file: risks_cc2b9ab4-0769-4435-b881-9f7dd5e3f22c.json",
+      "risk_data": {
+        "total_risks": 1,
+        "high_risks": 0,
+        "critical_risks": 1,
+        "overall_score": 100,
+        "risk_file": "out\\risks\\risks_cc2b9ab4-0769-4435-b881-9f7dd5e3f22c.json"
+      }
+    },
+    {
+      "action": "management_approve",
+      "by_role": "management",
+      "timestamp": "2025-09-26T22:57:19.016645",
+      "notes": "Management approve",
+      "old_status": "draft_management",
+      "new_status": "approved"
     }
   ],
-  "management_notes": null,
-  "legal_notes": null,
+  "management_notes": "",
+  "legal_notes": "",
   "internal_notes": null,
   "json_file_path": "C:\\Users\\tech\\jasmine\\ifest\\Final-IFest2025\\ai\\out\\contracts\\contract_cc2b9ab4-0769-4435-b881-9f7dd5e3f22c.json",
-  "pdf_file_path": "C:\\Users\\tech\\jasmine\\ifest\\Final-IFest2025\\ai\\out\\pdfs\\contract_cc2b9ab4-0769-4435-b881-9f7dd5e3f22c.pdf"
+  "pdf_file_path": "C:\\Users\\tech\\jasmine\\ifest\\Final-IFest2025\\ai\\out\\pdfs\\contract_cc2b9ab4-0769-4435-b881-9f7dd5e3f22c.pdf",
+  "risk_score": 100
 }
