@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useMemo, useEffect } from 'react';
 import { useContractStore } from '@/stores/contractStore';
 
 import ContractTable from '../contracts/ContractTable';
@@ -8,7 +8,12 @@ import { FileText, Clock, CheckCircle, AlertTriangle } from 'lucide-react';
 import StatCard from '../dashboard/StatCard';
 
 const LegalDashboard = () => {
-  const contracts = useContractStore(state => state.contracts);
+  const { contracts, fetchContracts, loading, error } = useContractStore();
+  
+  // Fetch contracts when component mounts
+  useEffect(() => {
+    fetchContracts();
+  }, [fetchContracts]);
 
   // Filter contracts relevant to legal team
   const legalContracts = useMemo(() => {
@@ -71,6 +76,41 @@ const LegalDashboard = () => {
       icon: <AlertTriangle className="h-6 w-6 text-destructive" />,
     },
   ];
+
+  // Show loading state
+  if (loading) {
+    return (
+      <div className="space-y-6 p-6">
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+            <p className="text-muted-foreground">Loading contracts...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error state
+  if (error) {
+    return (
+      <div className="space-y-6 p-6">
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="text-center">
+            <AlertTriangle className="h-12 w-12 text-destructive mx-auto mb-4" />
+            <h3 className="text-lg font-semibold mb-2">Error Loading Contracts</h3>
+            <p className="text-muted-foreground mb-4">{error}</p>
+            <button 
+              onClick={() => fetchContracts()} 
+              className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
+            >
+              Retry
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6 p-6">
