@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { toast } from 'sonner';
@@ -87,26 +87,18 @@ export function AddContractModal({
     },
   });
 
-  const { fields, append, remove } = useForm({
+  const { fields, append, remove } = useFieldArray({
     name: 'parties',
     control: form.control,
   });
 
   const addParty = () => {
-    const currentParties = form.getValues('parties');
-    form.setValue('parties', [
-      ...currentParties,
-      { name: '', representation: '' },
-    ]);
+    append({ name: '', representation: '' });
   };
 
   const removeParty = (index: number) => {
-    const currentParties = form.getValues('parties');
-    if (currentParties.length > 2) {
-      form.setValue(
-        'parties',
-        currentParties.filter((_, i) => i !== index)
-      );
+    if (fields.length > 2) {
+      remove(index);
     }
   };
 
@@ -147,12 +139,12 @@ export function AddContractModal({
 
   if (!isOpen) return null;
 
-  const parties = form.watch('parties') || [];
-
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-      <div className="bg-white rounded-lg shadow-lg w-full max-w-2xl max-h-[90vh] ">
-        <div className="flex items-center justify-between p-6 border-b">
+      {/* Modal container with flex column layout to manage header, body, and footer */}
+      <div className="bg-white rounded-lg shadow-lg w-full max-w-2xl max-h-[90vh] flex flex-col">
+        {/* Header (fixed) */}
+        <div className="flex items-center justify-between p-6 border-b flex-shrink-0">
           <h2 className="text-xl font-semibold">Create New Contract</h2>
           <button
             onClick={onClose}
@@ -163,145 +155,149 @@ export function AddContractModal({
           </button>
         </div>
 
+        {/* Form now acts as a layout container for the scrollable area and the footer */}
         <form
           onSubmit={form.handleSubmit(handleSubmit)}
-          className="p-6 space-y-6 overflow-y-scroll"
+          className="flex flex-col flex-grow overflow-hidden"
         >
-          {/* Contract Name */}
-          <div className="space-y-2">
-            <Label htmlFor="title">Contract Name *</Label>
-            <Input
-              id="title"
-              {...form.register('title')}
-              placeholder="Enter contract name"
-              disabled={isGenerating}
-            />
-            {form.formState.errors.title && (
-              <p className="text-sm text-red-600">
-                {form.formState.errors.title.message}
-              </p>
-            )}
-          </div>
-
-          {/* Contract Description */}
-          <div className="space-y-2">
-            <Label htmlFor="description">Contract Description *</Label>
-            <textarea
-              id="description"
-              {...form.register('description')}
-              placeholder="Describe the purpose and scope of this contract"
-              className="w-full p-3 border border-gray-300 rounded-md min-h-[120px] resize-none"
-              disabled={isGenerating}
-            />
-            {form.formState.errors.description && (
-              <p className="text-sm text-red-600">
-                {form.formState.errors.description.message}
-              </p>
-            )}
-          </div>
-
-          {/* End Date */}
-          <div className="space-y-2">
-            <Label htmlFor="endDate">End of Contract *</Label>
-            <Input
-              id="endDate"
-              type="date"
-              {...form.register('endDate')}
-              disabled={isGenerating}
-            />
-            {form.formState.errors.endDate && (
-              <p className="text-sm text-red-600">
-                {form.formState.errors.endDate.message}
-              </p>
-            )}
-          </div>
-
-          {/* Parties */}
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <Label>Parties *</Label>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={addParty}
-                className="flex items-center gap-2"
+          {/* Scrollable Body section */}
+          <div className="flex-grow p-6 space-y-6 overflow-y-auto">
+            {/* Contract Name */}
+            <div className="space-y-2">
+              <Label htmlFor="title">Contract Name *</Label>
+              <Input
+                id="title"
+                {...form.register('title')}
+                placeholder="Enter contract name"
                 disabled={isGenerating}
-              >
-                <Plus className="h-4 w-4" />
-                Add Party
-              </Button>
+              />
+              {form.formState.errors.title && (
+                <p className="text-sm text-red-600">
+                  {form.formState.errors.title.message}
+                </p>
+              )}
             </div>
 
-            {parties.map((_, index) => (
-              <div
-                key={index}
-                className="border border-gray-200 rounded-lg p-4 space-y-3"
-              >
-                <div className="flex items-center justify-between">
-                  <h4 className="text-sm font-medium">Party {index + 1}</h4>
-                  {parties.length > 2 && (
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={() => removeParty(index)}
-                      className="h-8 w-8 p-0 text-red-600"
-                      disabled={isGenerating}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  )}
-                </div>
+            {/* Contract Description */}
+            <div className="space-y-2">
+              <Label htmlFor="description">Contract Description *</Label>
+              <textarea
+                id="description"
+                {...form.register('description')}
+                placeholder="Describe the purpose and scope of this contract"
+                className="w-full p-3 border border-gray-300 rounded-md min-h-[120px] resize-none"
+                disabled={isGenerating}
+              />
+              {form.formState.errors.description && (
+                <p className="text-sm text-red-600">
+                  {form.formState.errors.description.message}
+                </p>
+              )}
+            </div>
 
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <Label htmlFor={`party-name-${index}`}>Name *</Label>
-                    <Input
-                      id={`party-name-${index}`}
-                      {...form.register(`parties.${index}.name`)}
-                      placeholder="Company/Person name"
-                      disabled={isGenerating}
-                    />
-                    {form.formState.errors.parties?.[index]?.name && (
-                      <p className="text-xs text-red-600 mt-1">
-                        {form.formState.errors.parties[index]?.name?.message}
-                      </p>
-                    )}
-                  </div>
+            {/* End Date */}
+            <div className="space-y-2">
+              <Label htmlFor="endDate">End of Contract *</Label>
+              <Input
+                id="endDate"
+                type="date"
+                {...form.register('endDate')}
+                disabled={isGenerating}
+              />
+              {form.formState.errors.endDate && (
+                <p className="text-sm text-red-600">
+                  {form.formState.errors.endDate.message}
+                </p>
+              )}
+            </div>
 
-                  <div>
-                    <Label htmlFor={`party-representation-${index}`}>
-                      Representation *
-                    </Label>
-                    <Input
-                      id={`party-representation-${index}`}
-                      {...form.register(`parties.${index}.representation`)}
-                      placeholder="e.g., Client, Vendor, Partner"
-                      disabled={isGenerating}
-                    />
-                    {form.formState.errors.parties?.[index]?.representation && (
-                      <p className="text-xs text-red-600 mt-1">
-                        {
-                          form.formState.errors.parties[index]?.representation
-                            ?.message
-                        }
-                      </p>
-                    )}
-                  </div>
-                </div>
+            {/* Parties */}
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <Label>Parties *</Label>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={addParty}
+                  className="flex items-center gap-2"
+                  disabled={isGenerating}
+                >
+                  <Plus className="h-4 w-4" />
+                  Add Party
+                </Button>
               </div>
-            ))}
 
-            {form.formState.errors.parties && (
-              <p className="text-sm text-red-600">
-                {form.formState.errors.parties.message}
-              </p>
-            )}
+              {fields.map((field, index) => (
+                <div
+                  key={field.id}
+                  className="border border-gray-200 rounded-lg p-4 space-y-3"
+                >
+                  <div className="flex items-center justify-between">
+                    <h4 className="text-sm font-medium">Party {index + 1}</h4>
+                    {fields.length > 2 && (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => removeParty(index)}
+                        className="h-8 w-8 p-0 text-red-600"
+                        disabled={isGenerating}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    )}
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <Label htmlFor={`party-name-${index}`}>Name *</Label>
+                      <Input
+                        id={`party-name-${index}`}
+                        {...form.register(`parties.${index}.name`)}
+                        placeholder="Company/Person name"
+                        disabled={isGenerating}
+                      />
+                      {form.formState.errors.parties?.[index]?.name && (
+                        <p className="text-xs text-red-600 mt-1">
+                          {form.formState.errors.parties[index]?.name?.message}
+                        </p>
+                      )}
+                    </div>
+
+                    <div>
+                      <Label htmlFor={`party-representation-${index}`}>
+                        Representation *
+                      </Label>
+                      <Input
+                        id={`party-representation-${index}`}
+                        {...form.register(`parties.${index}.representation`)}
+                        placeholder="e.g., Client, Vendor, Partner"
+                        disabled={isGenerating}
+                      />
+                      {form.formState.errors.parties?.[index]
+                        ?.representation && (
+                        <p className="text-xs text-red-600 mt-1">
+                          {
+                            form.formState.errors.parties[index]?.representation
+                              ?.message
+                          }
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+
+              {form.formState.errors.parties && (
+                <p className="text-sm text-red-600">
+                  {form.formState.errors.parties.message}
+                </p>
+              )}
+            </div>
           </div>
-
-          {/* Submit Button */}
-          <div className="flex justify-end gap-3 pt-4 border-t">
+          {/* Footer (fixed) */}
+          <div className="flex justify-end gap-3 p-6 border-t flex-shrink-0">
             <Button
               type="button"
               variant="outline"
