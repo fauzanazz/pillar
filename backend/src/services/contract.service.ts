@@ -4,8 +4,13 @@ import {
   createContract as createContractRepo,
   getContractById as getContractByIdRepo,
   getContracts as getContractsRepo,
+  updateContract as updateContractRepo,
 } from '@/repositories/contract.repository';
-import type { CreateContract, GetContractsQuery } from '@/types/contract.type';
+import type {
+  CreateContract,
+  GetContractsQuery,
+  UpdateContract,
+} from '@/types/contract.type';
 
 export const getContractsService = async (query: GetContractsQuery) => {
   return await getContractsRepo(query);
@@ -30,4 +35,12 @@ export const createContractService = async (
   );
 
   return await createContractRepo(contractData, createdBy, url, key);
+};
+
+export const updateContractService = async (
+  id: number,
+  contractData: UpdateContract,
+  updatedBy: string,
+) => {
+  return await updateContractRepo(id, contractData, updatedBy);
 };

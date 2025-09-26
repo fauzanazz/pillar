@@ -13,6 +13,7 @@ import type {
   ContractWithRelations,
   CreateContract,
   GetContractsQuery,
+  UpdateContract,
 } from '@/types/contract.type';
 
 export const getContracts = async (query: GetContractsQuery) => {
@@ -186,5 +187,39 @@ export const createContract = async (
     presignedUrl: url,
     createdAt: newContract.createdAt.toISOString(),
     updatedAt: newContract.updatedAt.toISOString(),
+  };
+};
+
+export const updateContract = async (
+  id: number,
+  contractData: UpdateContract,
+  updatedBy: string,
+) => {
+  const [updatedContract] = await db
+    .update(contracts)
+    .set({
+      ...contractData,
+      updatedBy,
+      updatedAt: new Date(),
+    })
+    .where(eq(contracts.id, id))
+    .returning();
+
+  if (!updatedContract) {
+    return null;
+  }
+
+  return {
+    ...updatedContract,
+    urlContract: await getPresignedUrlByUrl(updatedContract.urlContract || ''),
+    status: updatedContract.status as
+      | 'Draft'
+      | 'Legal Review'
+      | 'Management Review'
+      | 'Accepted'
+      | 'Rejected'
+      | 'Canceled',
+    createdAt: updatedContract.createdAt.toISOString(),
+    updatedAt: updatedContract.updatedAt.toISOString(),
   };
 };

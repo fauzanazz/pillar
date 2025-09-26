@@ -9,6 +9,7 @@ import {
   createContractSchema,
   getContractParamsSchema,
   getContractsQuerySchema,
+  updateContractSchema,
 } from '@/types/contract.type';
 
 export const getContractsRoute = createRoute({
@@ -76,6 +77,34 @@ export const createContractRoute = createRoute({
   responses: {
     201: {
       description: 'Contract created successfully',
+      content: {
+        'application/json': {
+          schema: contractResponseSchema,
+        },
+      },
+    },
+    ...GenericErrorResponses,
+  },
+});
+
+export const updateContractRoute = createRoute({
+  operationId: 'updateContract',
+  tags: ['contracts'],
+  method: 'put',
+  path: '/contracts/{id}',
+  request: {
+    params: getContractParamsSchema,
+    body: {
+      content: {
+        'application/json': {
+          schema: updateContractSchema,
+        },
+      },
+    },
+  },
+  responses: {
+    200: {
+      description: 'Contract updated successfully',
       content: {
         'application/json': {
           schema: contractResponseSchema,
