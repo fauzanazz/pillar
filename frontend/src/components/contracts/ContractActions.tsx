@@ -1,18 +1,18 @@
 'use client';
 
+import { ContractWithRelations } from '@/api';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
-import { Contract } from '@/constants/mockData';
 import { Edit, Eye, Trash2, FileCheck, FileX, Plus } from 'lucide-react';
 
 interface ContractActionsProps {
-  contract?: Contract;
-  onEdit?: (contract: Contract) => void;
+  contract?: ContractWithRelations;
+  onEdit?: (contract: ContractWithRelations) => void;
   onCreate?: () => void;
-  onView?: (contract: Contract) => void;
-  onApprove?: (contract: Contract) => void;
-  onReject?: (contract: Contract) => void;
-  onDelete?: (contract: Contract) => void;
+  onView?: (contract: ContractWithRelations) => void;
+  onApprove?: (contract: ContractWithRelations) => void;
+  onReject?: (contract: ContractWithRelations) => void;
+  onDelete?: (contract: ContractWithRelations) => void;
 }
 
 const ContractActions = ({
@@ -22,14 +22,14 @@ const ContractActions = ({
   onView,
   onApprove,
   onReject,
-  onDelete
+  onDelete,
 }: ContractActionsProps) => {
   const {
     canCreateContracts,
     canReviewContracts,
     isInternal,
     isLegal,
-    isManagement
+    isManagement,
   } = useAuth();
 
   // If no contract provided, show create action for internal users
@@ -37,10 +37,7 @@ const ContractActions = ({
     return (
       <>
         {canCreateContracts && onCreate && (
-          <Button
-            onClick={onCreate}
-            className="flex items-center gap-2"
-          >
+          <Button onClick={onCreate} className="flex items-center gap-2">
             <Plus className="h-4 w-4" />
             New Contract
           </Button>
@@ -81,7 +78,7 @@ const ContractActions = ({
       {canReviewContracts && (
         <>
           {/* Legal review actions */}
-          {isLegal && contract.status === 'legal_review' && (
+          {isLegal && contract.status === 'Legal Review' && (
             <>
               {onApprove && (
                 <Button
@@ -109,7 +106,7 @@ const ContractActions = ({
           )}
 
           {/* Management review actions */}
-          {isManagement && contract.status === 'management_review' && (
+          {isManagement && contract.status === 'Management Review' && (
             <>
               {onApprove && (
                 <Button
@@ -139,7 +136,7 @@ const ContractActions = ({
       )}
 
       {/* Delete action - only internal users can delete drafts */}
-      {isInternal && contract.status === 'draft' && onDelete && (
+      {isInternal && contract.status === 'Draft' && onDelete && (
         <Button
           variant="ghost"
           size="sm"

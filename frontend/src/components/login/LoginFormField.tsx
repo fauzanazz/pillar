@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -54,6 +54,9 @@ export const LoginFormField = () => {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const login = useAuthStore(state => state.login);
+  const isAuthenticated = useAuthStore(state => state.isAuthenticated);
+  const role = useAuthStore(state => state.user?.role);
+
 
   const form = useForm<LoginForm>({
     resolver: zodResolver(loginSchema),
