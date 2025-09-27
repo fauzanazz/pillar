@@ -4,7 +4,7 @@ import AuthGuard from '@/components/auth/AuthGuard';
 import './global.css';
 
 export const metadata: Metadata = {
-  title: 'iFest 2025 - Contract Management System',
+  title: 'Pillar 2025 - Contract Management System',
   description:
     'Professional contract management system for legal, internal, and management teams',
 };

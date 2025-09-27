@@ -15,7 +15,7 @@ const LoginPage = () => {
             <div className="h-12 w-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center border border-white/30 shadow-lg p-2">
               <Image 
                 src="/logo.png" 
-                alt="iFest 2025 Logo" 
+                alt="Pillar Logo" 
                 width={32} 
                 height={32}
                 className="w-8 h-8 object-contain"
@@ -23,7 +23,7 @@ const LoginPage = () => {
             </div>
             <div>
               <h1 className="text-2xl sm:text-3xl font-bold text-black">
-                iFest 2025
+                Pillar
               </h1>
               <p className="text-black text-sm sm:text-base font-medium">
                 Contract Management System
@@ -47,7 +47,7 @@ const LoginPage = () => {
               </div>
               <div>
                 <h1 className="text-4xl font-bold text-black/80 mb-1">
-                  iFest 2025
+                  Pillar
                 </h1>
                 <p className="text-black/80 text-lg font-medium">
                   Contract Management System

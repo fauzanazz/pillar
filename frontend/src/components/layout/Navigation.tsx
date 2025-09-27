@@ -49,7 +49,7 @@ const Navigation = () => {
               <div className="h-10 w-10 bg-[--twilight-gaze]/10 backdrop-blur-sm rounded-xl flex items-center justify-center border border-[--twilight-gaze]/20 shadow-sm p-2">
                 <Image
                   src="/logo.png"
-                  alt="iFest 2025 Logo"
+                  alt="Pillar Logo"
                   width={24}
                   height={24}
                   className="w-6 h-6 object-contain"
