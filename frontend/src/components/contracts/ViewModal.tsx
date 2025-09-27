@@ -23,7 +23,7 @@ export const ViewContractModal: React.FC<ViewContractModalProps> = ({
 }) => {
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-4xl h-[90vh] flex flex-col">
+      <DialogContent className="sm:max-w-4xl bg-white  h-[90vh] flex flex-col">
         <DialogHeader>
           <DialogTitle>{contractTitle}</DialogTitle>
           <DialogDescription>
@@ -32,7 +32,7 @@ export const ViewContractModal: React.FC<ViewContractModalProps> = ({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="flex-grow mt-4 overflow-hidden">
+        <div className="flex-grow mt-4 overflow-hidden ">
           <iframe
             src={pdfUrl}
             title={contractTitle}
