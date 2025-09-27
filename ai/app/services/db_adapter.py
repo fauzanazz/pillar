@@ -251,7 +251,6 @@ class ContractDBAdapter:
             'reason': contract.management_notes,
             'created_by': contract.created_by.value if hasattr(contract.created_by, 'value') else str(contract.created_by),
             'updated_by': contract.current_assignee.value if hasattr(contract.current_assignee, 'value') else str(contract.current_assignee),
-            'url_contract': contract.pdf_file_path,
             'ai_draft_data': ai_draft_data,
             'ai_metadata': ai_metadata,
             'draft_summary': contract.template.description,

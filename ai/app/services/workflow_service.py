@@ -43,8 +43,6 @@ class WorkflowService:
         
         # Generate initial PDF (template without clauses)
         pdf_path = self._generate_contract_pdf(contract)
-        if pdf_path:
-            contract.pdf_file_path = pdf_path
         
         # Save contract
         await self.storage.save_contract(contract)
@@ -134,8 +132,6 @@ class WorkflowService:
         
         # Regenerate PDF with clauses
         pdf_path = self._generate_contract_pdf(contract, correlation_id)
-        if pdf_path:
-            contract.pdf_file_path = pdf_path
         
         # Save updated contract
         await self.storage.save_contract(contract)
@@ -260,8 +256,6 @@ class WorkflowService:
         
         # Regenerate PDF with final reviewed clauses
         pdf_path = self._generate_contract_pdf(contract, presigned_url=presigned_url)
-        if pdf_path:
-            contract.pdf_file_path = pdf_path
         
         await self.storage.save_contract(contract)
         
@@ -326,10 +320,6 @@ class WorkflowService:
         })
         
         # Generate final PDF for approved contracts
-        if decision == "approve":
-            pdf_path = self._generate_contract_pdf(contract, presigned_url=presigned_url)
-            if pdf_path:
-                contract.pdf_file_path = pdf_path
         
         self.storage.save_contract(contract)
         
