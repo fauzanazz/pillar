@@ -1,6 +1,6 @@
-# MODYV - AI-Powered Contract Management Platform
+# PILLAR - AI-Powered Contract Management Platform
 
-**MODYV** is a comprehensive, AI-powered contract management platform designed for PT Integrasi Logistik Cipta Solusi (ILCS). The platform combines modern web technologies with advanced AI capabilities to streamline contract drafting, management, and risk assessment processes.
+**PILLAR** is a comprehensive, AI-powered contract management platform designed for PT Integrasi Logistik Cipta Solusi (ILCS). The platform combines modern web technologies with advanced AI capabilities to streamline contract drafting, management, and risk assessment processes.
 
 ## 🚀 Features
 
@@ -17,7 +17,7 @@
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                        MODYV Platform                       │
+│                        PILLAR Platform                       │
 ├─────────────────┬─────────────────┬─────────────────────────┤
 │   Frontend      │    Backend      │      AI Service         │
 │   (Next.js)     │    (Hono.js)    │     (FastAPI)          │
