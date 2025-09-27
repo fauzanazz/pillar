@@ -266,7 +266,7 @@ export default function ManagementReviewClient({
                       Accept
                     </Button>
                   </AlertDialogTrigger>
-                  <AlertDialogContent>
+                  <AlertDialogContent className='bg-white'>
                     <AlertDialogHeader>
                       <AlertDialogTitle>
                         Are you sure you want to approve this contract?
